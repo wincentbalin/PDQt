@@ -1,0 +1,38 @@
+This file tells the history of development on different plattforms
+of the GUI for PDa, the fixed-point-adapted fork of the multimedia
+environment Pure Data.
+
+
+
+Milestone 1
+-----------
+
+Functionality:
+Window with white canvas, closeable through system-wide means.
+
+(Qtopia port: Window created accordingly to the small walkthrough
+ from the Qtopia documentation. Closeable through accepting the
+ closing event in the method... well... closeEvent(). Qt building
+ system needs class declaration to be in the separate header
+ file (meaning: declaration must not be in the source file),
+ other systems might be more conciliant. Qtopia-provided class
+ QCanvas used as canvas.
+ To compile smoothly execute this sequence of commands:
+ . env.sh
+ dev-x86-qpe.sh
+ . qtopia-env.sh
+ )
+
+
+
+Milestone 2
+-----------
+
+Functionality:
+
+
+
+
+
+
+
