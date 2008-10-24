@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Pure Data for Qt
+Comment=Emulation of Pure Data on iPxd
+Exec=pdqt
+Terminal=0
+Type=Application
+Icon=pdqt.png
+Categories=Application;Audio
+Display=640x480/144dpi
+CanFastLoad=0
