@@ -886,12 +886,12 @@ void PDQt::receiveMessage()
 	  {
 	    if(argval > (*widget).max) argval = (*widget).max;
 	    if(argval < (*widget).min) argval = (*widget).min;
-
-	    if((*widget).type == PD_BANG)
-	      (*widget).value = 1;
-	    else
-	      (*widget).value = argval;
 	  }
+
+	  if((*widget).type == PD_BANG)
+	    (*widget).value = 1;
+	  else
+	    (*widget).value = argval;
 	}
       }
 
