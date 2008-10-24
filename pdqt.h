@@ -17,11 +17,9 @@
 
 #ifdef QTOPIA
   #include <qpe/qpeapplication.h>
-  #include <qpe/resource.h>
   #include <qpe/config.h>
 #else
   #include <qapplication.h>
-  #include "compat/resource.h"
   #include "compat/config.h"
 #endif
 
@@ -154,8 +152,12 @@ private:
   PDPodButton wheelCounterclockwise;
   int scrollValue; // Emulation of the scroll wheel
   //
-  QFont standardGUIFont;
-  QFontMetrics* standardGUIFontMetrics;
+  QFont font;
+  QFontMetrics* fm;
+  //
+  QString pdPath;
+  QString patchDirectory;
+  Config* config;
 };
 
 #endif

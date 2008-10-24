@@ -7,7 +7,8 @@
 #include "pdqt.h"
 
 #define PDQTNAME "Pure Data for Qtopia"
-#define PD_COMMAND "/usr/local/PDa/bin/pd"
+#define PD_COMMAND "/opt/QtPalmtop/bin/pd"
+#define PATCH_DIRECTORY "/opt/QtPalmtop/share/pdqt"
 
 #define DPRINTF(x...) fprintf(stderr, x);
 
@@ -32,8 +33,8 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   scrollValue = 0;
 
   // Initialize standard GUI font
-  standardGUIFont = QFont("helvetica", 36, QFont::Bold);
-  standardGUIFontMetrics = new QFontMetrics(standardGUIFont);
+  font = QFont("helvetica", 24, QFont::Bold);
+  fm = new QFontMetrics(font);
 
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
@@ -46,6 +47,19 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   // Calculate size factor
   screenMultiplier = screenWidth / 160.0f;
 
+  // Get configuration entries
+  config = new Config("PDQt");
+  if(config->isValid())
+  {
+    pdPath = config->readEntry("pdPath");
+    patchDirectory = config->readEntry("patchDirectory");
+  }
+  else
+  {
+    pdPath = PD_COMMAND;
+    patchDirectory = PATCH_DIRECTORY;
+  }
+
   // Create status bar
   status = new QLabel(statusBar());
   statusBar()->addWidget(status, 2, true);
@@ -57,6 +71,10 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
 /** Destructor. */
 PDQt::~PDQt()
 {
+  // Save configuration
+  config->writeEntry("pdPath", pdPath);
+  config->writeEntry("patchDirectory", patchDirectory);
+
   // Remove status label
   statusBar()->removeWidget(status);
   delete status;
@@ -389,18 +407,18 @@ void PDQt::paintEvent(QPaintEvent*)
 	  numberContour[5] = numberContour[0];
           sv = QString::number((*widget).value, 'f', 1);
 	  p.drawPolyline(numberContour);
-          p.setFont(standardGUIFont);
-	  p.drawText((*widget).x + (*widget).w - standardGUIFontMetrics->width(sv) - 24,
-	             (*widget).y + standardGUIFontMetrics->height() + 12,
+          p.setFont(font);
+	  p.drawText((*widget).x + (*widget).w - fm->width(sv) - 24,
+	             (*widget).y + fm->height() + 12,
 		     sv,
 		     sv.length());
 
 	  break;
 
 	case PD_TEXT:
-          p.setFont(standardGUIFont);
+          p.setFont(font);
 	  p.drawText((*widget).x + 12,
-	             (*widget).y + standardGUIFontMetrics->height() + 12,
+	             (*widget).y + fm->height() + 12,
 		     (*widget).name,
 		     strlen((*widget).name));
 	  break;
@@ -484,9 +502,9 @@ void PDQt::paintEvent(QPaintEvent*)
 
     p.setPen(black);
     QString sv(QString("%1").arg(scrollValue));
-    p.setFont(standardGUIFont);
-    p.drawText(screenWidth / 2 - standardGUIFontMetrics->width(sv) / 2,
-               screenHeight / 2 + standardGUIFontMetrics->height() / 2,
+    p.setFont(font);
+    p.drawText(screenWidth / 2 - fm->width(sv) / 2,
+               screenHeight / 2 + fm->height() / 2,
 	       sv,
 	       sv.length());
   }
@@ -529,6 +547,8 @@ void PDQt::load()
   fileDialog.setHomeDirectoryCdUpEnable(true);
 
   // Set directory
+  fileDialog.setDirectory(patchDirectory);
+
   fileDialog.showMaximized();
 
   if(fileDialog.exec() == QDialog::Accepted)
@@ -549,6 +569,7 @@ void PDQt::load(const char* fileName)
   // Set patch name and directory of the patch
   patch = fileName;
   fi = QFileInfo(patch);
+  patchDirectory = fi.dirPath();
 
   // Open patch file
   if(!f.open(IO_ReadOnly))
@@ -714,7 +735,7 @@ void PDQt::startPD()
   {
     running = true;
     status->setText("Running PDa");
-    execl(PD_COMMAND, "pd", "-r", "22050", "-nogui", "-rt", "-nomidi", "-noadc", patch.latin1(), NULL);
+    execl(pdPath.latin1(), "pd", "-r", "22050", "-nogui", "-rt", "-nomidi", "-noadc", patch.latin1(), NULL);
     // If exec fails display message and exit forked process
     running = false;
     status->clear();
