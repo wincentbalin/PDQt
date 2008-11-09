@@ -7,8 +7,14 @@
 #include "pdqt.h"
 
 #define PDQTNAME "Pure Data for Qtopia"
+
+#ifndef PD_COMMAND
 #define PD_COMMAND "/opt/QtPalmtop/bin/pd"
+#endif
+
+#ifndef PATCH_DIRECTORY
 #define PATCH_DIRECTORY "/opt/QtPalmtop/share/pdqt"
+#endif
 
 #define DPRINTF(x...) fprintf(stderr, x);
 
