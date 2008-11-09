@@ -4,8 +4,9 @@ CONFIG		= qt warn_on
 TMAKE_CC	= gcc
 TMAKE_CXX	= g++
 TMAKE_LINK	= gcc
-TMAKE_CFLAGS	= $$TMAKE_CFLAGS -DQTOPIA -DQWS -DNATIVE -O3 -fomit-frame-pointer
-TMAKE_CXXFLAGS  = $$TMAKE_CXXFLAGS -DQTOPIA -DQWS -DNATIVE -O3 -fomit-frame-pointer
+NATIVE_FLAGS	= -DNATIVE -DPD_COMMAND='"/home/wincent/workspace/pdqt/PureData/pd"' -DPATCH_DIRECTORY='"/home/wincent/workspace/pdqt/PureData"'
+TMAKE_CFLAGS	= $$TMAKE_CFLAGS $$NATIVE_FLAGS -DQTOPIA -DQWS -DNATIVE -O3 -fomit-frame-pointer
+TMAKE_CXXFLAGS  = $$TMAKE_CXXFLAGS $$NATIVE_FLAGS -DQTOPIA -DQWS -DNATIVE -O3 -fomit-frame-pointer
 LIBS		+= -lqpe -ljpeg
 INCLUDEPATH     = \
                 . \
