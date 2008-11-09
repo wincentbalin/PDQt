@@ -4,8 +4,8 @@ CONFIG		= qt warn_on
 TMAKE_CC	= gcc
 TMAKE_CXX	= g++
 TMAKE_LINK	= gcc
-TMAKE_CFLAGS	= $$TMAKE_CFLAGS -DQTOPIA -DQWS -O3 -fomit-frame-pointer
-TMAKE_CXXFLAGS  = $$TMAKE_CXXFLAGS -DQTOPIA -DQWS -O3 -fomit-frame-pointer
+TMAKE_CFLAGS	= $$TMAKE_CFLAGS -DQTOPIA -DQWS -DNATIVE -O3 -fomit-frame-pointer
+TMAKE_CXXFLAGS  = $$TMAKE_CXXFLAGS -DQTOPIA -DQWS -DNATIVE -O3 -fomit-frame-pointer
 LIBS		+= -lqpe -ljpeg
 INCLUDEPATH     = \
                 . \
