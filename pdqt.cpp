@@ -66,7 +66,7 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
     patchDirectory = PATCH_DIRECTORY;
   }
 
-  // Set widget flags
+  // Set widget flags for double-buffering 
   setWFlags(getWFlags() |
             Qt::WNorthWestGravity | Qt::WRepaintNoErase | Qt::WResizeNoErase);
 
@@ -300,9 +300,9 @@ void PDQt::resizeEvent(QResizeEvent *)
   screenWidth = this->width();
   screenHeight = this->height();
 
-  if (screenWidth != paintPixmap.width() || screenHeight != paintPixmap.height())
+  if(screenWidth != paintPixmap.width() || screenHeight != paintPixmap.height())
   {
-	paintPixmap.resize(screenWidth, screenHeight);
+    paintPixmap.resize(screenWidth, screenHeight);
   }
 
   // Calculate size factor
