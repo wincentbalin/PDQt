@@ -13,6 +13,6 @@ INCLUDEPATH     = \
 		compat \
 		tkmix \
 		/mnt/card/zgcc/include/Qtopia
-HEADERS		= pdqt.h   tkmix/qtkfiledialog.h   compat/config.h   compat/resource.h
-SOURCES		= pdqt.cpp tkmix/qtkfiledialog.cpp compat/config.cpp compat/resource.cpp
+HEADERS		= pdqt.h   tkmix/qtkfiledialog.h
+SOURCES		= pdqt.cpp tkmix/qtkfiledialog.cpp
 MOC_DIR		= .moc
