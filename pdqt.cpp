@@ -294,6 +294,21 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
   }
 }
 
+void PDQt::resizeEvent(QResizeEvent *)
+{
+  // Get screen dimensions
+  screenWidth = this->width();
+  screenHeight = this->height();
+
+  if (screenWidth != paintPixmap.width() || screenHeight != paintPixmap.height())
+  {
+	paintPixmap.resize(screenWidth, screenHeight);
+  }
+
+  // Calculate size factor
+  screenMultiplier = screenWidth / 160.0f;
+}
+
 /** Paint GUI. */
 void PDQt::paintEvent(QPaintEvent*)
 {
@@ -301,7 +316,9 @@ void PDQt::paintEvent(QPaintEvent*)
   if(!loaded)
     return;
 
-  QPainter p(this);
+  paintPixmap.fill();
+  QPainter p(&paintPixmap);
+
   QBrush brush(black); // Solid black
 
   p.setBackgroundColor(white);
@@ -347,7 +364,7 @@ void PDQt::paintEvent(QPaintEvent*)
 	             (*widget).y,
 	             (*widget).w,
 	             (*widget).h);
-          v = (int) ((float) (*widget).h / ((*widget).max - (*widget).min)) * 
+          v = (int) ((float) (*widget).h / ((*widget).max - (*widget).min)) *
 	      (int) ((*widget).max - (*widget).value);
 	  p.fillRect((*widget).x,
 	             (*widget).y + v,
@@ -361,7 +378,7 @@ void PDQt::paintEvent(QPaintEvent*)
 	             (*widget).y,
 	             (*widget).w,
 	             (*widget).h);
-          v = (int) ((float) (*widget).w / ((*widget).max - (*widget).min)) * 
+          v = (int) ((float) (*widget).w / ((*widget).max - (*widget).min)) *
 	      (int) ((*widget).max - (*widget).value);
 	  p.fillRect((*widget).x + (*widget).w - v,
 	             (*widget).y,
@@ -518,6 +535,9 @@ void PDQt::paintEvent(QPaintEvent*)
 	       sv,
 	       sv.length());
   }
+
+  QPainter pp(this);
+  pp.drawPixmap(0, 0, paintPixmap);
 }
 
 /** Processes closing events. */

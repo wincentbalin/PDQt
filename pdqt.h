@@ -112,6 +112,7 @@ public slots:
 protected:
   void keyPressEvent(QKeyEvent*);
   void keyReleaseEvent(QKeyEvent*);
+  void resizeEvent(QResizeEvent *);
   void paintEvent(QPaintEvent*);
   void closeEvent(QCloseEvent*);
 private slots:
@@ -128,6 +129,7 @@ private:
   int screenHeight;
   float screenMultiplier;
   QLabel* status;
+  QPixmap paintPixmap;
   //
   QValueList<PDWidget> widgets;
   QString patch;
