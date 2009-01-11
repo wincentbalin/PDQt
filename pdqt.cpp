@@ -66,6 +66,10 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
     patchDirectory = PATCH_DIRECTORY;
   }
 
+  // Set widget flags
+  setWFlags(getWFlags() |
+            Qt::WNorthWestGravity | Qt::WRepaintNoErase | Qt::WResizeNoErase);
+
   // Create status bar
   status = new QLabel(statusBar());
   statusBar()->addWidget(status, 2, true);
@@ -100,7 +104,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       if(widgets.count() == 0)
       {
         buttonMenu.pressed = true;
-	repaint();
+	repaint(false);
       }
     }
   }
@@ -113,7 +117,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       if(widgets.count() == 0)
       {
         buttonAction.pressed = true;
-	repaint();
+	repaint(false);
 	QTimer::singleShot(1000, this, SLOT(buttonActionBackpress()));
       }
     }
@@ -130,7 +134,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       if(widgets.count() == 0)
       {
         buttonRewind.pressed = true;
-	repaint();
+	repaint(false);
       }
     }
   }
@@ -143,7 +147,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       if(widgets.count() == 0)
       {
         buttonForward.pressed = true;
-	repaint();
+	repaint(false);
       }
     }
   }
@@ -163,7 +167,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       }
 
       if(widgets.count() == 0)
-        repaint();
+        repaint(false);
     }
   }
   else if(key == wheelClockwise.key)
@@ -182,7 +186,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       }
 
       if(widgets.count() == 0)
-        repaint();
+        repaint(false);
     }
   }
   else if(key == buttonPlay.key)
@@ -211,7 +215,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
 	if(widgets.count() == 0)
 	{
 	  buttonPlay.pressed = true;
-	  repaint();
+	  repaint(false);
 	}
       }
     }
@@ -236,7 +240,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
       if(widgets.count() == 0)
       {
         buttonMenu.pressed = false;
-	repaint();
+	repaint(false);
       }
     }
   }
@@ -254,7 +258,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
       if(widgets.count() == 0)
       {
         buttonRewind.pressed = false;
-	repaint();
+	repaint(false);
       }
     }
   }
@@ -267,7 +271,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
       if(widgets.count() == 0)
       {
         buttonForward.pressed = false;
-	repaint();
+	repaint(false);
       }
     }
   }
@@ -280,7 +284,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
       if(widgets.count() == 0)
       {
         buttonPlay.pressed = false;
-	repaint();
+	repaint(false);
       }
     }
   }
@@ -727,7 +731,7 @@ void PDQt::about()
 void PDQt::buttonActionBackpress()
 {
   buttonAction.pressed = false;
-  repaint();
+  repaint(false);
 }
 
 /** Start PD core. */
@@ -906,7 +910,7 @@ void PDQt::receiveMessage()
   }
 
   if(updateGUI)
-    repaint();
+    repaint(false);
 }
 
 /** Program entry. */
