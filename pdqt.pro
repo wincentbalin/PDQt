@@ -6,7 +6,7 @@ TMAKE_CXX	= arm-linux-g++
 TMAKE_LINK	= arm-linux-gcc
 TMAKE_CFLAGS	= $$TMAKE_CFLAGS -DQTOPIA -DQWS -march=armv4 -mtune=strongarm -O3 -fomit-frame-pointer
 TMAKE_CXXFLAGS  = $$TMAKE_CXXFLAGS -DQTOPIA -DQWS -march=armv4 -mtune=strongarm -O3 -fomit-frame-pointer
-LIBS		+= -L/opt/Qtopia/sharp/lib -lqpe -ljpeg
+LIBS		+= -lqpe -ljpeg
 INCLUDEPATH     = \
                 . \
 		compat \
