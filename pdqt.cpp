@@ -943,7 +943,17 @@ int main(int argc, char** argv)
 #endif
   PDQt* pdqt = new PDQt();
   pdqt->setCaption(PDQTNAME);
-  pdqt->showMaximized();
+
+#ifdef QTOPIA
+  a.showMainWidget(pdqt);
+#else
+  a.setMainWidget(pdqt);
+  if (qApp->desktop()->width() < 800 || qApp->desktop()->height() < 600)
+	pdqt->showMaximized();
+  else
+	pdqt->show();
+#endif
+
   // Load PD patch supplied as an argument
   if(a.argc() > 1)
     pdqt->load(a.argv()[1]);
