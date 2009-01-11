@@ -1,0 +1,9 @@
+Package: pdqt
+Version: 0.5
+Section: multimedia
+Priority: optional
+Architecture: arm
+Depends: none
+Maintainer: Wincent Balin
+Source: http://trac.katastrophos.net/PDQt
+Description: Qtopia based re-creation of the iPxd front-end for Pure Data
