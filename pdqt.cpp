@@ -46,12 +46,14 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
   menuBar()->insertItem("&About", this, SLOT(about()), Key_F1);
 
+/*
   // Get screen dimensions
   screenWidth = qApp->desktop()->width();
   screenHeight = qApp->desktop()->height();
 
   // Calculate size factor
   screenMultiplier = screenWidth / 160.0f;
+*/
 
   // Get configuration entries
   config = new Config("PDQt");
@@ -741,7 +743,8 @@ void PDQt::load(const char* fileName)
 void PDQt::about()
 {
     QMessageBox::about(this, "About PDQt...", "Qtopia GUI for PDa\n"
-                                              "(c) 2008 by Wincent Balin\n"
+                                              "(c) 2008, 2009 by Wincent Balin\n"
+					      "            and Andre Beckedorf\n"
 					      "PdPod: Martin Kaltenbrunner\n"
 					      "PDa iPod port: Guenter Geiger\n"
 					      "Pure Data (pd): Miller Puckette");
