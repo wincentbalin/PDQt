@@ -22,6 +22,7 @@
 #else
   #include <qapplication.h>
   #include "config.h"
+  #include <qfiledialog.h>
 #endif
 
 #include <qmainwindow.h>

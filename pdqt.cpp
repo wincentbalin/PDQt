@@ -571,6 +571,16 @@ void PDQt::closeEvent(QCloseEvent* ce)
 /** Get PD patch filename. */
 void PDQt::load()
 {
+  QString fileName;
+
+#ifdef USE_NATIVE_FILEDIALOGS
+  fileName = QFileDialog::getOpenFileName(patchDirectory,
+                                          "PureData patches (*.pd);;" \
+					  "All files (*.*)",
+					  this,
+					  "open file dialog",
+					  "Load PureData patches");
+#else
   QTKFileDialog fileDialog(this, "Load PureData patches");
 
   fileDialog.setFilter("PureData patches|*.pd|" \
@@ -585,8 +595,12 @@ void PDQt::load()
 
   if(fileDialog.exec() == QDialog::Accepted)
   {
-    load(fileDialog.getFileName().latin1());
+     fileName  = fileDialog.getFileName();
   }
+#endif
+
+  if(fileName.length() > 0)
+    load(fileName.latin1());
 }
 
 /** Load PD patch. */
