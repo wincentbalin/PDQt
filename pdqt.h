@@ -1,4 +1,4 @@
-/***
+/**
   pdqt.h
 
   Qtopia interface for Pure Data -- header file.
@@ -18,9 +18,10 @@
 #ifdef QTOPIA
   #include <qpe/qpeapplication.h>
   #include <qpe/config.h>
+  #include "qtkfiledialog.h"
 #else
   #include <qapplication.h>
-  #include "compat/config.h"
+  #include "config.h"
 #endif
 
 #include <qmainwindow.h>
@@ -40,7 +41,6 @@
 #include <qcolor.h>
 #include <qtimer.h>
 
-#include "tkmix/qtkfiledialog.h"
 
 enum pdWidgetType
 {

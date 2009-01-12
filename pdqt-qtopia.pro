@@ -9,9 +9,8 @@ TMAKE_CXXFLAGS  = $$TMAKE_CXXFLAGS -DQTOPIA -DQWS -march=armv4 -mtune=strongarm 
 LIBS		+= -lqpe -ljpeg
 INCLUDEPATH     = \
                 . \
-		compat \
-		tkmix \
+		compat/sharp-qtopia \
 		/mnt/card/zgcc/include/Qtopia
-HEADERS		= pdqt.h   tkmix/qtkfiledialog.h
-SOURCES		= pdqt.cpp tkmix/qtkfiledialog.cpp
+HEADERS		= pdqt.h   compat/sharp-qtopia/qtkfiledialog.h
+SOURCES		= pdqt.cpp compat/sharp-qtopia/qtkfiledialog.cpp
 MOC_DIR		= .moc

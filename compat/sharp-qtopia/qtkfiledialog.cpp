@@ -16,7 +16,7 @@
 #include <qpe/resource.h>
 #else
 //#include <resource.h>
-#include "../compat/resource.h"
+#include "resource.h"
 #endif
 #include <qmessagebox.h>
 #include <qaccel.h>
