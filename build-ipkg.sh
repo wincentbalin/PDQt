@@ -19,3 +19,4 @@ tar zcvf pdqt_0.5_arm.ipk ./control.tar.gz ./data.tar.gz ./debian-binary
 
 # Clean up
 rm data.tar* control.tar* 
+rm opt/QtPalmtop/bin/pdqt
