@@ -2,6 +2,8 @@
 #
 # Build ipk of pdqt
 
+VERSION=0.6
+
 # Pack control file
 tar cvf control.tar ./control
 gzip -fv9 control.tar
@@ -15,7 +17,7 @@ tar cvf data.tar ./opt --exclude .svn
 gzip -fv9 data.tar
 
 # Pack the ipk package
-tar zcvf pdqt_0.5_arm.ipk ./control.tar.gz ./data.tar.gz ./debian-binary
+tar zcvf pdqt_"$VERSION"_arm.ipk ./control.tar.gz ./data.tar.gz ./debian-binary
 
 # Clean up
 rm data.tar* control.tar* 
