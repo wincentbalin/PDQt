@@ -4,6 +4,13 @@
 
 VERSION=0.6
 
+# Check whether we have pdqt binary
+if [ ! -x pdqt ]; then
+	echo "pdqt binary not there!"
+	echo "aborting..."
+	exit 1
+fi
+
 # Create control file
 echo -n > control
 echo "Package: pdqt"                             >> control
@@ -31,10 +38,13 @@ cp pdqt ./opt/QtPalmtop/bin/
 tar cvf data.tar ./opt --exclude .svn
 gzip -fv9 data.tar
 
+# Create debian-binary file
+echo -n "2.0" > debian-binary
+
 # Pack the ipk package
 tar zcvf pdqt_"$VERSION"_arm.ipk ./control.tar.gz ./data.tar.gz ./debian-binary
 
 # Clean up
-rm data.tar* control.tar* 
+rm data.tar* control.tar* debian-binary
 rm opt/QtPalmtop/bin/pdqt
 
