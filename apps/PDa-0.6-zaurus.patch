@@ -1,0 +1,36 @@
+diff -urN ../orig/PDa/src/makefile PDa/src/makefile
+--- ../orig/PDa/src/makefile	2009-02-06 19:02:52.000000000 +0100
++++ PDa/src/makefile	2009-02-06 19:10:06.000000000 +0100
+@@ -91,8 +91,8 @@
+ 
+ static: 
+ 	make pd_SRC="$(pd_SRC) $(extra_SRC)" DEFINES="-DPD -DUNIX -DSTATIC" \
+-	     pd pd-gui pd-watchdog $(BIN_DIR)/pdsend \
+-	     $(BIN_DIR)/pdreceive  $(BIN_DIR)/pd.tk
++	     pd pd-watchdog $(BIN_DIR)/pdsend \
++	     $(BIN_DIR)/pdreceive
+ 
+ extra: $(extra_EXT)
+ 
+@@ -102,6 +102,9 @@
+ blackfin:
+ 	make CC=bfin-uclinux-gcc static
+ 
++zaurus:
++	make CC=arm-linux-gcc CFLAGS="-march=armv4 -mtune=strongarm -O3 -fomit-frame-pointer" static
++
+ $(pd_OBJ) : %.o : %.c
+ 	$(CC) $(CFLAGS) $(pd_DEFINES) $(pd_INCLUDES) -c -o $(OBJ_DIR)/$@  $+ 
+ 
+diff -urN ../orig/PDa/src/s_loader.c PDa/src/s_loader.c
+--- ../orig/PDa/src/s_loader.c	2009-02-06 19:02:52.000000000 +0100
++++ PDa/src/s_loader.c	2009-02-06 19:03:21.000000000 +0100
+@@ -48,7 +48,7 @@
+ 
+ #ifdef STATIC
+ int sys_load_lib(char *dirname, char *classname)
+-{ return 1;}
++{ return 0;}
+ #else
+ int sys_load_lib(char *dirname, char *classname)
+ {
