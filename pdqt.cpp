@@ -425,10 +425,10 @@ void PDQt::paintEvent(QPaintEvent*)
 
 	case PD_NUMBER:
 	  numberContour[0] = QPoint((*widget).x, (*widget).y);
-	  numberContour[1] = QPoint((*widget).x + (*widget).w - 5 * screenMultiplier,
+	  numberContour[1] = QPoint((*widget).x + (*widget).w - 5 * (int) screenMultiplier,
 	                            (*widget).y);
           numberContour[2] = QPoint((*widget).x + (*widget).w,
-	                            (*widget).y + 5 * screenMultiplier);
+	                            (*widget).y + 5 * (int) screenMultiplier);
           numberContour[3] = QPoint((*widget).x + (*widget).w,
 	                            (*widget).y + (*widget).h);
           numberContour[4] = QPoint((*widget).x,
@@ -601,6 +601,9 @@ void PDQt::load()
 
   if(fileName.length() > 0)
     load(fileName.latin1());
+
+  // Repaint whole screen
+  repaint(false);
 }
 
 /** Load PD patch. */
@@ -965,10 +968,15 @@ int main(int argc, char** argv)
   a.showMainWidget(pdqt);
 #else
   a.setMainWidget(pdqt);
-  if (qApp->desktop()->width() < 800 || qApp->desktop()->height() < 600)
-	pdqt->showMaximized();
+  if (qApp->desktop()->width() < 640 || qApp->desktop()->height() < 480)
+  {
+    pdqt->showMaximized();
+  }
   else
-	pdqt->show();
+  {
+    pdqt->resize(640, 480);
+    pdqt->show();
+  }
 #endif
 
   // Load PD patch supplied as an argument
