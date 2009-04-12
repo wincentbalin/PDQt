@@ -60,7 +60,7 @@ BangWidget::BangWidget(QStringList& parameters, float scale)
   max = 1;
 
   // Set name
-  name = parameters[10].latin1();
+  name = parameters[10];
 }
 
 /** Paint bang widget. */
@@ -71,6 +71,7 @@ void BangWidget::paint(QPainter& p)
 
   // Draw contour
   p.drawRect(x, y, w-1, h-1);
+//std::cout << "Bang widget: " << "x=" << x << ", y=" << y << ", w-1=" << w-1 << ", h-1=" << h-1 << std::endl;
 
   // If selected, backup current brush and set solid black one
   if(value == 1)
@@ -107,7 +108,7 @@ HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters, float sc
   max = parameters[8].toInt();
 
   // Set name
-  name = parameters[12].latin1();
+  name = parameters[12];
 }
 
 /** Paint horizontal slider widget. */
@@ -140,7 +141,7 @@ VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters, float scale)
   max = parameters[8].toInt();
 
   // Set name
-  name = parameters[12].latin1();
+  name = parameters[12];
 }
 
 /** Paint vertical slider widget. */
@@ -173,7 +174,7 @@ HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters, float scal
   w = h * max;
 
   // Set name
-  name = parameters[10].latin1();
+  name = parameters[10];
 
   // Save amount of radio buttons and adjust maximal value
   radioButtons = max;
@@ -211,7 +212,7 @@ VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters, float scale)
   h = w * max;
 
   // Set name
-  name = parameters[10].latin1();
+  name = parameters[10];
 
   // Save amount of radio buttons and adjust maximal value
   radioButtons = max;
@@ -259,7 +260,7 @@ NumberWidget::NumberWidget(QStringList& parameters, float scale, QFont& widgetFo
   value = 0.0f;
 
   // Set name
-  name = parameters[9].latin1();
+  name = parameters[9];
 
   // Set font and it's metrics
   font = widgetFont;
@@ -291,7 +292,7 @@ SymbolWidget::SymbolWidget(QStringList& parameters, float scale)
   y = (int) (parameters[3].toInt() * scale);
 
   // Set name
-  name = parameters[9].latin1();
+  name = parameters[9];
 }
 
 /** Create text widget. */
@@ -305,11 +306,11 @@ TextWidget::TextWidget(QStringList& parameters, float scale, QFont& widgetFont, 
   y = (int) (parameters[3].toInt() * scale);
 
   // Copy fourth parameter to the text
-  text = parameters[4].latin1();
+  text = parameters[4];
 
-  // Append all tokens to the text (which is the value)
-  for(unsigned int i = 5; i < parameters.count(); i++)
-    text.append(parameters[i].latin1());
+  // Append all (but the last ';') tokens to the text (which is the value)
+  for(unsigned int i = 5; i < parameters.count()-1; i++)
+    text.append(parameters[i]);
 
   // Set font and it's metrics
   font = widgetFont;
@@ -322,9 +323,6 @@ void TextWidget::paint(QPainter& p)
   p.setFont(font);
   p.drawText(x + 12, y + fm->height() + 12, text, text.length());
 }
-
-
-
 
 
 /** PD Qt GUI constructor. */
@@ -524,6 +522,9 @@ void PDQt::keyPressEvent(QKeyEvent* k)
   {
     k->ignore();
   }
+
+  // Repaint everything
+  repaint(false);
 }
 
 /** Mark key as released. */
@@ -614,7 +615,7 @@ void PDQt::paintEvent(QPaintEvent*)
   paintPixmap.fill();
   QPainter p(&paintPixmap);
 
-  QBrush brush(black); // Solid black
+  QBrush brush("black"); // Solid black
 
   p.setBackgroundColor(white);
   p.setPen(black);
@@ -629,12 +630,25 @@ void PDQt::paintEvent(QPaintEvent*)
     QString sv;
 #endif
 
+    // Paint widgets
+    for(QValueList<BaseWidget*>::Iterator widget = w.begin(); widget != w.end(); widget++)
+      paintWidget(*widget, p);
+
+#if 0
     for(QValueList<BaseWidget>::Iterator widget = w.begin(); widget != w.end(); widget++)
     {
+      BaseWidget bw = *widget;
+      int id = bw.getId();
+
+      if(id == PD_BANG)
+      {
+        BangWidget* bang = static_cast<BangWidget*>(&bw);
+      }
 //      p.save();
-      (*widget).paint(p);
+//      (*widget).paint(&p);
 //      p.restore();
     }
+#endif
 
 #if 0
     for(QValueList<PDWidget>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
@@ -934,6 +948,11 @@ void PDQt::load(const char* fileName)
 
   // Clear widgets
 //  widgets.clear();
+  for(QValueList<BaseWidget*>::Iterator widget = w.begin(); widget != w.end(); widget++)
+  {
+    delete *widget;
+    //delete bwp;
+  }
   w.clear();
 
   while(!t.atEnd())
@@ -958,8 +977,12 @@ void PDQt::load(const char* fileName)
     // Check for empty lines
     if(line.isEmpty())
       continue;
-std::cout << line << std::endl;
+//std::cout << line << std::endl;
 
+    // Parse line and add the new widget, if one was created
+    createWidget(line);
+
+#if 0
     // Split line to tokens
     QStringList tokens = QStringList::split(' ', line.stripWhiteSpace());
 
@@ -982,7 +1005,7 @@ std::cout << line << std::endl;
       w.append(TextWidget(tokens, screenMultiplier, font, fm));
     else
       continue;
-
+#endif
 
     // Parse line and add the new widget, if one was created
 //    if(createWidget(line, widget))
@@ -1260,6 +1283,9 @@ std::cout << "Got message: " << *line << std::endl;
       // Process message
       tokens = QStringList::split(' ', *message);
 
+      // Get name of the widget
+      QString addressedWidgetName = (*tokens.at(0));
+
       if(tokens.count() > 1)
       {
 //        argval = atof((*(tokens.at(1))).latin1());
@@ -1270,19 +1296,24 @@ std::cout << "Got message: " << *line << std::endl;
         argval = 0;
       }
 
-      for(QValueList<BaseWidget>::Iterator i = w.begin(); i != w.end(); i++)
+      for(QValueList<BaseWidget*>::Iterator widget = w.begin(); widget != w.end(); widget++)
       {
-        BaseWidget widget = *i;
-        QString addressedWidgetName = (*tokens.at(0));
+        // Get widget from the iterator
+        BaseWidget* bw = *widget;
 
-        if(widget.getName() == addressedWidgetName)
+        // If widget is addressed, set it's value
+        if(bw->getName() == addressedWidgetName)
         {
           // If addressed widget is a bang, activate it
-          if(widget.getId() == PD_BANG)
+          if(bw->getId() == PD_BANG)
             argval = 1;
 
-          // Set value of the widget
-          widget.setValue(argval);
+          // Make this a geometric widget. Possible miscast!
+          GeometricWidget* gw = dynamic_cast<GeometricWidget*>(bw);
+          //if(gw == NULL) continue;
+
+          // Set value of the geometric widget
+          gw->setValue(argval);
         }
       }
 #if 0
@@ -1312,36 +1343,46 @@ std::cout << "Got message: " << *line << std::endl;
     repaint(false);
 }
 
-#if 0
 /** Widget builder (pattern of the same name). */
-bool PDQt::createWidget(QString& line, BaseWidget* widget)
+void PDQt::createWidget(QString& line)
 {
   // Split line to tokens
   QStringList tokens = QStringList::split(' ', line.stripWhiteSpace());
 
   // Check whether line contains widget information; if so, create it
   if(line.contains("floatatom") && line.contains("pod_"))
-    widget = new NumberWidget(tokens, screenMultiplier, font, fm);
+    w.append(new NumberWidget(tokens, screenMultiplier, font, fm));
   else if(line.contains("symbolatom") && line.contains("pod_"))
-    widget = new SymbolWidget(tokens, screenMultiplier);
+    w.append(new SymbolWidget(tokens, screenMultiplier));
   else if(line.contains("vsl") && line.contains("pod_"))
-    widget = new VerticalSliderWidget(tokens, screenMultiplier);
+    w.append(new VerticalSliderWidget(tokens, screenMultiplier));
   else if(line.contains("hsl") && line.contains("pod_"))
-    widget = new HorizontalSliderWidget(tokens, screenMultiplier);
+    w.append(new HorizontalSliderWidget(tokens, screenMultiplier));
   else if(line.contains("vradio") && line.contains("pod_"))
-    widget = new VerticalRadioWidget(tokens, screenMultiplier);
+    w.append(new VerticalRadioWidget(tokens, screenMultiplier));
   else if(line.contains("hradio") && line.contains("pod_"))
-    widget = new HorizontalRadioWidget(tokens, screenMultiplier);
+    w.append(new HorizontalRadioWidget(tokens, screenMultiplier));
   else if(line.contains("bng") && line.contains("pod_"))
-    widget = new BangWidget(tokens, screenMultiplier);
+    w.append(new BangWidget(tokens, screenMultiplier));
   else if(line.contains("text"))
-    widget = new TextWidget(tokens, screenMultiplier, font, fm);
-  else return false;
-
-  // Widget created
-  return true;
+    w.append(new TextWidget(tokens, screenMultiplier, font, fm));
 }
-#endif
+
+/** Widget painter (now what pattern is this?). */
+void PDQt::paintWidget(BaseWidget* w, QPainter& p)
+{
+  switch(w->getId())
+  {
+    case PD_NUMBER:  dynamic_cast<NumberWidget*>(w)->paint(p);           break;
+    case PD_SYMBOL:  dynamic_cast<SymbolWidget*>(w)->paint(p);           break;
+    case PD_VSLIDER: dynamic_cast<VerticalSliderWidget*>(w)->paint(p);   break;
+    case PD_HSLIDER: dynamic_cast<HorizontalSliderWidget*>(w)->paint(p); break;
+    case PD_VRADIO:  dynamic_cast<VerticalRadioWidget*>(w)->paint(p);    break;
+    case PD_HRADIO:  dynamic_cast<HorizontalRadioWidget*>(w)->paint(p);  break;
+    case PD_BANG:    dynamic_cast<BangWidget*>(w)->paint(p);             break;
+    case PD_TEXT:    dynamic_cast<TextWidget*>(w)->paint(p);             break;
+  }
+}
 
 /** Program entry. */
 int main(int argc, char** argv)

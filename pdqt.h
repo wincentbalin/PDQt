@@ -43,6 +43,7 @@
 #include <qtimer.h>
 
 #include <iostream>
+//#include <typeinfo>
 
 enum WIDGETID
 {
@@ -119,30 +120,15 @@ private:
 class BaseWidget
 {
 public:
-  virtual ~BaseWidget(){}
-  virtual enum WIDGETID getId() {return id;}
+  virtual ~BaseWidget() {}
+  virtual enum WIDGETID getId() { return id; }
   virtual void paint(QPainter&) {}
   virtual QString& getName() { return name; }
-  virtual int minValue() { return min; }
-  virtual int maxValue() { return max; }
-  virtual float getValue() { return value; }
-  virtual void setValue(float value_)
-  {
-    if(value_ > max)
-      value = max;
-    else if(value_ < min)
-      value = min;
-    else
-      value = value_;
-  }
 protected:
   enum WIDGETID id;
   int x;
   int y;
   QString name;
-  int min;
-  int max;
-  float value;
 };
 
 class GeometricWidget : virtual public BaseWidget
@@ -150,9 +136,22 @@ class GeometricWidget : virtual public BaseWidget
 public:
   GeometricWidget() { blackBrush = QBrush("black"); }
   virtual ~GeometricWidget() {}
+  virtual void paint(QPainter&) {}
+  virtual int minValue() { return min; }
+  virtual int maxValue() { return max; }
+  virtual float getValue() { return value; }
+  virtual void setValue(float value_)
+  {
+    if(value_ > max)      value = max;
+    else if(value_ < min) value = min;
+    else                  value = value_;
+  }
 protected:
   int w;
   int h;
+  int min;
+  int max;
+  float value;
   bool selected;
   QBrush blackBrush;
 };
@@ -271,8 +270,9 @@ private:
   QLabel* status;
   QPixmap paintPixmap;
   //
-  QValueList<BaseWidget> w;
-  bool createWidget(QString& line, BaseWidget* widget);
+  QValueList<BaseWidget*> w;
+  void createWidget(QString& line);
+  void paintWidget(BaseWidget* w, QPainter& p);
   //
 //  QValueList<PDWidget> widgets;
   QString patch;
