@@ -19,6 +19,311 @@
 #define DPRINTF(x...) fprintf(stderr, x);
 
 
+/** Scroll wheel constructor. */
+ScrollWheel::ScrollWheel(int value_)
+{
+  value = value_;
+}
+
+/** Scroll wheel up for x steps. */
+void ScrollWheel::scrollUp(unsigned int steps)
+{
+  value += steps;
+}
+
+/** Scroll wheel down for x steps. */
+void ScrollWheel::scrollDown(unsigned int steps)
+{
+  value -= steps;
+}
+
+/** Get value of the scroll wheel. */
+int ScrollWheel::getValue()
+{
+  return value;
+}
+
+/** Create bang widget. */
+BangWidget::BangWidget(QStringList& parameters, float scale)
+{
+  // Set id of the widget
+  id = PD_BANG;
+
+  // Set dimensions
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  w = (int) (parameters[5].toInt() * scale);
+  h = w;
+
+  // Set minimal and maximal values (i.e. false and true)
+  min = 0;
+  max = 1;
+
+  // Set name
+  name = parameters[10].latin1();
+}
+
+/** Paint bang widget. */
+void BangWidget::paint(QPainter& p)
+{
+  // Backup brush
+  QBrush backupBrush;
+
+  // Draw contour
+  p.drawRect(x, y, w-1, h-1);
+
+  // If selected, backup current brush and set solid black one
+  if(value == 1)
+  {
+    QBrush backupBrush = p.brush();
+    p.setBrush(blackBrush);
+  }
+
+  // Draw ellipse, filled if selected
+  p.drawEllipse(x, y, w-1, h-1);
+
+  // If widget selected, deselect and restore brush
+  if(value == 1)
+  {
+    value = 0;
+    p.setBrush(backupBrush);
+  }
+}
+
+/** Create horizontal slider widget. */
+HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters, float scale)
+{
+  // Set id of the widget
+  id = PD_HSLIDER;
+
+  // Set dimensions
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  w = (int) (parameters[5].toInt() * scale);
+  h = (int) (parameters[6].toInt() * scale);
+
+  // Set minimal and maximal values
+  min = parameters[7].toInt();
+  max = parameters[8].toInt();
+
+  // Set name
+  name = parameters[12].latin1();
+}
+
+/** Paint horizontal slider widget. */
+void HorizontalSliderWidget::paint(QPainter& p)
+{
+  // Draw contour
+  p.drawRect(x, y, w, h);
+
+  // Calculate position of the slider
+  position = (int) ((float) w / max - min) * (int) (max - value);
+
+  // Draw slider
+  p.fillRect(x + w - position, y, 2, h, blackBrush);
+}
+
+/** Create vertical slider widget. */
+VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters, float scale)
+{
+  // Set id of the widget
+  id = PD_VSLIDER;
+
+  // Set dimensions
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  w = (int) (parameters[5].toInt() * scale);
+  h = (int) (parameters[6].toInt() * scale);
+
+  // Set minimal and maximal values
+  min = parameters[7].toInt();
+  max = parameters[8].toInt();
+
+  // Set name
+  name = parameters[12].latin1();
+}
+
+/** Paint vertical slider widget. */
+void VerticalSliderWidget::paint(QPainter& p)
+{
+  // Draw contour
+  p.drawRect(x, y, w, h);
+
+  // Calculate position of the slider
+  position = (int) ((float) h / max - min) * (int) (max - value);
+
+  // Draw slider
+  p.fillRect(x, y + position, 2, h, blackBrush);
+}
+
+/** Create horizontal radio widget. */
+HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters, float scale)
+{
+  // Set id of the widget
+  id = PD_HRADIO;
+
+  // Set minimal and maximal values first (needed for dimension calculations)
+  min = 0;
+  max = parameters[8].toInt();
+
+  // Set dimensions
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  h = (int) (parameters[5].toInt() * scale);
+  w = h * max;
+
+  // Set name
+  name = parameters[10].latin1();
+
+  // Save amount of radio buttons and adjust maximal value
+  radioButtons = max;
+  max--;
+}
+
+/** Paint horizontal radio widget. */
+void HorizontalRadioWidget::paint(QPainter& p)
+{
+  for(unsigned int i = 0; i < radioButtons; i++)
+  {
+    // Draw a radio button
+    p.drawRect(x + h * i, y, h, h);
+
+    // Mark current radio button
+    if(i == value)
+      p.fillRect(x + h * i + 2, y + 2, h - 4, h - 4, blackBrush);
+  }
+}
+
+/** Create vertical radio widget. */
+VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters, float scale)
+{
+  // Set id of the widget
+  id = PD_VRADIO;
+
+  // Set minimal and maximal values first (needed for dimension calculations)
+  min = 0;
+  max = parameters[8].toInt();
+
+  // Set dimensions
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  w = (int) (parameters[5].toInt() * scale);
+  h = w * max;
+
+  // Set name
+  name = parameters[10].latin1();
+
+  // Save amount of radio buttons and adjust maximal value
+  radioButtons = max;
+  max--;
+}
+
+/** Paint vertical radio widget. */
+void VerticalRadioWidget::paint(QPainter& p)
+{
+  for(unsigned int i = 0; i < radioButtons; i++)
+  {
+    // Draw a radio button
+    p.drawRect(x, y + w * i, w, w);
+
+    // Mark current radio button
+    if(i == value)
+      p.fillRect(x + 2, y + w * i + 2, w - 4, w - 4, blackBrush);
+  }
+}
+
+/** Create number widget. */
+NumberWidget::NumberWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics)
+{
+  // Set id of the widget
+  id = PD_NUMBER;
+
+  // Set dimensions
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  w = (int) (parameters[4].toInt() * 7 * scale);
+  h = (int) (                       16 * scale);
+
+  // Set contour
+  contour.setPoint(0, QPoint(x, y));
+  contour.setPoint(1, QPoint(x + w - 5 * (int) scale, y));
+  contour.setPoint(2, QPoint(x + w, y + 5 * (int) scale));
+  contour.setPoint(3, QPoint(x + w, y + h));
+  contour.setPoint(4, QPoint(x, y + h));
+  contour.setPoint(5, QPoint(x, y));
+
+  // Set value
+  value = 0.0f;
+
+  // Set name
+  name = parameters[9].latin1();
+
+  // Set font and it's metrics
+  font = widgetFont;
+  fm = widgetFontMetrics;
+}
+
+/** Paint number widget. */
+void NumberWidget::paint(QPainter& p)
+{
+  // Convert value to string
+  sv = QString::number(value, 'f', 1); 
+
+  // Set font
+  p.setFont(font);
+
+  // Draw contour and text
+  p.drawPolyline(contour);
+  p.drawText(x + 12, y + fm->height() + 12, sv, sv.length());
+}
+
+/** Create symbol widget. */
+SymbolWidget::SymbolWidget(QStringList& parameters, float scale)
+{
+  // Set id of the widget
+  id = PD_SYMBOL;
+
+  // Set dimensions
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+
+  // Set name
+  name = parameters[9].latin1();
+}
+
+/** Create text widget. */
+TextWidget::TextWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics)
+{
+  // Set id of the widget
+  id = PD_TEXT;
+
+  // Set dimensions
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+
+  // Copy fourth parameter to the text
+  text = parameters[4].latin1();
+
+  // Append all tokens to the text (which is the value)
+  for(unsigned int i = 5; i < parameters.count(); i++)
+    text.append(parameters[i].latin1());
+
+  // Set font and it's metrics
+  font = widgetFont;
+  fm = widgetFontMetrics;
+}
+
+/** Paint text widget. */
+void TextWidget::paint(QPainter& p)
+{
+  p.setFont(font);
+  p.drawText(x + 12, y + fm->height() + 12, text, text.length());
+}
+
+
+
+
+
 /** PD Qt GUI constructor. */
 PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
 {
@@ -90,6 +395,9 @@ PDQt::~PDQt()
   // Remove status label
   statusBar()->removeWidget(status);
   delete status;
+
+  // Delete created font metrics
+  delete fm;
 }
 
 /** Mark key as pressed. */
@@ -104,10 +412,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       sendMessage("m 1;\n");
 
       if(widgets.count() == 0)
-      {
         buttonMenu.pressed = true;
-	repaint(false);
-      }
     }
   }
   else if(key == buttonAction.key)
@@ -134,10 +439,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       sendMessage("w 1;\n");
 
       if(widgets.count() == 0)
-      {
         buttonRewind.pressed = true;
-	repaint(false);
-      }
     }
   }
   else if(key == buttonForward.key)
@@ -147,10 +449,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       sendMessage("f 1;\n");
 
       if(widgets.count() == 0)
-      {
         buttonForward.pressed = true;
-	repaint(false);
-      }
     }
   }
   else if(key == wheelCounterclockwise.key)
@@ -167,9 +466,6 @@ void PDQt::keyPressEvent(QKeyEvent* k)
         sendMessage("l 1;\n");
 	scrollValue -= 1;
       }
-
-      if(widgets.count() == 0)
-        repaint(false);
     }
   }
   else if(key == wheelClockwise.key)
@@ -186,9 +482,6 @@ void PDQt::keyPressEvent(QKeyEvent* k)
         sendMessage("r 1;\n");
 	scrollValue += 1;
       }
-
-      if(widgets.count() == 0)
-        repaint(false);
     }
   }
   else if(key == buttonPlay.key)
@@ -215,10 +508,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
         sendMessage("d 1;\n");
 
 	if(widgets.count() == 0)
-	{
 	  buttonPlay.pressed = true;
-	  repaint(false);
-	}
       }
     }
   }
@@ -240,10 +530,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
       sendMessage("m 0;\n");
 
       if(widgets.count() == 0)
-      {
         buttonMenu.pressed = false;
-	repaint(false);
-      }
     }
   }
   else if(key == buttonAction.key)
@@ -258,10 +545,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
       sendMessage("w 0;\n");
 
       if(widgets.count() == 0)
-      {
         buttonRewind.pressed = false;
-	repaint(false);
-      }
     }
   }
   else if(key == buttonForward.key)
@@ -271,10 +555,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
       sendMessage("f 0;\n");
 
       if(widgets.count() == 0)
-      {
         buttonForward.pressed = false;
-	repaint(false);
-      }
     }
   }
   else if(key == buttonPlay.key)
@@ -284,16 +565,16 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
       sendMessage("d 0;\n");
 
       if(widgets.count() == 0)
-      {
         buttonPlay.pressed = false;
-	repaint(false);
-      }
     }
   }
   else
   {
     k->ignore();
   }
+
+  // Repaint everything, especially useful for repainting reset bang widgets
+  repaint(false);
 }
 
 void PDQt::resizeEvent(QResizeEvent *)
@@ -633,7 +914,7 @@ void PDQt::load(const char* fileName)
   while(!t.atEnd())
   {
     // PD widget parameters
-    enum pdWidgetType type = PD_TEXT;
+    enum WIDGETID type = PD_TEXT;
     char name[128];
     int x = 0,
         y = 0,
@@ -951,6 +1232,35 @@ void PDQt::receiveMessage()
 
   if(updateGUI)
     repaint(false);
+}
+
+/** Widget builder (pattern of the same name). */
+bool PDQt::createWidget(QString& line, BaseWidget& widget)
+{
+  // Split line to tokens
+  QStringList tokens = QStringList::split(' ', line.stripWhiteSpace());
+
+  // Check whether line contains widget information; if so, create it
+  if(line.contains("floatatom") && line.contains("pod_"))
+    widget = NumberWidget(tokens, screenMultiplier, font, fm);
+  else if(line.contains("symbolatom") && line.contains("pod_"))
+    widget = SymbolWidget(tokens, screenMultiplier);
+  else if(line.contains("vsl") && line.contains("pod_"))
+    widget = VerticalSliderWidget(tokens, screenMultiplier);
+  else if(line.contains("hsl") && line.contains("pod_"))
+    widget = HorizontalSliderWidget(tokens, screenMultiplier);
+  else if(line.contains("vradio") && line.contains("pod_"))
+    widget = VerticalRadioWidget(tokens, screenMultiplier);
+  else if(line.contains("hradio") && line.contains("pod_"))
+    widget = HorizontalRadioWidget(tokens, screenMultiplier);
+  else if(line.contains("bng") && line.contains("pod_"))
+    widget = BangWidget(tokens, screenMultiplier);
+  else if(line.contains("text"))
+    widget = TextWidget(tokens, screenMultiplier, font, fm);
+  else return false;
+
+  // Widget created
+  return true;
 }
 
 /** Program entry. */

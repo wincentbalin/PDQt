@@ -43,7 +43,7 @@
 #include <qtimer.h>
 
 
-enum pdWidgetType
+enum WIDGETID
 {
   PD_BANG    = 0,
   PD_VSLIDER = 1,
@@ -55,11 +55,13 @@ enum pdWidgetType
   PD_TEXT    = 7
 };
 
+// C-like data
+
 class PDWidget
 {
   friend class PDQt;
 public:
-  PDWidget(enum pdWidgetType type_ = PD_TEXT,
+  PDWidget(enum WIDGETID type_ = PD_TEXT,
            char* name_ = "",
 	   int x_ = 0,
 	   int y_ = 0,
@@ -80,7 +82,7 @@ public:
 	     strncpy(name, name_, 128-1);
 	   }
 private:
-  enum pdWidgetType type;
+  enum WIDGETID type;
   char name[128];
   int x;
   int y;
@@ -98,6 +100,130 @@ class PDPodButton
   PDPodButton(int key_) : key(key_), pressed(false) {}
   int key;
   bool pressed;
+};
+
+// C++-like data
+
+class ScrollWheel
+{
+public:
+  ScrollWheel(int value_ = 0);
+  void scrollUp(unsigned int steps = 1);
+  void scrollDown(unsigned int steps = 1);
+  int getValue();
+private:
+  int value;
+};
+
+class BaseWidget
+{
+public:
+  virtual ~BaseWidget(){}
+  virtual enum WIDGETID getId(){return id;}
+  virtual void paint(QPainter&){}
+protected:
+  enum WIDGETID id;
+  int x;
+  int y;
+};
+
+class GeometricWidget : virtual public BaseWidget
+{
+public:
+  GeometricWidget() { blackBrush = QBrush("black"); }
+  virtual ~GeometricWidget() {}
+  virtual QString& getName() { return name; }
+  virtual float getValue() { return value; }
+  virtual void setValue(float value_) { value = value_; }
+protected:
+  int w;
+  int h;
+  int min;
+  int max;
+  float value;
+  QString name;
+  bool selected;
+  QBrush blackBrush;
+};
+
+class SliderWidget : virtual public GeometricWidget
+{
+protected:
+  int position;
+};
+
+class RadioWidget : virtual public GeometricWidget
+{
+protected:
+  unsigned int radioButtons;
+};
+
+class BangWidget : public GeometricWidget
+{
+public:
+  BangWidget(QStringList& parameters, float scale);
+  virtual void paint(QPainter& p);
+};
+
+class HorizontalSliderWidget : public SliderWidget
+{
+public:
+  HorizontalSliderWidget(QStringList& parameters, float scale);
+  virtual void paint(QPainter& p);
+};
+
+class VerticalSliderWidget : public SliderWidget
+{
+public:
+  VerticalSliderWidget(QStringList& parameters, float scale);
+  virtual void paint(QPainter& p);
+};
+
+class HorizontalRadioWidget : public RadioWidget
+{
+public:
+  HorizontalRadioWidget(QStringList& parameters, float scale);
+  virtual void paint(QPainter& p);
+};
+
+class VerticalRadioWidget : public RadioWidget
+{
+public:
+  VerticalRadioWidget(QStringList& parameters, float scale);
+  virtual void paint(QPainter& p);
+};
+
+class NumberWidget : public GeometricWidget
+{
+public:
+  NumberWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
+  virtual void paint(QPainter& p);
+private:
+  QPointArray contour;
+  QString sv; // string value
+  QFont font;
+  QFontMetrics* fm;
+};
+
+
+class SymbolWidget : public BaseWidget
+{
+public:
+  SymbolWidget(QStringList& parameters, float scale);
+  QString& getName() { return name; }
+private:
+  QString name;
+};
+
+class TextWidget : public BaseWidget
+{
+public:
+  TextWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
+  virtual void paint(QPainter& p);
+private:
+  QString text;
+  QFont font;
+  QFontMetrics* fm;
 };
 
 class PDQt : public QMainWindow
@@ -131,6 +257,9 @@ private:
   float screenMultiplier;
   QLabel* status;
   QPixmap paintPixmap;
+  //
+  QValueList<BaseWidget> w;
+  bool createWidget(QString& line, BaseWidget& widget);
   //
   QValueList<PDWidget> widgets;
   QString patch;
