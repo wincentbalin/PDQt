@@ -405,7 +405,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("m 1;\n");
 
-      if(w.count() == 0)
+      if(widgets.count() == 0)
         buttonMenu.pressed = true;
     }
   }
@@ -415,7 +415,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("b;\n");
 
-      if(w.count() == 0)
+      if(widgets.count() == 0)
       {
         buttonAction.pressed = true;
         repaint(false);
@@ -432,7 +432,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("w 1;\n");
 
-      if(w.count() == 0)
+      if(widgets.count() == 0)
         buttonRewind.pressed = true;
     }
   }
@@ -442,7 +442,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("f 1;\n");
 
-      if(w.count() == 0)
+      if(widgets.count() == 0)
         buttonForward.pressed = true;
     }
   }
@@ -501,7 +501,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       {
         sendMessage("d 1;\n");
 
-        if(w.count() == 0)
+        if(widgets.count() == 0)
           buttonPlay.pressed = true;
       }
     }
@@ -526,7 +526,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("m 0;\n");
 
-      if(w.count() == 0)
+      if(widgets.count() == 0)
         buttonMenu.pressed = false;
     }
   }
@@ -541,7 +541,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("w 0;\n");
 
-      if(w.count() == 0)
+      if(widgets.count() == 0)
         buttonRewind.pressed = false;
     }
   }
@@ -551,7 +551,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("f 0;\n");
 
-      if(w.count() == 0)
+      if(widgets.count() == 0)
         buttonForward.pressed = false;
     }
   }
@@ -561,7 +561,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("d 0;\n");
 
-      if(w.count() == 0)
+      if(widgets.count() == 0)
         buttonPlay.pressed = false;
     }
   }
@@ -604,10 +604,10 @@ void PDQt::paintEvent(QPaintEvent*)
   p.setBackgroundColor(white);
   p.setPen(black);
 
-  if(w.count() > 0) // Custom interface
+  if(widgets.count() > 0) // Custom interface
   {
     // Paint widgets
-    for(QValueList<BaseWidget*>::Iterator widget = w.begin(); widget != w.end(); widget++)
+    for(QValueList<BaseWidget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
       paintWidget(*widget, p);
   }
   else // Standard interface
@@ -778,13 +778,11 @@ void PDQt::load(const char* fileName)
   // Reset status
   loaded = false;
 
-  // Clear widgets
-  for(QValueList<BaseWidget*>::Iterator widget = w.begin(); widget != w.end(); widget++)
-  {
+  // Erase widget objects
+  for(QValueList<BaseWidget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
     delete *widget;
-    //delete bwp;
-  }
-  w.clear();
+  // Clear widgets
+  widgets.clear();
 
   // Read patch file
   while(!t.atEnd())
@@ -991,7 +989,7 @@ void PDQt::receiveMessage()
         argval = 0;
       }
 
-      for(QValueList<BaseWidget*>::Iterator widget = w.begin(); widget != w.end(); widget++)
+      for(QValueList<BaseWidget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
       {
         // Get widget from the iterator
         BaseWidget* bw = *widget;
@@ -999,13 +997,25 @@ void PDQt::receiveMessage()
         // If widget is addressed, set it's value
         if(bw->getName() == addressedWidgetName)
         {
-          // If addressed widget is a bang, activate it
-          if(bw->getId() == PD_BANG)
-            argval = 1;
+          enum WIDGETID id = bw->getId();
 
           // Make this a geometric widget. Possible miscast!
           GeometricWidget* gw = dynamic_cast<GeometricWidget*>(bw);
-          //if(gw == NULL) continue;
+          // Error checking
+          if(gw == NULL) continue;
+
+          // If widget is not a number, set correct number boundaries
+          if(id != PD_NUMBER)  // Number widgets do not have min and max set
+          {
+            if(argval < gw->minValue())
+              argval = gw->minValue();
+            else if(argval > gw->maxValue())
+              argval = gw->maxValue();
+          }
+
+          // If addressed widget is a bang, activate it
+          if(id == PD_BANG)
+            argval = 1;
 
           // Set value of the geometric widget
           gw->setValue(argval);
@@ -1029,21 +1039,21 @@ void PDQt::createWidget(QString& line)
 
   // Check whether line contains widget information; if so, create it
   if(line.contains("floatatom") && line.contains("pod_"))
-    w.append(new NumberWidget(tokens, screenMultiplier, font, fm));
+    widgets.append(new NumberWidget(tokens, screenMultiplier, font, fm));
   else if(line.contains("symbolatom") && line.contains("pod_"))
-    w.append(new SymbolWidget(tokens, screenMultiplier));
+    widgets.append(new SymbolWidget(tokens, screenMultiplier));
   else if(line.contains("vsl") && line.contains("pod_"))
-    w.append(new VerticalSliderWidget(tokens, screenMultiplier));
+    widgets.append(new VerticalSliderWidget(tokens, screenMultiplier));
   else if(line.contains("hsl") && line.contains("pod_"))
-    w.append(new HorizontalSliderWidget(tokens, screenMultiplier));
+    widgets.append(new HorizontalSliderWidget(tokens, screenMultiplier));
   else if(line.contains("vradio") && line.contains("pod_"))
-    w.append(new VerticalRadioWidget(tokens, screenMultiplier));
+    widgets.append(new VerticalRadioWidget(tokens, screenMultiplier));
   else if(line.contains("hradio") && line.contains("pod_"))
-    w.append(new HorizontalRadioWidget(tokens, screenMultiplier));
+    widgets.append(new HorizontalRadioWidget(tokens, screenMultiplier));
   else if(line.contains("bng") && line.contains("pod_"))
-    w.append(new BangWidget(tokens, screenMultiplier));
+    widgets.append(new BangWidget(tokens, screenMultiplier));
   else if(line.contains("text"))
-    w.append(new TextWidget(tokens, screenMultiplier, font, fm));
+    widgets.append(new TextWidget(tokens, screenMultiplier, font, fm));
 }
 
 /** Widget painter (now what pattern is this?). */

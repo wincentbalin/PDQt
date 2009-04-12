@@ -42,6 +42,7 @@
 #include <qcolor.h>
 #include <qtimer.h>
 
+
 enum WIDGETID
 {
   PD_BANG    = 0,
@@ -137,12 +138,7 @@ public:
   virtual int minValue() { return min; }
   virtual int maxValue() { return max; }
   virtual float getValue() { return value; }
-  virtual void setValue(float value_)
-  {
-    if(value_ > max)      value = max;
-    else if(value_ < min) value = min;
-    else                  value = value_;
-  }
+  virtual void setValue(float value_) { value = value_; }
 protected:
   int w;
   int h;
@@ -267,7 +263,7 @@ private:
   QLabel* status;
   QPixmap paintPixmap;
   //
-  QValueList<BaseWidget*> w;
+  QValueList<BaseWidget*> widgets;
   void createWidget(QString& line);
   void paintWidget(BaseWidget* w, QPainter& p);
   //
