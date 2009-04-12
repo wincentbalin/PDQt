@@ -57,42 +57,6 @@ enum WIDGETID
 
 // C-like data
 
-class PDWidget
-{
-  friend class PDQt;
-public:
-  PDWidget(enum WIDGETID type_ = PD_TEXT,
-           char* name_ = "",
-	   int x_ = 0,
-	   int y_ = 0,
-	   int w_ = 0,
-	   int h_ = 0,
-	   int min_ = 0,
-	   int max_ = 0,
-           float value_ = 0) :
-	   type(type_),
-	   x(x_),
-	   y(y_),
-	   w(w_),
-	   h(h_),
-	   min(min_),
-	   max(max_),
-	   value(value_)
-	   {
-	     strncpy(name, name_, 128-1);
-	   }
-private:
-  enum WIDGETID type;
-  char name[128];
-  int x;
-  int y;
-  int w;
-  int h;
-  int min;
-  int max;
-  float value;
-};
-
 class PDPodButton
 {
   friend class PDQt;
@@ -119,9 +83,13 @@ class BaseWidget
 {
 public:
   virtual ~BaseWidget() {}
-  virtual enum WIDGETID getId() { return id; }
-  virtual void paint(QPainter&) {}
-  virtual QString& getName() { return name; }
+  virtual enum WIDGETID getId() = 0;
+  virtual void paint(QPainter&) = 0;
+  virtual QString& getName()    = 0;
+  virtual int minValue()        = 0;
+  virtual int maxValue()        = 0;
+  virtual float getValue()      = 0;
+  virtual void setValue(float)  = 0;
 protected:
   enum WIDGETID id;
   int x;
@@ -134,7 +102,9 @@ class GeometricWidget : virtual public BaseWidget
 public:
   GeometricWidget() { blackBrush = QBrush("black"); }
   virtual ~GeometricWidget() {}
+  virtual enum WIDGETID getId() { return id; }
   virtual void paint(QPainter&) {}
+  virtual QString& getName() { return name; }
   virtual int minValue() { return min; }
   virtual int maxValue() { return max; }
   virtual float getValue() { return value; }
@@ -154,6 +124,14 @@ class TextualWidget : virtual public BaseWidget
 public:
   TextualWidget() {}
   virtual ~TextualWidget() {}
+  virtual enum WIDGETID getId() { return id; }
+  virtual void paint(QPainter&) {}
+  virtual QString& getName() { return name; }
+  // Placeholders
+  virtual int minValue() { return 0; }
+  virtual int maxValue() { return 0; }
+  virtual float getValue() { return 0; }
+  virtual void setValue(float) {}
 protected:
   QFont font;
   QFontMetrics* fm;
@@ -206,20 +184,24 @@ public:
   virtual void paint(QPainter& p);
 };
 
-class NumberWidget : public GeometricWidget, public TextualWidget
+class NumberWidget : public GeometricWidget
 {
 public:
   NumberWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
   virtual void paint(QPainter& p);
+protected:
+  QFont font;
+  QFontMetrics* fm;
 private:
   QPointArray contour;
   QString sv; // string value
 };
 
-class SymbolWidget : public BaseWidget
+class SymbolWidget : public TextualWidget
 {
 public:
   SymbolWidget(QStringList& parameters, float scale);
+  virtual void paint(QPainter&);
 };
 
 class TextWidget : public TextualWidget
@@ -265,7 +247,6 @@ private:
   //
   QValueList<BaseWidget*> widgets;
   void createWidget(QString& line);
-  void paintWidget(BaseWidget* w, QPainter& p);
   //
   QString patch;
   //

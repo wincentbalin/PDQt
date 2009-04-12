@@ -294,6 +294,11 @@ SymbolWidget::SymbolWidget(QStringList& parameters, float scale)
   name = parameters[9];
 }
 
+/** Paint symbol widget. */
+void SymbolWidget::paint(QPainter&)
+{
+}
+
 /** Create text widget. */
 TextWidget::TextWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics)
 {
@@ -608,7 +613,7 @@ void PDQt::paintEvent(QPaintEvent*)
   {
     // Paint widgets
     for(QValueList<BaseWidget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
-      paintWidget(*widget, p);
+      (*widget)->paint(p);
   }
   else // Standard interface
   {
@@ -992,20 +997,18 @@ void PDQt::receiveMessage()
       for(QValueList<BaseWidget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
       {
         // Get widget from the iterator
-        BaseWidget* bw = *widget;
+        BaseWidget* w = *widget;
 
         // If widget is addressed, set it's value
-        if(bw->getName() == addressedWidgetName)
+        if(w->getName() == addressedWidgetName)
         {
-          enum WIDGETID id = bw->getId();
+          enum WIDGETID widgetId = w->getId();
 
-          // Make this a geometric widget. Possible miscast!
-          GeometricWidget* gw = dynamic_cast<GeometricWidget*>(bw);
-          // Error checking
-          if(gw == NULL) continue;
+          // Make addressed widget a geometric widget.
+          GeometricWidget* gw = reinterpret_cast<GeometricWidget*>(w);
 
           // If widget is not a number, set correct number boundaries
-          if(id != PD_NUMBER)  // Number widgets do not have min and max set
+          if(widgetId != PD_NUMBER)  // Number widgets do not have min and max set
           {
             if(argval < gw->minValue())
               argval = gw->minValue();
@@ -1014,7 +1017,7 @@ void PDQt::receiveMessage()
           }
 
           // If addressed widget is a bang, activate it
-          if(id == PD_BANG)
+          if(widgetId == PD_BANG)
             argval = 1;
 
           // Set value of the geometric widget
@@ -1054,22 +1057,6 @@ void PDQt::createWidget(QString& line)
     widgets.append(new BangWidget(tokens, screenMultiplier));
   else if(line.contains("text"))
     widgets.append(new TextWidget(tokens, screenMultiplier, font, fm));
-}
-
-/** Widget painter (now what pattern is this?). */
-void PDQt::paintWidget(BaseWidget* w, QPainter& p)
-{
-  switch(w->getId())
-  {
-    case PD_NUMBER:  dynamic_cast<NumberWidget*>(w)->paint(p);           break;
-    case PD_SYMBOL:  dynamic_cast<SymbolWidget*>(w)->paint(p);           break;
-    case PD_VSLIDER: dynamic_cast<VerticalSliderWidget*>(w)->paint(p);   break;
-    case PD_HSLIDER: dynamic_cast<HorizontalSliderWidget*>(w)->paint(p); break;
-    case PD_VRADIO:  dynamic_cast<VerticalRadioWidget*>(w)->paint(p);    break;
-    case PD_HRADIO:  dynamic_cast<HorizontalRadioWidget*>(w)->paint(p);  break;
-    case PD_BANG:    dynamic_cast<BangWidget*>(w)->paint(p);             break;
-    case PD_TEXT:    dynamic_cast<TextWidget*>(w)->paint(p);             break;
-  }
 }
 
 /** Program entry. */
