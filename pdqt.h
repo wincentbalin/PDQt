@@ -42,6 +42,7 @@
 #include <qcolor.h>
 #include <qtimer.h>
 
+#include <iostream>
 
 enum WIDGETID
 {
@@ -119,12 +120,29 @@ class BaseWidget
 {
 public:
   virtual ~BaseWidget(){}
-  virtual enum WIDGETID getId(){return id;}
-  virtual void paint(QPainter&){}
+  virtual enum WIDGETID getId() {return id;}
+  virtual void paint(QPainter&) {}
+  virtual QString& getName() { return name; }
+  virtual int minValue() { return min; }
+  virtual int maxValue() { return max; }
+  virtual float getValue() { return value; }
+  virtual void setValue(float value_)
+  {
+    if(value_ > max)
+      value = max;
+    else if(value_ < min)
+      value = min;
+    else
+      value = value_;
+  }
 protected:
   enum WIDGETID id;
   int x;
   int y;
+  QString name;
+  int min;
+  int max;
+  float value;
 };
 
 class GeometricWidget : virtual public BaseWidget
@@ -132,18 +150,21 @@ class GeometricWidget : virtual public BaseWidget
 public:
   GeometricWidget() { blackBrush = QBrush("black"); }
   virtual ~GeometricWidget() {}
-  virtual QString& getName() { return name; }
-  virtual float getValue() { return value; }
-  virtual void setValue(float value_) { value = value_; }
 protected:
   int w;
   int h;
-  int min;
-  int max;
-  float value;
-  QString name;
   bool selected;
   QBrush blackBrush;
+};
+
+class TextualWidget : virtual public BaseWidget
+{
+public:
+  TextualWidget() {}
+  virtual ~TextualWidget() {}
+protected:
+  QFont font;
+  QFontMetrics* fm;
 };
 
 class SliderWidget : virtual public GeometricWidget
@@ -193,7 +214,7 @@ public:
   virtual void paint(QPainter& p);
 };
 
-class NumberWidget : public GeometricWidget
+class NumberWidget : public GeometricWidget, public TextualWidget
 {
 public:
   NumberWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
@@ -201,29 +222,21 @@ public:
 private:
   QPointArray contour;
   QString sv; // string value
-  QFont font;
-  QFontMetrics* fm;
 };
-
 
 class SymbolWidget : public BaseWidget
 {
 public:
   SymbolWidget(QStringList& parameters, float scale);
-  QString& getName() { return name; }
-private:
-  QString name;
 };
 
-class TextWidget : public BaseWidget
+class TextWidget : public TextualWidget
 {
 public:
   TextWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
   virtual void paint(QPainter& p);
 private:
   QString text;
-  QFont font;
-  QFontMetrics* fm;
 };
 
 class PDQt : public QMainWindow
@@ -259,9 +272,9 @@ private:
   QPixmap paintPixmap;
   //
   QValueList<BaseWidget> w;
-  bool createWidget(QString& line, BaseWidget& widget);
+  bool createWidget(QString& line, BaseWidget* widget);
   //
-  QValueList<PDWidget> widgets;
+//  QValueList<PDWidget> widgets;
   QString patch;
   //
   pid_t pdPid; // Process ID of the forked PD starter

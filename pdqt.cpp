@@ -244,6 +244,9 @@ NumberWidget::NumberWidget(QStringList& parameters, float scale, QFont& widgetFo
   w = (int) (parameters[4].toInt() * 7 * scale);
   h = (int) (                       16 * scale);
 
+  // Create contour
+  contour = QPointArray(6);
+
   // Set contour
   contour.setPoint(0, QPoint(x, y));
   contour.setPoint(1, QPoint(x + w - 5 * (int) scale, y));
@@ -411,7 +414,8 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("m 1;\n");
 
-      if(widgets.count() == 0)
+//      if(widgets.count() == 0)
+      if(w.count() == 0)
         buttonMenu.pressed = true;
     }
   }
@@ -421,7 +425,8 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("b;\n");
 
-      if(widgets.count() == 0)
+//      if(widgets.count() == 0)
+      if(w.count() == 0)
       {
         buttonAction.pressed = true;
 	repaint(false);
@@ -438,7 +443,8 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("w 1;\n");
 
-      if(widgets.count() == 0)
+//      if(widgets.count() == 0)
+      if(w.count() == 0)
         buttonRewind.pressed = true;
     }
   }
@@ -448,7 +454,8 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("f 1;\n");
 
-      if(widgets.count() == 0)
+//      if(widgets.count() == 0)
+      if(w.count() == 0)
         buttonForward.pressed = true;
     }
   }
@@ -507,7 +514,8 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       {
         sendMessage("d 1;\n");
 
-	if(widgets.count() == 0)
+//	if(widgets.count() == 0)
+	if(w.count() == 0)
 	  buttonPlay.pressed = true;
       }
     }
@@ -529,7 +537,8 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("m 0;\n");
 
-      if(widgets.count() == 0)
+//      if(widgets.count() == 0)
+      if(w.count() == 0)
         buttonMenu.pressed = false;
     }
   }
@@ -544,7 +553,8 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("w 0;\n");
 
-      if(widgets.count() == 0)
+//      if(widgets.count() == 0)
+      if(w.count() == 0)
         buttonRewind.pressed = false;
     }
   }
@@ -554,7 +564,8 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("f 0;\n");
 
-      if(widgets.count() == 0)
+//      if(widgets.count() == 0)
+      if(w.count() == 0)
         buttonForward.pressed = false;
     }
   }
@@ -564,7 +575,8 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("d 0;\n");
 
-      if(widgets.count() == 0)
+//      if(widgets.count() == 0)
+      if(w.count() == 0)
         buttonPlay.pressed = false;
     }
   }
@@ -607,13 +619,24 @@ void PDQt::paintEvent(QPaintEvent*)
   p.setBackgroundColor(white);
   p.setPen(black);
 
-  if(widgets.count() > 0) // Custom interface
+//  if(widgets.count() > 0) // Custom interface
+  if(w.count() > 0) // Custom interface
   {
+#if 0
     int v;
     unsigned int radioButtons;
     QPointArray numberContour(6);
     QString sv;
+#endif
 
+    for(QValueList<BaseWidget>::Iterator widget = w.begin(); widget != w.end(); widget++)
+    {
+//      p.save();
+      (*widget).paint(p);
+//      p.restore();
+    }
+
+#if 0
     for(QValueList<PDWidget>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
     {
       p.save();
@@ -739,6 +762,7 @@ void PDQt::paintEvent(QPaintEvent*)
 
       p.restore();
     }
+#endif
   }
   else // Standard interface
   {
@@ -909,10 +933,12 @@ void PDQt::load(const char* fileName)
   loaded = false;
 
   // Clear widgets
-  widgets.clear();
+//  widgets.clear();
+  w.clear();
 
   while(!t.atEnd())
   {
+#if 0
     // PD widget parameters
     enum WIDGETID type = PD_TEXT;
     char name[128];
@@ -923,6 +949,8 @@ void PDQt::load(const char* fileName)
     int min = 0,
         max = 0;
     float value = 0;
+#endif
+//    BaseWidget* widget = 0;
 
     // Reading line
     line = t.readLine();
@@ -930,7 +958,37 @@ void PDQt::load(const char* fileName)
     // Check for empty lines
     if(line.isEmpty())
       continue;
+std::cout << line << std::endl;
 
+    // Split line to tokens
+    QStringList tokens = QStringList::split(' ', line.stripWhiteSpace());
+
+    // Check whether line contains widget information; if so, create it and add to list
+    if(line.contains("floatatom") && line.contains("pod_"))
+      w.append(NumberWidget(tokens, screenMultiplier, font, fm));
+    else if(line.contains("symbolatom") && line.contains("pod_"))
+      w.append(SymbolWidget(tokens, screenMultiplier));
+    else if(line.contains("vsl") && line.contains("pod_"))
+      w.append(VerticalSliderWidget(tokens, screenMultiplier));
+    else if(line.contains("hsl") && line.contains("pod_"))
+      w.append(HorizontalSliderWidget(tokens, screenMultiplier));
+    else if(line.contains("vradio") && line.contains("pod_"))
+      w.append(VerticalRadioWidget(tokens, screenMultiplier));
+    else if(line.contains("hradio") && line.contains("pod_"))
+      w.append(HorizontalRadioWidget(tokens, screenMultiplier));
+    else if(line.contains("bng") && line.contains("pod_"))
+      w.append(BangWidget(tokens, screenMultiplier));
+    else if(line.contains("text"))
+      w.append(TextWidget(tokens, screenMultiplier, font, fm));
+    else
+      continue;
+
+
+    // Parse line and add the new widget, if one was created
+//    if(createWidget(line, widget))
+//      w.append(*widget);
+
+#if 0
     // Parse line
 
     // Type of widget?
@@ -1019,6 +1077,7 @@ void PDQt::load(const char* fileName)
 
     // Add new widget
     widgets.append(PDWidget(type, name, x, y, w, h, min, max, value));
+#endif
   }
 
   f.close();
@@ -1194,6 +1253,7 @@ void PDQt::receiveMessage()
   for(QStringList::Iterator line = lines.begin(); line != lines.end(); line++)
   {
     messages = QStringList::split(';', *line);
+std::cout << "Got message: " << *line << std::endl;
 
     for(QStringList::Iterator message = messages.begin(); message != messages.end(); message++)
     {
@@ -1202,13 +1262,30 @@ void PDQt::receiveMessage()
 
       if(tokens.count() > 1)
       {
-        argval = atof((*(tokens.at(1))).latin1());
+//        argval = atof((*(tokens.at(1))).latin1());
+        argval = (*tokens.at(1)).toFloat();
       }
       else
       {
         argval = 0;
       }
 
+      for(QValueList<BaseWidget>::Iterator i = w.begin(); i != w.end(); i++)
+      {
+        BaseWidget widget = *i;
+        QString addressedWidgetName = (*tokens.at(0));
+
+        if(widget.getName() == addressedWidgetName)
+        {
+          // If addressed widget is a bang, activate it
+          if(widget.getId() == PD_BANG)
+            argval = 1;
+
+          // Set value of the widget
+          widget.setValue(argval);
+        }
+      }
+#if 0
       for(QValueList<PDWidget>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
       {
         if(strncmp((*tokens.at(0)).latin1(), (*widget).name, strlen((*widget).name)) == 0)
@@ -1225,6 +1302,7 @@ void PDQt::receiveMessage()
 	    (*widget).value = argval;
 	}
       }
+#endif
 
       updateGUI = true;
     }
@@ -1234,34 +1312,36 @@ void PDQt::receiveMessage()
     repaint(false);
 }
 
+#if 0
 /** Widget builder (pattern of the same name). */
-bool PDQt::createWidget(QString& line, BaseWidget& widget)
+bool PDQt::createWidget(QString& line, BaseWidget* widget)
 {
   // Split line to tokens
   QStringList tokens = QStringList::split(' ', line.stripWhiteSpace());
 
   // Check whether line contains widget information; if so, create it
   if(line.contains("floatatom") && line.contains("pod_"))
-    widget = NumberWidget(tokens, screenMultiplier, font, fm);
+    widget = new NumberWidget(tokens, screenMultiplier, font, fm);
   else if(line.contains("symbolatom") && line.contains("pod_"))
-    widget = SymbolWidget(tokens, screenMultiplier);
+    widget = new SymbolWidget(tokens, screenMultiplier);
   else if(line.contains("vsl") && line.contains("pod_"))
-    widget = VerticalSliderWidget(tokens, screenMultiplier);
+    widget = new VerticalSliderWidget(tokens, screenMultiplier);
   else if(line.contains("hsl") && line.contains("pod_"))
-    widget = HorizontalSliderWidget(tokens, screenMultiplier);
+    widget = new HorizontalSliderWidget(tokens, screenMultiplier);
   else if(line.contains("vradio") && line.contains("pod_"))
-    widget = VerticalRadioWidget(tokens, screenMultiplier);
+    widget = new VerticalRadioWidget(tokens, screenMultiplier);
   else if(line.contains("hradio") && line.contains("pod_"))
-    widget = HorizontalRadioWidget(tokens, screenMultiplier);
+    widget = new HorizontalRadioWidget(tokens, screenMultiplier);
   else if(line.contains("bng") && line.contains("pod_"))
-    widget = BangWidget(tokens, screenMultiplier);
+    widget = new BangWidget(tokens, screenMultiplier);
   else if(line.contains("text"))
-    widget = TextWidget(tokens, screenMultiplier, font, fm);
+    widget = new TextWidget(tokens, screenMultiplier, font, fm);
   else return false;
 
   // Widget created
   return true;
 }
+#endif
 
 /** Program entry. */
 int main(int argc, char** argv)
@@ -1295,4 +1375,5 @@ int main(int argc, char** argv)
   a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
   return a.exec();
 }
+
 
