@@ -71,7 +71,6 @@ void BangWidget::paint(QPainter& p)
 
   // Draw contour
   p.drawRect(x, y, w-1, h-1);
-//std::cout << "Bang widget: " << "x=" << x << ", y=" << y << ", w-1=" << w-1 << ", h-1=" << h-1 << std::endl;
 
   // If selected, backup current brush and set solid black one
   if(value == 1)
@@ -308,9 +307,12 @@ TextWidget::TextWidget(QStringList& parameters, float scale, QFont& widgetFont, 
   // Copy fourth parameter to the text
   text = parameters[4];
 
-  // Append all (but the last ';') tokens to the text (which is the value)
-  for(unsigned int i = 5; i < parameters.count()-1; i++)
+  // Append all tokens to the text (which is the value)
+  for(unsigned int i = 5; i < parameters.count(); i++)
     text.append(parameters[i]);
+
+  // Cut off the last semi-colon
+  text.truncate(text.length()-1);
 
   // Set font and it's metrics
   font = widgetFont;
@@ -351,15 +353,6 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
   menuBar()->insertItem("&About", this, SLOT(about()), Key_F1);
-
-/*
-  // Get screen dimensions
-  screenWidth = qApp->desktop()->width();
-  screenHeight = qApp->desktop()->height();
-
-  // Calculate size factor
-  screenMultiplier = screenWidth / 160.0f;
-*/
 
   // Get configuration entries
   config = new Config("PDQt");
@@ -412,7 +405,6 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("m 1;\n");
 
-//      if(widgets.count() == 0)
       if(w.count() == 0)
         buttonMenu.pressed = true;
     }
@@ -423,12 +415,11 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("b;\n");
 
-//      if(widgets.count() == 0)
       if(w.count() == 0)
       {
         buttonAction.pressed = true;
-	repaint(false);
-	QTimer::singleShot(1000, this, SLOT(buttonActionBackpress()));
+        repaint(false);
+        QTimer::singleShot(1000, this, SLOT(buttonActionBackpress()));
       }
     }
 
@@ -441,7 +432,6 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("w 1;\n");
 
-//      if(widgets.count() == 0)
       if(w.count() == 0)
         buttonRewind.pressed = true;
     }
@@ -452,7 +442,6 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     {
       sendMessage("f 1;\n");
 
-//      if(widgets.count() == 0)
       if(w.count() == 0)
         buttonForward.pressed = true;
     }
@@ -464,12 +453,12 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       if(shift)
       {
         sendMessage("l 10;\n");
-	scrollValue -= 10;
+        scrollValue -= 10;
       }
       else
       {
         sendMessage("l 1;\n");
-	scrollValue -= 1;
+        scrollValue -= 1;
       }
     }
   }
@@ -480,12 +469,12 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       if(shift)
       {
         sendMessage("r 10;\n");
-	scrollValue += 10;
+        scrollValue += 10;
       }
       else
       {
         sendMessage("r 1;\n");
-	scrollValue += 1;
+        scrollValue += 1;
       }
     }
   }
@@ -497,24 +486,23 @@ void PDQt::keyPressEvent(QKeyEvent* k)
       {
         paused = !paused;
 
-	if(paused)
-	{
+        if(paused)
+        {
           sendMessage("p 0;\n");
-	  status->setText("Paused");
-	}
-	else
-	{
-	  sendMessage("p 1;\n");
-	  status->setText("Running patch");
-	}
+          status->setText("Paused");
+        }
+        else
+        {
+          sendMessage("p 1;\n");
+          status->setText("Running patch");
+        }
       }
       else if(!paused)
       {
         sendMessage("d 1;\n");
 
-//	if(widgets.count() == 0)
-	if(w.count() == 0)
-	  buttonPlay.pressed = true;
+        if(w.count() == 0)
+          buttonPlay.pressed = true;
       }
     }
   }
@@ -538,7 +526,6 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("m 0;\n");
 
-//      if(widgets.count() == 0)
       if(w.count() == 0)
         buttonMenu.pressed = false;
     }
@@ -554,7 +541,6 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("w 0;\n");
 
-//      if(widgets.count() == 0)
       if(w.count() == 0)
         buttonRewind.pressed = false;
     }
@@ -565,7 +551,6 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("f 0;\n");
 
-//      if(widgets.count() == 0)
       if(w.count() == 0)
         buttonForward.pressed = false;
     }
@@ -576,7 +561,6 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
     {
       sendMessage("d 0;\n");
 
-//      if(widgets.count() == 0)
       if(w.count() == 0)
         buttonPlay.pressed = false;
     }
@@ -620,163 +604,11 @@ void PDQt::paintEvent(QPaintEvent*)
   p.setBackgroundColor(white);
   p.setPen(black);
 
-//  if(widgets.count() > 0) // Custom interface
   if(w.count() > 0) // Custom interface
   {
-#if 0
-    int v;
-    unsigned int radioButtons;
-    QPointArray numberContour(6);
-    QString sv;
-#endif
-
     // Paint widgets
     for(QValueList<BaseWidget*>::Iterator widget = w.begin(); widget != w.end(); widget++)
       paintWidget(*widget, p);
-
-#if 0
-    for(QValueList<BaseWidget>::Iterator widget = w.begin(); widget != w.end(); widget++)
-    {
-      BaseWidget bw = *widget;
-      int id = bw.getId();
-
-      if(id == PD_BANG)
-      {
-        BangWidget* bang = static_cast<BangWidget*>(&bw);
-      }
-//      p.save();
-//      (*widget).paint(&p);
-//      p.restore();
-    }
-#endif
-
-#if 0
-    for(QValueList<PDWidget>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
-    {
-      p.save();
-
-      switch((*widget).type)
-      {
-        case PD_BANG:
-	  p.drawRect((*widget).x,
-	             (*widget).y,
-	             (*widget).w-1,
-	             (*widget).h-1);
-          if((*widget).value == 1)
-	  {
-	    p.setBrush(brush);
-            p.drawEllipse((*widget).x,
-                          (*widget).y,
-                          (*widget).w-1,
-                          (*widget).h-1);
-            (*widget).value = 0;
-	    p.setBrush(NoBrush);
-	  }
-	  else
-            p.drawEllipse((*widget).x,
-                          (*widget).y,
-                          (*widget).w-1,
-                          (*widget).h-1);
-	  break;
-
-	case PD_VSLIDER:
-	  p.drawRect((*widget).x,
-	             (*widget).y,
-	             (*widget).w,
-	             (*widget).h);
-          v = (int) ((float) (*widget).h / ((*widget).max - (*widget).min)) *
-	      (int) ((*widget).max - (*widget).value);
-	  p.fillRect((*widget).x,
-	             (*widget).y + v,
-		     (*widget).w,
-		     2,
-		     brush);
-	  break;
-
-        case PD_HSLIDER:
-	  p.drawRect((*widget).x,
-	             (*widget).y,
-	             (*widget).w,
-	             (*widget).h);
-          v = (int) ((float) (*widget).w / ((*widget).max - (*widget).min)) *
-	      (int) ((*widget).max - (*widget).value);
-	  p.fillRect((*widget).x + (*widget).w - v,
-	             (*widget).y,
-		     2,
-		     (*widget).h,
-		     brush);
-          break;
-
-        case PD_HRADIO:
-	  radioButtons = (*widget).w / (*widget).h;
-	  for(unsigned int i = 0; i < radioButtons; i++)
-	  {
-	    p.drawRect((*widget).x + (*widget).h * i,
-	               (*widget).y,
-		       (*widget).h,
-		       (*widget).h);
-            if((*widget).value == i)
-	      p.fillRect((*widget).x + (*widget).h * i + 2,
-	                 (*widget).y + 2,
-			 (*widget).h - 4,
-			 (*widget).h - 4,
-			 brush);
-	  }
-	  break;
-
-	case PD_VRADIO:
-	  radioButtons = (*widget).h / (*widget).w;
-          for(unsigned int i = 0; i < radioButtons; i++)
-	  {
-	    p.drawRect((*widget).x,
-	               (*widget).y + (*widget).w * i,
-		       (*widget).w,
-		       (*widget).w);
-            if((*widget).value == i)
-	      p.fillRect((*widget).x + 2,
-	                 (*widget).y + (*widget).w * i + 2,
-			 (*widget).w - 4,
-			 (*widget).w - 4,
-			 brush);
-	  }
-	  break;
-
-	case PD_NUMBER:
-	  numberContour[0] = QPoint((*widget).x, (*widget).y);
-	  numberContour[1] = QPoint((*widget).x + (*widget).w - 5 * (int) screenMultiplier,
-	                            (*widget).y);
-          numberContour[2] = QPoint((*widget).x + (*widget).w,
-	                            (*widget).y + 5 * (int) screenMultiplier);
-          numberContour[3] = QPoint((*widget).x + (*widget).w,
-	                            (*widget).y + (*widget).h);
-          numberContour[4] = QPoint((*widget).x,
-	                            (*widget).y + (*widget).h);
-	  numberContour[5] = numberContour[0];
-          sv = QString::number((*widget).value, 'f', 1);
-	  p.drawPolyline(numberContour);
-          p.setFont(font);
-	  p.drawText((*widget).x + (*widget).w - fm->width(sv) - 24,
-	             (*widget).y + fm->height() + 12,
-		     sv,
-		     sv.length());
-
-	  break;
-
-	case PD_TEXT:
-          p.setFont(font);
-	  p.drawText((*widget).x + 12,
-	             (*widget).y + fm->height() + 12,
-		     (*widget).name,
-		     strlen((*widget).name));
-	  break;
-
-	default:
-	  break;
-      }
-
-      p.restore();
-    }
-#endif
   }
   else // Standard interface
   {
@@ -784,8 +616,8 @@ void PDQt::paintEvent(QPaintEvent*)
     p.setBrush(brush);
     p.drawEllipse(screenWidth / 2 - 2 * screenHeight / 5,
                   screenHeight / 10,
-		  4 * screenHeight / 5,
-		  4 * screenHeight / 5);
+                  4 * screenHeight / 5,
+                  4 * screenHeight / 5);
 
     if(buttonMenu.pressed)
     {
@@ -794,8 +626,8 @@ void PDQt::paintEvent(QPaintEvent*)
       p.setBrush(brush);
       p.drawEllipse(screenWidth / 2 - screenHeight / 8,
                     screenHeight / 4 - screenHeight / 8,
-		    screenHeight / 4,
-		    screenHeight / 4);
+                    screenHeight / 4,
+                    screenHeight / 4);
     }
 
     if(buttonRewind.pressed)
@@ -805,8 +637,8 @@ void PDQt::paintEvent(QPaintEvent*)
       p.setBrush(brush);
       p.drawEllipse(screenWidth / 3 - screenHeight / 8,
                     screenHeight / 2 - screenHeight / 8,
-		    screenHeight / 4,
-		    screenHeight / 4);
+                    screenHeight / 4,
+                    screenHeight / 4);
     }
 
     if(buttonForward.pressed)
@@ -816,8 +648,8 @@ void PDQt::paintEvent(QPaintEvent*)
       p.setBrush(brush);
       p.drawEllipse(2 * screenWidth / 3  + 1 - screenHeight / 8,
                     screenHeight / 2 - screenHeight / 8,
-		    screenHeight / 4,
-		    screenHeight / 4);
+                    screenHeight / 4,
+                    screenHeight / 4);
     }
 
     if(buttonPlay.pressed)
@@ -827,8 +659,8 @@ void PDQt::paintEvent(QPaintEvent*)
       p.setBrush(brush);
       p.drawEllipse(screenWidth / 2 - screenHeight / 8,
                     3 * screenHeight / 4 - screenHeight / 8,
-		    screenHeight / 4,
-		    screenHeight / 4);
+                    screenHeight / 4,
+                    screenHeight / 4);
     }
 
     if(buttonAction.pressed)
@@ -845,16 +677,16 @@ void PDQt::paintEvent(QPaintEvent*)
     }
     p.drawEllipse(screenWidth / 2 - screenHeight / 8,
                   screenHeight / 2 - screenHeight / 8,
-		  screenHeight / 4,
-		  screenHeight / 4);
+                  screenHeight / 4,
+                  screenHeight / 4);
 
     p.setPen(black);
     QString sv(QString("%1").arg(scrollValue));
     p.setFont(font);
     p.drawText(screenWidth / 2 - fm->width(sv) / 2,
                screenHeight / 2 + fm->height() / 2,
-	       sv,
-	       sv.length());
+               sv,
+               sv.length());
   }
 
   QPainter pp(this);
@@ -874,15 +706,15 @@ void PDQt::closeEvent(QCloseEvent* ce)
     {
       case 0:
         if(connected)
-	  disconnectPD();
-	if(running)
-	  stopPD();
+          disconnectPD();
+        if(running)
+          stopPD();
         ce->accept();
-	break;
+        break;
       case 1:
       default:
         ce->ignore();
-	break;
+        break;
     }
   }
 }
@@ -895,10 +727,10 @@ void PDQt::load()
 #ifdef USE_NATIVE_FILEDIALOGS
   fileName = QFileDialog::getOpenFileName(patchDirectory,
                                           "PureData patches (*.pd);;" \
-					  "All files (*.*)",
-					  this,
-					  "open file dialog",
-					  "Load PureData patches");
+                                          "All files (*.*)",
+                                          this,
+                                          "open file dialog",
+                                          "Load PureData patches");
 #else
   QTKFileDialog fileDialog(this, "Load PureData patches");
 
@@ -947,7 +779,6 @@ void PDQt::load(const char* fileName)
   loaded = false;
 
   // Clear widgets
-//  widgets.clear();
   for(QValueList<BaseWidget*>::Iterator widget = w.begin(); widget != w.end(); widget++)
   {
     delete *widget;
@@ -955,152 +786,18 @@ void PDQt::load(const char* fileName)
   }
   w.clear();
 
+  // Read patch file
   while(!t.atEnd())
   {
-#if 0
-    // PD widget parameters
-    enum WIDGETID type = PD_TEXT;
-    char name[128];
-    int x = 0,
-        y = 0,
-        w = 0,
-        h = 0;
-    int min = 0,
-        max = 0;
-    float value = 0;
-#endif
-//    BaseWidget* widget = 0;
-
     // Reading line
     line = t.readLine();
 
     // Check for empty lines
     if(line.isEmpty())
       continue;
-//std::cout << line << std::endl;
 
     // Parse line and add the new widget, if one was created
     createWidget(line);
-
-#if 0
-    // Split line to tokens
-    QStringList tokens = QStringList::split(' ', line.stripWhiteSpace());
-
-    // Check whether line contains widget information; if so, create it and add to list
-    if(line.contains("floatatom") && line.contains("pod_"))
-      w.append(NumberWidget(tokens, screenMultiplier, font, fm));
-    else if(line.contains("symbolatom") && line.contains("pod_"))
-      w.append(SymbolWidget(tokens, screenMultiplier));
-    else if(line.contains("vsl") && line.contains("pod_"))
-      w.append(VerticalSliderWidget(tokens, screenMultiplier));
-    else if(line.contains("hsl") && line.contains("pod_"))
-      w.append(HorizontalSliderWidget(tokens, screenMultiplier));
-    else if(line.contains("vradio") && line.contains("pod_"))
-      w.append(VerticalRadioWidget(tokens, screenMultiplier));
-    else if(line.contains("hradio") && line.contains("pod_"))
-      w.append(HorizontalRadioWidget(tokens, screenMultiplier));
-    else if(line.contains("bng") && line.contains("pod_"))
-      w.append(BangWidget(tokens, screenMultiplier));
-    else if(line.contains("text"))
-      w.append(TextWidget(tokens, screenMultiplier, font, fm));
-    else
-      continue;
-#endif
-
-    // Parse line and add the new widget, if one was created
-//    if(createWidget(line, widget))
-//      w.append(*widget);
-
-#if 0
-    // Parse line
-
-    // Type of widget?
-    if(line.contains("floatatom") && line.contains("pod_")) type = PD_NUMBER;
-    else if(line.contains("symbolatom") && line.contains("pod_")) type = PD_SYMBOL;
-    else if(line.contains("vsl") && line.contains("pod_")) type = PD_VSLIDER;
-    else if(line.contains("hsl") && line.contains("pod_")) type = PD_HSLIDER;
-    else if(line.contains("vradio") && line.contains("pod_")) type = PD_VRADIO;
-    else if(line.contains("hradio") && line.contains("pod_")) type = PD_HRADIO;
-    else if(line.contains("bng") && line.contains("pod_")) type = PD_BANG;
-    else if(line.contains("text")) type = PD_TEXT;
-    // Type unknown, continue with the next line
-    else continue;
-
-    // Split line into list of parameters
-    parameters = QStringList::split(' ', line.stripWhiteSpace());
-
-    // Parse parameters
-    // QStringList::split() takes the first token in too -- different to strtok()!
-    switch(type)
-    {
-      case PD_NUMBER:
-      case PD_SYMBOL:
-        x = (int) (parameters[2].toInt() * screenMultiplier);
-	y = (int) (parameters[3].toInt() * screenMultiplier);
-	w = (int) (parameters[4].toInt() * 7 * screenMultiplier);
-	h = (int) (                       16 * screenMultiplier);
-	strncpy(name, parameters[9].latin1(), 128-1);
-	break;
-
-      case PD_VSLIDER:
-      case PD_HSLIDER:
-        x = (int) (parameters[2].toInt() * screenMultiplier);
-        y = (int) (parameters[3].toInt() * screenMultiplier);
-        w = (int) (parameters[5].toInt() * screenMultiplier);
-        h = (int) (parameters[6].toInt() * screenMultiplier);
-	min = parameters[7].toInt();
-	max = parameters[8].toInt();
-	strncpy(name, parameters[12].latin1(), 128-1);
-        break;
-
-      case PD_VRADIO:
-      case PD_HRADIO:
-        x = (int) (parameters[2].toInt() * screenMultiplier);
-	y = (int) (parameters[3].toInt() * screenMultiplier);
-	min = 0;
-	max = parameters[8].toInt();
-	if(type == PD_VRADIO)
-	{
-	  w = (int) (parameters[5].toInt() * screenMultiplier);
-	  h = w * max;
-	}
-	else if(type == PD_HRADIO)
-	{
-          h = (int) (parameters[5].toInt() * screenMultiplier);
-          w = h * max;
-	}
-	strncpy(name, parameters[10].latin1(), 128-1);
-	max--;
-	break;
-
-      case PD_BANG:
-        x = (int) (parameters[2].toInt() * screenMultiplier);
-	y = (int) (parameters[3].toInt() * screenMultiplier);
-	w = (int) (parameters[5].toInt() * screenMultiplier);
-	h = w;
-	min = 0;
-	max = 1;
-	strncpy(name, parameters[10].latin1(), 128-1);
-	break;
-
-      case PD_TEXT:
-        x = (int) (parameters[2].toInt() * screenMultiplier);
-	y = (int) (parameters[3].toInt() * screenMultiplier);
-	strncpy(name, parameters[4].latin1(), 128-1);
-	for(int i = 5, n = 128-1; i < (int) parameters.count(); i++)
-	{
-	  n = n - parameters[i].length();
-	  if(n < 0)
-	    break;
-	  strcat(name, parameters[i].latin1());
-	}
-	name[strlen(name)-1] = '\0';
-        break;
-    }
-
-    // Add new widget
-    widgets.append(PDWidget(type, name, x, y, w, h, min, max, value));
-#endif
   }
 
   f.close();
@@ -1124,10 +821,10 @@ void PDQt::about()
 {
     QMessageBox::about(this, "About PDQt...", "Qtopia GUI for PDa\n"
                                               "(c) 2008, 2009 by Wincent Balin\n"
-					      "            and Andre Beckedorf\n"
-					      "PdPod: Martin Kaltenbrunner\n"
-					      "PDa iPod port: Guenter Geiger\n"
-					      "Pure Data (pd): Miller Puckette");
+                                              "            and Andre Beckedorf\n"
+                                              "PdPod: Martin Kaltenbrunner\n"
+                                              "PDa iPod port: Guenter Geiger\n"
+                                              "Pure Data (pd): Miller Puckette");
 }
 
 /** Press back action button. */
@@ -1276,7 +973,6 @@ void PDQt::receiveMessage()
   for(QStringList::Iterator line = lines.begin(); line != lines.end(); line++)
   {
     messages = QStringList::split(';', *line);
-std::cout << "Got message: " << *line << std::endl;
 
     for(QStringList::Iterator message = messages.begin(); message != messages.end(); message++)
     {
@@ -1288,7 +984,6 @@ std::cout << "Got message: " << *line << std::endl;
 
       if(tokens.count() > 1)
       {
-//        argval = atof((*(tokens.at(1))).latin1());
         argval = (*tokens.at(1)).toFloat();
       }
       else
@@ -1316,29 +1011,12 @@ std::cout << "Got message: " << *line << std::endl;
           gw->setValue(argval);
         }
       }
-#if 0
-      for(QValueList<PDWidget>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
-      {
-        if(strncmp((*tokens.at(0)).latin1(), (*widget).name, strlen((*widget).name)) == 0)
-	{
-	  if((*widget).type != PD_NUMBER)
-	  {
-	    if(argval > (*widget).max) argval = (*widget).max;
-	    if(argval < (*widget).min) argval = (*widget).min;
-	  }
-
-	  if((*widget).type == PD_BANG)
-	    (*widget).value = 1;
-	  else
-	    (*widget).value = argval;
-	}
-      }
-#endif
 
       updateGUI = true;
     }
   }
 
+  // Repaint everything of needed
   if(updateGUI)
     repaint(false);
 }

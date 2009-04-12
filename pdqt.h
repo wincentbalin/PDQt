@@ -42,9 +42,6 @@
 #include <qcolor.h>
 #include <qtimer.h>
 
-#include <iostream>
-//#include <typeinfo>
-
 enum WIDGETID
 {
   PD_BANG    = 0,
@@ -274,7 +271,6 @@ private:
   void createWidget(QString& line);
   void paintWidget(BaseWidget* w, QPainter& p);
   //
-//  QValueList<PDWidget> widgets;
   QString patch;
   //
   pid_t pdPid; // Process ID of the forked PD starter
