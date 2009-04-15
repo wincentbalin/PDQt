@@ -1004,6 +1004,10 @@ void PDQt::receiveMessage()
         {
           enum WIDGETID widgetId = w->getId();
 
+          // Ensure that the message does not go to a non-geometric widget
+          if(widgetId == PD_SYMBOL || widgetId == PD_TEXT)
+            break;
+
           // Make addressed widget a geometric widget.
           GeometricWidget* gw = reinterpret_cast<GeometricWidget*>(w);
 
