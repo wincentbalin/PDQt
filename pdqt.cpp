@@ -1128,7 +1128,7 @@ void PDQt::setStatus(const char* text)
 /** Is this a standard view? */
 bool PDQt::isStandardView() const
 {
-  return (widgets.size() == 0);
+  return widgets.isEmpty();
 }
 
 
