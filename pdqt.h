@@ -42,6 +42,7 @@
 #include <qcolor.h>
 #include <qtimer.h>
 
+
 namespace pdqt
 {
   enum BUTTONID
@@ -68,18 +69,6 @@ namespace pdqt
     PD_TEXT    = 7
   };
 
-  // C-like data
-/*
-  class PDPodButton
-  {
-    friend class PDQt;
-    PDPodButton() : pressed(false) {}
-    PDPodButton(int key_) : key(key_), pressed(false) {}
-    int key;
-    bool pressed;
-  };
-*/
-  // C++-like data
 
   class ScrollWheel
   {
@@ -104,7 +93,6 @@ namespace pdqt
   {
   public:
     virtual bool patchLoaded() const = 0;
-//    virtual void pdRun(bool run) = 0;
     virtual bool pdRunning() const = 0;
     virtual void pdPause(bool pause) = 0;
     virtual bool pdPaused() const = 0;
@@ -348,7 +336,6 @@ namespace pdqt
     //
     void sendMessage(const char*);
     bool patchLoaded() const;
-//    void pdRun(bool run);
     bool pdRunning() const;
     void pdPause(bool pause);
     bool pdPaused() const;
@@ -379,17 +366,6 @@ namespace pdqt
     bool paused; // Is PD paused?
     bool shift; // Shift key emulation
     //
-/*
-    PDPodButton buttonMenu;
-    PDPodButton buttonPlay;
-    PDPodButton buttonForward;
-    PDPodButton buttonRewind;
-    PDPodButton buttonAction;
-    PDPodButton wheelClockwise;
-    PDPodButton wheelCounterclockwise;
-    int scrollValue; // Emulation of the scroll wheel
-*/
-    //
     QFont font;
     QFontMetrics* fm;
     //
@@ -400,4 +376,3 @@ namespace pdqt
 }
 
 #endif
-

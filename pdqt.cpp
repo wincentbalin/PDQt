@@ -619,17 +619,7 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   connected = false;
   paused = false;
 
-  // Initialize input variables
-/*
-  buttonMenu.key = Key_R;
-  buttonPlay.key = Key_C;
-  buttonForward.key = Key_F;
-  buttonRewind.key = Key_S;
-  buttonAction.key = Key_D;
-  wheelClockwise.key = Key_E;
-  wheelCounterclockwise.key = Key_X;
-  scrollValue = 0;
-*/
+  // Initialize input
   controller = new SourAppleController(this);
 
   // Initialize standard GUI font
@@ -697,130 +687,13 @@ void PDQt::keyPressEvent(QKeyEvent* k)
   if(!known_key)
     k->ignore();
 
-  // Release action button automatically after 1 second
+  // Release action button automatically after 10 msec
   if(controller->getButton(BUTTON_ACTION) == key && isStandardView() &&
       loaded && ! paused)
     QTimer::singleShot(10, this, SLOT(buttonActionBackpress()));
 
   // Repaint everything
   repaint(false);
-
-/*
-  if(key == buttonMenu.key)
-  {
-    if(running && !paused)
-    {
-      sendMessage("m 1;\n");
-
-      if(widgets.count() == 0)
-        buttonMenu.pressed = true;
-    }
-  }
-  else if(key == buttonAction.key)
-  {
-    if(running && !paused)
-    {
-      sendMessage("b;\n");
-
-      if(widgets.count() == 0)
-      {
-        buttonAction.pressed = true;
-        repaint(false);
-        QTimer::singleShot(1000, this, SLOT(buttonActionBackpress()));
-      }
-    }
-
-    if(running)
-      shift = true;
-  }
-  else if(key == buttonRewind.key)
-  {
-    if(running && !paused)
-    {
-      sendMessage("w 1;\n");
-
-      if(widgets.count() == 0)
-        buttonRewind.pressed = true;
-    }
-  }
-  else if(key == buttonForward.key)
-  {
-    if(running && !paused)
-    {
-      sendMessage("f 1;\n");
-
-      if(widgets.count() == 0)
-        buttonForward.pressed = true;
-    }
-  }
-  else if(key == wheelCounterclockwise.key)
-  {
-    if(running && !paused)
-    {
-      if(shift)
-      {
-        sendMessage("l 10;\n");
-        scrollValue -= 10;
-      }
-      else
-      {
-        sendMessage("l 1;\n");
-        scrollValue -= 1;
-      }
-    }
-  }
-  else if(key == wheelClockwise.key)
-  {
-    if(running && !paused)
-    {
-      if(shift)
-      {
-        sendMessage("r 10;\n");
-        scrollValue += 10;
-      }
-      else
-      {
-        sendMessage("r 1;\n");
-        scrollValue += 1;
-      }
-    }
-  }
-  else if(key == buttonPlay.key)
-  {
-    if(running)
-    {
-      if(shift)
-      {
-        paused = !paused;
-
-        if(paused)
-        {
-          sendMessage("p 0;\n");
-          status->setText("Paused");
-        }
-        else
-        {
-          sendMessage("p 1;\n");
-          status->setText("Running patch");
-        }
-      }
-      else if(!paused)
-      {
-        sendMessage("d 1;\n");
-
-        if(widgets.count() == 0)
-          buttonPlay.pressed = true;
-      }
-    }
-  }
-  else
-  {
-    k->ignore();
-  }
-
-  // Repaint everything
-  repaint(false);
-*/
 }
 
 /** Mark key as released. */
@@ -835,61 +708,6 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
 
   // Repaint everything
   repaint(false);
-
-/*
-  if(key == buttonMenu.key)
-  {
-    if(running && !shift && !paused)
-    {
-      sendMessage("m 0;\n");
-
-      if(widgets.count() == 0)
-        buttonMenu.pressed = false;
-    }
-  }
-  else if(key == buttonAction.key)
-  {
-    if(running)
-      shift = false;
-  }
-  else if(key == buttonRewind.key)
-  {
-    if(running && !paused)
-    {
-      sendMessage("w 0;\n");
-
-      if(widgets.count() == 0)
-        buttonRewind.pressed = false;
-    }
-  }
-  else if(key == buttonForward.key)
-  {
-    if(running && !paused)
-    {
-      sendMessage("f 0;\n");
-
-      if(widgets.count() == 0)
-        buttonForward.pressed = false;
-    }
-  }
-  else if(key == buttonPlay.key)
-  {
-    if(running && !shift && !paused)
-    {
-      sendMessage("d 0;\n");
-
-      if(widgets.count() == 0)
-        buttonPlay.pressed = false;
-    }
-  }
-  else
-  {
-    k->ignore();
-  }
-
-  // Repaint everything, especially useful for repainting reset bang widgets
-  repaint(false);
-*/
 }
 
 void PDQt::resizeEvent(QResizeEvent *)
@@ -923,93 +741,6 @@ void PDQt::paintEvent(QPaintEvent*)
   p.setPen(black);
 
   view->repaint(p);
-
-/*
-  if(widgets.count() > 0) // Custom interface
-  {
-    // Paint widgets
-    for(QValueList<BaseWidget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
-      (*widget)->paint(p);
-  }
-  else // Standard interface
-  {
-    // Draw filled ellipse
-    p.setBrush(brush);
-    p.drawEllipse(screenWidth / 2 - 2 * screenHeight / 5,
-                  screenHeight / 10,
-                  4 * screenHeight / 5,
-                  4 * screenHeight / 5);
-
-    if(buttonMenu.pressed)
-    {
-      p.setPen(gray);
-      brush.setColor(gray);
-      p.setBrush(brush);
-      p.drawEllipse(screenWidth / 2 - screenHeight / 8,
-                    screenHeight / 4 - screenHeight / 8,
-                    screenHeight / 4,
-                    screenHeight / 4);
-    }
-
-    if(buttonRewind.pressed)
-    {
-      p.setPen(gray);
-      brush.setColor(gray);
-      p.setBrush(brush);
-      p.drawEllipse(screenWidth / 3 - screenHeight / 8,
-                    screenHeight / 2 - screenHeight / 8,
-                    screenHeight / 4,
-                    screenHeight / 4);
-    }
-
-    if(buttonForward.pressed)
-    {
-      p.setPen(gray);
-      brush.setColor(gray);
-      p.setBrush(brush);
-      p.drawEllipse(2 * screenWidth / 3  + 1 - screenHeight / 8,
-                    screenHeight / 2 - screenHeight / 8,
-                    screenHeight / 4,
-                    screenHeight / 4);
-    }
-
-    if(buttonPlay.pressed)
-    {
-      p.setPen(gray);
-      brush.setColor(gray);
-      p.setBrush(brush);
-      p.drawEllipse(screenWidth / 2 - screenHeight / 8,
-                    3 * screenHeight / 4 - screenHeight / 8,
-                    screenHeight / 4,
-                    screenHeight / 4);
-    }
-
-    if(buttonAction.pressed)
-    {
-      p.setPen(gray);
-      brush.setColor(gray);
-      p.setBrush(brush);
-    }
-    else
-    {
-      p.setPen(lightGray);
-      brush.setColor(lightGray);
-      p.setBrush(brush);
-    }
-    p.drawEllipse(screenWidth / 2 - screenHeight / 8,
-                  screenHeight / 2 - screenHeight / 8,
-                  screenHeight / 4,
-                  screenHeight / 4);
-
-    p.setPen(black);
-    QString sv(QString("%1").arg(scrollValue));
-    p.setFont(font);
-    p.drawText(screenWidth / 2 - fm->width(sv) / 2,
-               screenHeight / 2 + fm->height() / 2,
-               sv,
-               sv.length());
-  }
-*/
 
   QPainter pp(this);
   pp.drawPixmap(0, 0, paintPixmap);
@@ -1097,6 +828,10 @@ void PDQt::load(const char* fileName)
   if(!f.open(IO_ReadOnly))
     return;
 
+  // If needed, delete view
+  if(loaded)
+    delete view;
+
   // Reset status
   loaded = false;
 
@@ -1129,10 +864,7 @@ void PDQt::load(const char* fileName)
     stopPD();
   startPD();
   connectPD();
-
   // (Re-)Create view
-  if(view)
-    delete view;
   if(isStandardView())
     view = new StandardView(controller, screenWidth, screenHeight, &font, fm);
   else
@@ -1158,10 +890,6 @@ void PDQt::about()
 /** Press back action button. */
 void PDQt::buttonActionBackpress()
 {
-/*
-  buttonAction.pressed = false;
-  repaint(false);
-*/
   (controller->getButton(BUTTON_ACTION)).press(false);
   repaint(false);
 }
@@ -1200,13 +928,6 @@ void PDQt::connectPD()
   // Reset status
   connected = false;
 
-  // Wait for awhile:
-  // Workaround, because PD does not start fast enough
-  {
-    struct timespec short_while = {0, 100000000};
-    nanosleep(&short_while, NULL);
-  }
-
   // Initialize sending socket
   pdTx = new QSocketDevice(QSocketDevice::Datagram);
   result =
@@ -1234,7 +955,7 @@ void PDQt::connectPD()
 
   // connected to PD core
   connected = true;
-  status->setText("Connected to PDa");
+  setStatus("Connected to PDa");
 }
 
 /** Disconnect from the PD core. */
@@ -1468,4 +1189,3 @@ int main(int argc, char** argv)
   a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
   return a.exec();
 }
-
