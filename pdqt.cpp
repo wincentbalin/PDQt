@@ -1,10 +1,12 @@
-/***
+/**
   pdqt.cpp
 
   Qtopia interface for Pure Data -- main file.
 */
 
 #include "pdqt.h"
+
+using namespace pdqt;
 
 #define PDQTNAME "Pure Data for Qtopia"
 
@@ -19,28 +21,204 @@
 #define DPRINTF(x...) fprintf(stderr, x);
 
 
-/** Scroll wheel constructor. */
-ScrollWheel::ScrollWheel(int value_)
+/** Create SourAppleController. */
+SourAppleController::SourAppleController(Main* main_)
 {
-  value = value_;
+  // Save message sender
+  main = main_;
+
+  // No shift when started
+  shift = false;
+
+  // Initialize buttons
+  buttons[BUTTON_PLAY]     = Button(Qt::Key_C);
+  buttons[BUTTON_MENU]     = Button(Qt::Key_R);
+  buttons[BUTTON_ACTION]   = Button(Qt::Key_D);
+  buttons[BUTTON_REWIND]   = Button(Qt::Key_S);
+  buttons[BUTTON_FORWARD]  = Button(Qt::Key_F);
+  buttons[WHEEL_CLOCKWISE] = Button(Qt::Key_E);
+  buttons[WHEEL_COUNTERCLOCKWISE] = Button(Qt::Key_X);
 }
 
-/** Scroll wheel up for x steps. */
-void ScrollWheel::scrollUp(unsigned int steps)
+/** Get a button. */
+Button& SourAppleController::getButton(enum BUTTONID id)
 {
-  value += steps;
+  return buttons[id];
 }
 
-/** Scroll wheel down for x steps. */
-void ScrollWheel::scrollDown(unsigned int steps)
+/** Press a key. */
+bool SourAppleController::pressKey(int key)
 {
-  value -= steps;
+  // Elaborate control logic
+  if(buttons[BUTTON_MENU] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused())
+    {
+      main->sendMessage("m 1;\n");
+      if(main->isStandardView())
+        buttons[BUTTON_MENU].press();
+    }
+    return true;
+  }
+  else if(buttons[BUTTON_ACTION] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused())
+    {
+      main->sendMessage("b;\n");
+      if(main->isStandardView())
+        buttons[BUTTON_ACTION].press();
+    }
+    if(main->pdRunning())
+      shift = true;
+    return true;
+  }
+  else if(buttons[BUTTON_REWIND] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused())
+    {
+      main->sendMessage("w 1;\n");
+      if(main->isStandardView())
+        buttons[BUTTON_REWIND].press();
+    }
+    return true;
+  }
+  else if(buttons[BUTTON_FORWARD] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused())
+    {
+      main->sendMessage("f 1;\n");
+      if(main->isStandardView())
+        buttons[BUTTON_FORWARD].press();
+    }
+    return true;
+  }
+  else if(buttons[WHEEL_COUNTERCLOCKWISE] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused())
+    {
+      if(shift) { wheel -= 10; main->sendMessage("l 10;\n"); }
+      else      { wheel -=  1; main->sendMessage("l 1;\n");  }
+    }
+    return true;
+  }
+  else if(buttons[WHEEL_CLOCKWISE] == key)
+  {
+    buttons[WHEEL_CLOCKWISE].press();
+    if(main->pdRunning() && ! main->pdPaused())
+    {
+      if(shift) { wheel += 10; main->sendMessage("r 10;\n"); }
+      else      { wheel +=  1; main->sendMessage("r 1;\n");  }
+    }
+    return true;
+  }
+  else if(buttons[BUTTON_PLAY] == key)
+  {
+    if(main->pdRunning())
+    {
+      if(shift)
+      {
+        main->pdPause( ! main->pdPaused());
+
+        if(main->pdPaused()) 
+        {
+          main->setStatus("Paused");
+          main->sendMessage("p 0;\n");
+        }
+        else
+        {
+          main->setStatus("Running patch");
+          main->sendMessage("p 1;\n");
+        }
+      }
+      else if( ! main->pdPaused())
+      {
+        main->sendMessage("d 1;\n");
+        if(main->isStandardView())
+          buttons[BUTTON_PLAY].press();
+      }
+    }
+    return true;
+  }
+
+  return false;
 }
 
-/** Get value of the scroll wheel. */
-int ScrollWheel::getValue()
+/** Unpress a key. */
+bool SourAppleController::unpressKey(int key)
 {
-  return value;
+  // Elaborate control logic
+  if(buttons[BUTTON_MENU] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused() && ! shift)
+    {
+      main->sendMessage("m 0;\n");
+      if(main->isStandardView())
+        buttons[BUTTON_MENU].press(false);
+    }
+    return true;
+  }
+  else if(buttons[BUTTON_ACTION] == key)
+  {
+    if(main->pdRunning())
+      shift = false;
+    return true;
+  }
+  else if(buttons[BUTTON_REWIND] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused())
+    {
+      main->sendMessage("w 0;\n");
+      if(main->isStandardView())
+        buttons[BUTTON_REWIND].press(false);
+    }
+    return true;
+  }
+  else if(buttons[BUTTON_FORWARD] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused())
+    {
+      main->sendMessage("f 0;\n");
+      if(main->isStandardView())
+        buttons[BUTTON_FORWARD].press(false);
+    }
+    return true;
+  }
+  else if(buttons[BUTTON_PLAY] == key)
+  {
+    if(main->pdRunning() && ! main->pdPaused() && ! shift)
+    {
+      main->sendMessage("d 0;\n");
+      if(main->isStandardView())
+        buttons[BUTTON_PLAY].press(false);
+    }
+    return true;
+  }
+
+  return false;
+}
+
+/** Is any button pressed? */
+bool SourAppleController::anyButtonPressed()
+{
+  // If any button pressed, return true
+  for(unsigned int i = 0; i < BUTTONS; i++)
+    if(buttons[i].pressed())
+      return true;
+
+  // No button pressed
+  return false;
+}
+
+/** Is a button pressed? */
+bool SourAppleController::buttonPressed(enum BUTTONID button)
+{
+  return buttons[button].pressed();
+}
+
+/** Value of the wheel. */
+int SourAppleController::wheelValue()
+{
+  return wheel.value();
 }
 
 /** Create bang widget. */
@@ -331,6 +509,106 @@ void TextWidget::paint(QPainter& p)
   p.drawText(x + 12, y + fm->height() + 12, text, text.length());
 }
 
+/** Create standard user interface. */
+StandardView::StandardView(Controller* controller_, int width_, int height_, QFont* font_, QFontMetrics* fm_)
+{
+  controller = controller_;
+  width = width_;
+  height = height_;
+  font = font_;
+  fm = fm_;
+}
+
+/** Paint standard user interface. */
+void StandardView::repaint(QPainter& p)
+{
+  QBrush brush(Qt::black); // Solid black
+
+  // For drawing filled ellipses
+  p.setBrush(brush);
+
+  // Outer circle
+  p.drawEllipse(width / 2 - 2 * height / 5,
+                height / 10,
+                4 * height / 5,
+                4 * height / 5);
+
+  // Draw buttons, if any pressed
+  if(controller->anyButtonPressed())
+  {
+    p.setPen(Qt::gray);
+    brush.setColor(Qt::gray);
+    p.setBrush(brush);
+  }
+
+  if(controller->buttonPressed(BUTTON_MENU))
+  {
+    p.drawEllipse(width / 2 - height / 8,
+                  height / 4 - height / 8,
+                  height / 4,
+                  height / 4);
+  }
+
+  if(controller->buttonPressed(BUTTON_REWIND))
+  {
+    p.drawEllipse(width / 3 - height / 8,
+                  height / 2 - height / 8,
+                  height / 4,
+                  height / 4);
+  }
+
+  if(controller->buttonPressed(BUTTON_FORWARD))
+  {
+    p.drawEllipse(2 * width / 3  + 1 - height / 8,
+                  height / 2 - height / 8,
+                  height / 4,
+                  height / 4);
+  }
+
+  if(controller->buttonPressed(BUTTON_PLAY))
+  {
+    p.drawEllipse(width / 2 - height / 8,
+                  3 * height / 4 - height / 8,
+                  height / 4,
+                  height / 4);
+  }
+
+  // Draw inner circle
+  QColor innerCircleColor =
+    controller->buttonPressed(BUTTON_ACTION) ? Qt::gray : Qt::lightGray;
+  p.setPen(innerCircleColor);
+  brush.setColor(innerCircleColor);
+  p.setBrush(brush);
+  p.drawEllipse(width / 2 - height / 8,
+                height / 2 - height / 8,
+                height / 4,
+                height / 4);
+
+  // Draw scroll wheel value
+  p.setPen(Qt::black);
+  QString sv(QString("%1").arg(controller->wheelValue()));
+  p.setFont(*font);
+  p.drawText(width / 2 - fm->width(sv) / 2,
+             height / 2 + fm->height() / 2,
+             sv,
+             sv.length());
+}
+
+/** Create custom user interface. */
+CustomView::CustomView(QValueList<BaseWidget*>* widgets_)
+{
+  widgets = widgets_;
+}
+
+/** Paint custom user interface. */
+void CustomView::repaint(QPainter& p)
+{
+  // Paint widgets
+  for(QValueList<BaseWidget*>::Iterator widget = widgets->begin(); widget != widgets->end(); widget++)
+    (*widget)->paint(p);
+}
+
+
 
 /** PD Qt GUI constructor. */
 PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
@@ -342,6 +620,7 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   paused = false;
 
   // Initialize input variables
+/*
   buttonMenu.key = Key_R;
   buttonPlay.key = Key_C;
   buttonForward.key = Key_F;
@@ -350,6 +629,8 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   wheelClockwise.key = Key_E;
   wheelCounterclockwise.key = Key_X;
   scrollValue = 0;
+*/
+  controller = new SourAppleController(this);
 
   // Initialize standard GUI font
   font = QFont("helvetica", 24, QFont::Bold);
@@ -391,9 +672,16 @@ PDQt::~PDQt()
   config->writeEntry("pdPath", pdPath);
   config->writeEntry("patchDirectory", patchDirectory);
 
+  // Remove view if needed
+  if(view)
+    delete view;
+
   // Remove status label
   statusBar()->removeWidget(status);
   delete status;
+
+  // Delete controller
+  delete controller;
 
   // Delete created font metrics
   delete fm;
@@ -404,6 +692,20 @@ void PDQt::keyPressEvent(QKeyEvent* k)
 {
   int key = k->key();
 
+  bool known_key = controller->pressKey(key);
+
+  if(!known_key)
+    k->ignore();
+
+  // Release action button automatically after 1 second
+  if(controller->getButton(BUTTON_ACTION) == key && isStandardView() &&
+      loaded && ! paused)
+    QTimer::singleShot(10, this, SLOT(buttonActionBackpress()));
+
+  // Repaint everything
+  repaint(false);
+
+/*
   if(key == buttonMenu.key)
   {
     if(running && !paused)
@@ -518,6 +820,7 @@ void PDQt::keyPressEvent(QKeyEvent* k)
 
   // Repaint everything
   repaint(false);
+*/
 }
 
 /** Mark key as released. */
@@ -525,6 +828,15 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
 {
   int key = k->key();
 
+  bool known_key = controller->unpressKey(key);
+
+  if(!known_key)
+    k->ignore();
+
+  // Repaint everything
+  repaint(false);
+
+/*
   if(key == buttonMenu.key)
   {
     if(running && !shift && !paused)
@@ -577,6 +889,7 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
 
   // Repaint everything, especially useful for repainting reset bang widgets
   repaint(false);
+*/
 }
 
 void PDQt::resizeEvent(QResizeEvent *)
@@ -604,11 +917,14 @@ void PDQt::paintEvent(QPaintEvent*)
   paintPixmap.fill();
   QPainter p(&paintPixmap);
 
-  QBrush brush("black"); // Solid black
+  QBrush brush(Qt::black); // Solid black
 
   p.setBackgroundColor(white);
   p.setPen(black);
 
+  view->repaint(p);
+
+/*
   if(widgets.count() > 0) // Custom interface
   {
     // Paint widgets
@@ -693,6 +1009,7 @@ void PDQt::paintEvent(QPaintEvent*)
                sv,
                sv.length());
   }
+*/
 
   QPainter pp(this);
   pp.drawPixmap(0, 0, paintPixmap);
@@ -813,10 +1130,18 @@ void PDQt::load(const char* fileName)
   startPD();
   connectPD();
 
+  // (Re-)Create view
+  if(view)
+    delete view;
+  if(isStandardView())
+    view = new StandardView(controller, screenWidth, screenHeight, &font, fm);
+  else
+    view = new CustomView(&widgets);
+
   // Update status
   loaded = true;
   setCaption(QString(PDQTNAME" - %1").arg(fileName));
-  status->setText("Running patch");
+  setStatus("Running patch");
 }
 
 /** Show About dialog. */
@@ -833,7 +1158,11 @@ void PDQt::about()
 /** Press back action button. */
 void PDQt::buttonActionBackpress()
 {
+/*
   buttonAction.pressed = false;
+  repaint(false);
+*/
+  (controller->getButton(BUTTON_ACTION)).press(false);
   repaint(false);
 }
 
@@ -870,6 +1199,13 @@ void PDQt::connectPD()
 
   // Reset status
   connected = false;
+
+  // Wait for awhile:
+  // Workaround, because PD does not start fast enough
+  {
+    struct timespec short_while = {0, 100000000};
+    nanosleep(&short_while, NULL);
+  }
 
   // Initialize sending socket
   pdTx = new QSocketDevice(QSocketDevice::Datagram);
@@ -1006,7 +1342,7 @@ void PDQt::receiveMessage()
 
           // Ensure that the message does not go to a non-geometric widget
           if(widgetId == PD_SYMBOL || widgetId == PD_TEXT)
-            break;
+            continue;
 
           // Make addressed widget a geometric widget.
           GeometricWidget* gw = reinterpret_cast<GeometricWidget*>(w);
@@ -1037,6 +1373,43 @@ void PDQt::receiveMessage()
   if(updateGUI)
     repaint(false);
 }
+
+/** Is a patch loaded? */
+bool PDQt::patchLoaded() const
+{
+  return loaded;
+}
+
+/** Is PD running? */
+bool PDQt::pdRunning() const
+{
+  return running;
+}
+
+/** Pause PD (status only). */
+void PDQt::pdPause(bool pause)
+{
+  paused = pause;
+}
+
+/** Is PD paused? */
+bool PDQt::pdPaused() const
+{
+  return paused;
+}
+
+/** Set status text. */
+void PDQt::setStatus(const char* text)
+{
+  status->setText(text);
+}
+
+/** Is this a standard view? */
+bool PDQt::isStandardView() const
+{
+  return (widgets.size() == 0);
+}
+
 
 /** Widget builder (pattern of the same name). */
 void PDQt::createWidget(QString& line)
@@ -1095,5 +1468,4 @@ int main(int argc, char** argv)
   a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
   return a.exec();
 }
-
 

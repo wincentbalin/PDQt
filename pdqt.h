@@ -44,6 +44,18 @@
 
 namespace pdqt
 {
+  enum BUTTONID
+  {
+    BUTTON_PLAY            = 0,
+    BUTTON_MENU            = 1,
+    BUTTON_ACTION          = 2,
+    BUTTON_REWIND          = 3,
+    BUTTON_FORWARD         = 4,
+    WHEEL_CLOCKWISE        = 5,
+    WHEEL_COUNTERCLOCKWISE = 6,
+    BUTTONS
+  };
+
   enum WIDGETID
   {
     PD_BANG    = 0,
@@ -56,19 +68,8 @@ namespace pdqt
     PD_TEXT    = 7
   };
 
-  enum BUTTONID
-  {
-    BUTTON_PLAY            = 0,
-    BUTTON_MENU            = 1,
-    BUTTON_ACTION          = 2,
-    BUTTON_REWIND          = 3,
-    BUTTON_FORWARD         = 4,
-    WHEEL_CLOCKWISE        = 5,
-    WHEEL_COUNTERCLOCKWISE = 6
-  };
-
   // C-like data
-
+/*
   class PDPodButton
   {
     friend class PDQt;
@@ -77,18 +78,20 @@ namespace pdqt
     int key;
     bool pressed;
   };
-
+*/
   // C++-like data
 
   class ScrollWheel
   {
   public:
-    ScrollWheel(int value_ = 0);
-    void scrollUp(unsigned int steps = 1);
-    void scrollDown(unsigned int steps = 1);
-    int getValue();
+    ScrollWheel(int value = 0) : value_(value) {}
+    void scrollUp(unsigned int steps = 1) { value_ += steps; }
+    void scrollDown(unsigned int steps = 1) { value_ -= steps; }
+    int value() const { return value_; }
+    inline ScrollWheel& operator += (const int i) { value_ += i; return *this; }
+    inline ScrollWheel& operator -= (const int i) { value_ -= i; return *this; }
   private:
-    int value;
+    int value_;
   };
 
   class MessageSender
@@ -97,21 +100,28 @@ namespace pdqt
     virtual void sendMessage(const char*) = 0;
   };
 
-  class Main
+  class Main : virtual public MessageSender
   {
   public:
-    virtual bool patchLoaded() = 0;
-    virtual bool pdRunning() = 0;
-    virtual bool pdPaused() = 0;
+    virtual bool patchLoaded() const = 0;
+//    virtual void pdRun(bool run) = 0;
+    virtual bool pdRunning() const = 0;
+    virtual void pdPause(bool pause) = 0;
+    virtual bool pdPaused() const = 0;
     virtual void setStatus(const char*) = 0;
+    virtual bool isStandardView() const = 0;
   };
 
   class Button
   {
   public:
-    Button(int key);
-    void press(bool buttonpressed);
-    bool pressed();
+    Button() : key_(0), pressed_(false) {}
+    Button(int key) : key_(key), pressed_(false) {}
+    Button(const Button& b) : key_(b.key_), pressed_(b.pressed_) {}
+    int key() const { return key_; }
+    void press(bool buttonpressed = true) { pressed_ = buttonpressed; }
+    bool pressed() const { return pressed_; }
+    inline bool operator == (const int key) { return (key_ == key); }
   private:
     int key_;
     bool pressed_;
@@ -120,16 +130,29 @@ namespace pdqt
   class Controller
   {
   public:
-    virtual void pressKey(int key) = 0;
-    virtual void unpressKey(int key) = 0;
+    virtual Button& getButton(enum BUTTONID id) = 0;
+    virtual bool pressKey(int key) = 0;
+    virtual bool unpressKey(int key) = 0;
+    virtual bool anyButtonPressed() = 0;
+    virtual bool buttonPressed(enum BUTTONID button) = 0;
+    virtual int  wheelValue() = 0;
   };
 
   class SourAppleController : virtual public Controller
   {
   public:
-    SourAppleController(MessageSender&);
+    SourAppleController(Main*);
+    Button& getButton(enum BUTTONID id);
+    bool pressKey(int key);
+    bool unpressKey(int key);
+    bool anyButtonPressed();
+    bool buttonPressed(enum BUTTONID button);
+    int  wheelValue();
   private:
+    bool shift;
+    Button buttons[BUTTONS];
     ScrollWheel wheel;
+    Main* main;
   };
 
   class BaseWidget
@@ -153,7 +176,7 @@ namespace pdqt
   class GeometricWidget : virtual public BaseWidget
   {
   public:
-    GeometricWidget() { blackBrush = QBrush("black"); }
+    GeometricWidget() { blackBrush = QBrush(Qt::black); }
     virtual ~GeometricWidget() {}
     virtual enum WIDGETID getId() { return id; }
     virtual void paint(QPainter&) {}
@@ -269,25 +292,36 @@ namespace pdqt
   class View
   {
   public:
+    virtual ~View() {}
     virtual void repaint(QPainter& p) = 0;
+  protected:
+    int width;
+    int height;
+    QFont* font;
+    QFontMetrics* fm;
   };
 
   class StandardView : virtual public View
   {
   public:
+    StandardView(Controller* controller_, int width_, int height_, QFont* font_, QFontMetrics* fm_);
+    virtual ~StandardView() {}
     void repaint(QPainter& p);
+  private:
+    Controller* controller;
   };
 
   class CustomView : virtual public View
   {
   public:
     CustomView(QValueList<BaseWidget*>*);
+    virtual ~CustomView() {}
     void repaint(QPainter&);
   private:
     QValueList<BaseWidget*>* widgets;
   };
 
-  class PDQt : public QMainWindow, MessageSender
+  class PDQt : public QMainWindow, Main
   {
     Q_OBJECT
   public:
@@ -300,7 +334,7 @@ namespace pdqt
   protected:
     void keyPressEvent(QKeyEvent*);
     void keyReleaseEvent(QKeyEvent*);
-    void resizeEvent(QResizeEvent *);
+    void resizeEvent(QResizeEvent*);
     void paintEvent(QPaintEvent*);
     void closeEvent(QCloseEvent*);
   private slots:
@@ -311,7 +345,15 @@ namespace pdqt
     void connectPD();
     void disconnectPD();
     void stopPD();
+    //
     void sendMessage(const char*);
+    bool patchLoaded() const;
+//    void pdRun(bool run);
+    bool pdRunning() const;
+    void pdPause(bool pause);
+    bool pdPaused() const;
+    void setStatus(const char*);
+    bool isStandardView() const;
     //
     int screenWidth;
     int screenHeight;
@@ -337,6 +379,7 @@ namespace pdqt
     bool paused; // Is PD paused?
     bool shift; // Shift key emulation
     //
+/*
     PDPodButton buttonMenu;
     PDPodButton buttonPlay;
     PDPodButton buttonForward;
@@ -345,6 +388,7 @@ namespace pdqt
     PDPodButton wheelClockwise;
     PDPodButton wheelCounterclockwise;
     int scrollValue; // Emulation of the scroll wheel
+*/
     //
     QFont font;
     QFontMetrics* fm;
