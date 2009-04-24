@@ -362,7 +362,6 @@ namespace pdqt
     bool running; // Is PD running?
     bool connected; // Is GUI connected to PD?
     bool paused; // Is PD paused?
-    bool shift; // Shift key emulation
     //
     QFont font;
     QFontMetrics* fm;
