@@ -161,13 +161,13 @@ namespace pdqt
     QString name;
   };
 
-  class GeometricWidget : virtual public BaseWidget
+  class GeometricWidget : public BaseWidget
   {
   public:
     GeometricWidget() { blackBrush = QBrush(Qt::black); }
     virtual ~GeometricWidget() {}
     virtual enum WIDGETID getId() { return id; }
-    virtual void paint(QPainter&) {}
+//    virtual void paint(QPainter&) {}
     virtual QString& getName() { return name; }
     virtual int minValue() { return min; }
     virtual int maxValue() { return max; }
@@ -183,13 +183,13 @@ namespace pdqt
     QBrush blackBrush;
   };
 
-  class TextualWidget : virtual public BaseWidget
+  class TextualWidget : public BaseWidget
   {
   public:
     TextualWidget() {}
     virtual ~TextualWidget() {}
     virtual enum WIDGETID getId() { return id; }
-    virtual void paint(QPainter&) {}
+//    virtual void paint(QPainter&) {}
     virtual QString& getName() { return name; }
     // Placeholders
     virtual int minValue() { return 0; }
@@ -201,13 +201,13 @@ namespace pdqt
     QFontMetrics* fm;
   };
 
-  class SliderWidget : virtual public GeometricWidget
+  class SliderWidget : public GeometricWidget
   {
   protected:
     int position;
   };
 
-  class RadioWidget : virtual public GeometricWidget
+  class RadioWidget : public GeometricWidget
   {
   protected:
     unsigned int radioButtons;
@@ -218,6 +218,13 @@ namespace pdqt
   public:
     BangWidget(QStringList& parameters, float scale);
     virtual void paint(QPainter& p);
+    //
+    virtual enum WIDGETID getId() { return id; }
+    virtual QString& getName() { return name; }
+    virtual int minValue() { return min; }
+    virtual int maxValue() { return max; }
+    virtual float getValue() { return value; }
+    virtual void setValue(float value_) { value = value_; }
   };
 
   class HorizontalSliderWidget : public SliderWidget
@@ -225,6 +232,13 @@ namespace pdqt
   public:
     HorizontalSliderWidget(QStringList& parameters, float scale);
     virtual void paint(QPainter& p);
+    //
+    virtual enum WIDGETID getId() { return id; }
+    virtual QString& getName() { return name; }
+    virtual int minValue() { return min; }
+    virtual int maxValue() { return max; }
+    virtual float getValue() { return value; }
+    virtual void setValue(float value_) { value = value_; }
   };
 
   class VerticalSliderWidget : public SliderWidget
@@ -232,6 +246,13 @@ namespace pdqt
   public:
     VerticalSliderWidget(QStringList& parameters, float scale);
     virtual void paint(QPainter& p);
+    //
+    virtual enum WIDGETID getId() { return id; }
+    virtual QString& getName() { return name; }
+    virtual int minValue() { return min; }
+    virtual int maxValue() { return max; }
+    virtual float getValue() { return value; }
+    virtual void setValue(float value_) { value = value_; }
   };
 
   class HorizontalRadioWidget : public RadioWidget
@@ -239,6 +260,13 @@ namespace pdqt
   public:
     HorizontalRadioWidget(QStringList& parameters, float scale);
     virtual void paint(QPainter& p);
+    //
+    virtual enum WIDGETID getId() { return id; }
+    virtual QString& getName() { return name; }
+    virtual int minValue() { return min; }
+    virtual int maxValue() { return max; }
+    virtual float getValue() { return value; }
+    virtual void setValue(float value_) { value = value_; }
   };
 
   class VerticalRadioWidget : public RadioWidget
@@ -246,6 +274,13 @@ namespace pdqt
   public:
     VerticalRadioWidget(QStringList& parameters, float scale);
     virtual void paint(QPainter& p);
+    //
+    virtual enum WIDGETID getId() { return id; }
+    virtual QString& getName() { return name; }
+    virtual int minValue() { return min; }
+    virtual int maxValue() { return max; }
+    virtual float getValue() { return value; }
+    virtual void setValue(float value_) { value = value_; }
   };
 
   class NumberWidget : public GeometricWidget
@@ -253,6 +288,13 @@ namespace pdqt
   public:
     NumberWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
     virtual void paint(QPainter& p);
+    //
+    virtual enum WIDGETID getId() { return id; }
+    virtual QString& getName() { return name; }
+    virtual int minValue() { return min; }
+    virtual int maxValue() { return max; }
+    virtual float getValue() { return value; }
+    virtual void setValue(float value_) { value = value_; }
   protected:
     QFont font;
     QFontMetrics* fm;
@@ -266,6 +308,9 @@ namespace pdqt
   public:
     SymbolWidget(QStringList& parameters, float scale);
     virtual void paint(QPainter&);
+    //
+    virtual enum WIDGETID getId() { return id; }
+    virtual QString& getName() { return name; }
   };
 
   class TextWidget : public TextualWidget
@@ -273,6 +318,9 @@ namespace pdqt
   public:
     TextWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
     virtual void paint(QPainter& p);
+    //
+    virtual enum WIDGETID getId() { return id; }
+    virtual QString& getName() { return name; }
   private:
     QString text;
   };
