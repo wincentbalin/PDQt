@@ -1066,7 +1066,7 @@ void PDQt::receiveMessage()
             continue;
 
           // Make addressed widget a geometric widget.
-          GeometricWidget* gw = reinterpret_cast<GeometricWidget*>(w);
+          GeometricWidget* gw = static_cast<GeometricWidget*>(w);
 
           // If widget is not a number, set correct number boundaries
           if(widgetId != PD_NUMBER)  // Number widgets do not have min and max set
