@@ -17,11 +17,9 @@
 
 #ifdef QTOPIA
   #include <qpe/qpeapplication.h>
-  #include <qpe/config.h>
   #include "qtkfiledialog.h"
 #else
   #include <qapplication.h>
-  #include "config.h"
   #include <qfiledialog.h>
 #endif
 
@@ -307,6 +305,26 @@ namespace pdqt
     QValueList<BaseWidget*>* widgets;
   };
 
+  class Config
+  {
+  public:
+    Config(const char* filename_, bool check_only_ = false);
+    ~Config();
+    //
+    QString pdPath() const { return pdPath_; }
+    void setPDPath(QString path) { pdPath_ = path; }
+    QString patchDirectory() const { return patchDirectory_; }
+    void setPatchDirectory(QString dir) { patchDirectory_ = dir; }
+  private:
+    void read();
+    void write();
+    QString filename;
+    bool check_only;
+    //
+    QString pdPath_;
+    QString patchDirectory_;
+  };
+
   class PDQt : public QMainWindow, Main
   {
     Q_OBJECT
@@ -315,7 +333,7 @@ namespace pdqt
     virtual ~PDQt();
   public slots:
     void load();
-    void load(const char* fileName);
+    void load(const char* filename);
     void about();
   protected:
     void keyPressEvent(QKeyEvent*);
@@ -366,8 +384,6 @@ namespace pdqt
     QFont font;
     QFontMetrics* fm;
     //
-    QString pdPath;
-    QString patchDirectory;
     Config* config;
   };
 }

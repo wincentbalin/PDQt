@@ -608,6 +608,111 @@ void CustomView::repaint(QPainter& p)
     (*widget)->paint(p);
 }
 
+/** Configuration class constructor. */
+Config::Config(const char* filename_, bool check_only_)
+{
+  // Store name of the configuration file
+  filename = filename_;
+  // Store also the contents check parameter
+  check_only = check_only_;
+
+  // Read entries
+  read();
+
+  // Check for empty entries. Replace them with default value
+  if(pdPath_.isEmpty()) pdPath_ = PD_COMMAND;
+  if(patchDirectory_.isEmpty()) patchDirectory_ = PATCH_DIRECTORY;
+
+  // If config file does not exist, write it
+  QFile configFile(filename);
+  if(!configFile.exists())
+    write();
+}
+
+/** Configuration class destructor. */
+Config::~Config()
+{
+  // If this config was used for checking only, return
+  if(check_only)
+    return;
+
+  // Re-read configuration into another object
+  Config* originalConfig = new Config(filename, true);
+
+  // Compare objects, write config into the config file if not equal
+  if(this->pdPath() != originalConfig->pdPath() ||
+     this->patchDirectory() != originalConfig->patchDirectory())
+    write();
+
+  // Clean up
+  delete originalConfig;
+}
+
+/** Read configuration file. */
+void Config::read()
+{
+  QFile f(filename);
+  QTextStream t(&f);
+  QString line;
+  QStringList parameters;
+  QString key;
+  QString value;
+
+  // Open file
+  if(!f.open(IO_ReadOnly))
+    return;
+
+  // Read patch file
+  while(!t.atEnd())
+  {
+    // Reading line
+    line = t.readLine().stripWhiteSpace();
+
+    // Check for empty lines
+    if(line.isEmpty())
+      continue;
+
+    // Parse the line and store value of parameter if one was supplied
+
+    // Split line at the '=' character
+    parameters = QStringList::split('=', line);
+
+    // If the are no two parts, go to the next line
+    if(parameters.count() != 2)
+      continue;
+
+    // Get key and value
+    key = (*(parameters.at(0))).stripWhiteSpace();
+    value = (*(parameters.at(1))).stripWhiteSpace();
+
+    // Assign values to keys
+    if(key == "PDPath")
+      pdPath_ = value;
+    else if(key == "PatchDirectory")
+      patchDirectory_ = value;
+  }
+
+  // Close file
+  f.close();
+}
+
+/** Write configuration file. */
+void Config::write()
+{
+  QFile f(filename);
+  QTextStream t(&f);
+
+  // Open file
+  if(!f.open(IO_WriteOnly))
+    return;
+
+  // Store values
+  t << "PDPath" << " = " << pdPath_ << endl;
+  t << "PatchDirectory" << " = " << patchDirectory_ << endl;
+
+  // Close file
+  f.close();
+}
 
 
 /** PD Qt GUI constructor. */
@@ -631,17 +736,11 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   menuBar()->insertItem("&About", this, SLOT(about()), Key_F1);
 
   // Get configuration entries
-  config = new Config("PDQt");
-  if(config->isValid())
-  {
-    pdPath = config->readEntry("pdPath");
-    patchDirectory = config->readEntry("patchDirectory");
-  }
-  else
-  {
-    pdPath = PD_COMMAND;
-    patchDirectory = PATCH_DIRECTORY;
-  }
+  QString configFilename;
+  configFilename.append(QDir::homeDirPath());
+  configFilename.append(QDir::separator());
+  configFilename.append(".pdqtrc");
+  config = new Config(configFilename);
 
   // Set widget flags for double-buffering 
   setWFlags(getWFlags() |
@@ -659,8 +758,7 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
 PDQt::~PDQt()
 {
   // Save configuration
-  config->writeEntry("pdPath", pdPath);
-  config->writeEntry("patchDirectory", patchDirectory);
+  delete config;
 
   // Remove view if needed
   if(view)
@@ -775,10 +873,10 @@ void PDQt::closeEvent(QCloseEvent* ce)
 /** Get PD patch filename. */
 void PDQt::load()
 {
-  QString fileName;
+  QString filename;
 
 #ifdef USE_NATIVE_FILEDIALOGS
-  fileName = QFileDialog::getOpenFileName(patchDirectory,
+  filename = QFileDialog::getOpenFileName(config->patchDirectory(),
                                           "PureData patches (*.pd);;" \
                                           "All files (*.*)",
                                           this,
@@ -793,36 +891,35 @@ void PDQt::load()
   fileDialog.setHomeDirectoryCdUpEnable(true);
 
   // Set directory
-  fileDialog.setDirectory(patchDirectory);
+  fileDialog.setDirectory(config->patchDirectory());
 
   fileDialog.showMaximized();
 
   if(fileDialog.exec() == QDialog::Accepted)
   {
-     fileName  = fileDialog.getFileName();
+     filename  = fileDialog.getFileName();
   }
 #endif
 
-  if(fileName.length() > 0)
-    load(fileName.latin1());
+  if(filename.length() > 0)
+    load(filename.latin1());
 
   // Repaint whole screen
   repaint(false);
 }
 
 /** Load PD patch. */
-void PDQt::load(const char* fileName)
+void PDQt::load(const char* filename)
 {
-  QFile f(fileName);
+  QFile f(filename);
   QFileInfo fi(f);
   QTextStream t(&f);
   QString line;
-  QStringList parameters;
 
   // Set patch name and directory of the patch
-  patch = fileName;
+  patch = filename;
   fi = QFileInfo(patch);
-  patchDirectory = fi.dirPath();
+  config->setPatchDirectory(fi.dirPath());
 
   // Open patch file
   if(!f.open(IO_ReadOnly))
@@ -872,7 +969,7 @@ void PDQt::load(const char* fileName)
 
   // Update status
   loaded = true;
-  setCaption(QString(PDQTNAME" - %1").arg(fileName));
+  setCaption(QString(PDQTNAME" - %1").arg(filename));
   setStatus("Running patch");
 }
 
@@ -905,7 +1002,7 @@ void PDQt::startPD()
   {
     running = true;
     status->setText("Running PDa");
-    execl(pdPath.latin1(), "pd", "-r", "22050", "-nogui", "-rt", "-nomidi", "-noadc", patch.latin1(), NULL);
+    execl(config->pdPath(), "pd", "-r", "22050", "-nogui", "-rt", "-nomidi", "-noadc", patch.latin1(), NULL);
     // If exec fails display message and exit forked process
     running = false;
     status->clear();
@@ -1168,6 +1265,7 @@ int main(int argc, char** argv)
   PDQt* pdqt = new PDQt();
   pdqt->setCaption(PDQTNAME);
 
+  // Show main widget and resize it if needed
 #ifdef QTOPIA
   a.showMainWidget(pdqt);
 #else
@@ -1186,6 +1284,12 @@ int main(int argc, char** argv)
   // Load PD patch supplied as an argument
   if(a.argc() > 1)
     pdqt->load(a.argv()[1]);
+
+  // Connect closing signal to the quit slot and execute the app
   a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
-  return a.exec();
+  int result = a.exec();
+
+  // Clean up after execution
+  delete pdqt;
+  return result;
 }

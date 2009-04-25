@@ -8,9 +8,7 @@ NATIVE_FLAGS	= -DNATIVE -DPD_COMMAND='"/home/wincent/workspace/pdqt/PureData/pd"
 TMAKE_CFLAGS	= $$TMAKE_CFLAGS $$NATIVE_FLAGS -DNATIVE -O2 -DQT_THREAD_SUPPORT -DUSE_NATIVE_FILEDIALOGS
 TMAKE_CXXFLAGS  = $$TMAKE_CXXFLAGS $$NATIVE_FLAGS -DNATIVE -O2 -DQT_THREAD_SUPPORT -DUSE_NATIVE_FILEDIALOGS
 LIBS		+= -lqt -ljpeg
-INCLUDEPATH     = \
-                  . \
-		  compat/qt3
-HEADERS		= pdqt.h   compat/qt3/config.h   compat/qt3/resource.h
-SOURCES		= pdqt.cpp compat/qt3/config.cpp compat/qt3/resource.cpp
+INCLUDEPATH     = .
+HEADERS		= pdqt.h
+SOURCES		= pdqt.cpp
 MOC_DIR		= .moc
