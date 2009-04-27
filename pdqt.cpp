@@ -620,8 +620,12 @@ Config::Config(const char* filename_, bool check_only_)
   read();
 
   // Check for empty entries. Replace them with default value
-  if(pdPath_.isEmpty()) pdPath_ = PD_COMMAND;
-  if(patchDirectory_.isEmpty()) patchDirectory_ = PATCH_DIRECTORY;
+  if(pdPath_.isEmpty() || patchDirectory_.isEmpty())
+  {
+    pdPath_ = PD_COMMAND;
+    pdStart_ = true;
+    patchDirectory_ = PATCH_DIRECTORY;
+  }
 
   // If config file does not exist, write it
   QFile configFile(filename);
@@ -641,11 +645,21 @@ Config::~Config()
 
   // Compare objects, write config into the config file if not equal
   if(this->pdPath() != originalConfig->pdPath() ||
+     this->pdStart() != originalConfig->pdStart() ||
      this->patchDirectory() != originalConfig->patchDirectory())
     write();
 
   // Clean up
   delete originalConfig;
+}
+
+/** Copy data from other config. */
+void Config::copyFrom(Config& otherConfig)
+{
+  // Copy data
+  pdPath_ = otherConfig.pdPath_;
+  pdStart_ = otherConfig.pdStart_;
+  patchDirectory_ = otherConfig.patchDirectory_;
 }
 
 /** Read configuration file. */
@@ -688,6 +702,8 @@ void Config::read()
     // Assign values to keys
     if(key == "PDPath")
       pdPath_ = value;
+    else if(key == "PDStart")
+      pdStart_ = (value == "yes");
     else if(key == "PatchDirectory")
       patchDirectory_ = value;
   }
@@ -708,10 +724,109 @@ void Config::write()
 
   // Store values
   t << "PDPath" << " = " << pdPath_ << endl;
+  t << "PDStart" << " = " << (pdStart_ ? "yes" : "no") << endl;
   t << "PatchDirectory" << " = " << patchDirectory_ << endl;
 
   // Close file
   f.close();
+}
+
+
+/** Configuration dialog constructor. */
+ConfigDialog::ConfigDialog(Config* currentConfig, QString filename,
+                           QWidget* parent, const char* name) :
+                                       QDialog(parent, name, true)
+{
+  // Set up initial parameters
+  setCaption("Configuration");
+
+  // Initialize configuration
+  config = new Config(filename, true);
+  config->copyFrom(*currentConfig);
+
+  // Create main dialog box
+  QGridLayout* grid = new QGridLayout(this, 3, 9, 4, 4, "grid layout");
+
+  // Create PD path group
+  QHGroupBox* pdPathGroup = new QHGroupBox("Pure Data binary location", this);
+  grid->addMultiCellWidget(pdPathGroup, 0, 0, 0, 8);
+
+  pdPathView = new QLineEdit(config->pdPath(), pdPathGroup);
+  connect(pdPathView, SIGNAL(textChanged(const QString&)),
+          this, SLOT(setPDPath(const QString&)));
+
+  QPushButton* pdPathChoose = new QPushButton("&Choose", pdPathGroup);
+  connect(pdPathChoose, SIGNAL(clicked()), this, SLOT(choosePDPath()));
+
+  QPushButton* pdPathDefault = new QPushButton("&Default", pdPathGroup);
+  connect(pdPathDefault, SIGNAL(clicked()), this, SLOT(defaultPDPath()));
+
+  // Create PD start group
+  QHGroupBox* pdStartGroup = new QHGroupBox("Start Pure Data", this);
+  grid->addMultiCellWidget(pdStartGroup, 1, 1, 0, 8);
+
+  pdStartView = new QCheckBox("Start Pure Data when loading patch", pdStartGroup);
+  pdStartView->setChecked(config->pdStart());
+  connect(pdStartView, SIGNAL(toggled(bool)), this, SLOT(setPDStart(bool)));
+
+  // Create (default) OK button
+  QPushButton* configOK = new QPushButton("&OK", this);
+  configOK->setDefault(true);
+  grid->addWidget(configOK, 2, 8);
+  connect(configOK, SIGNAL(clicked()), this, SLOT(accept()));
+}
+
+/** Set PD binary path. */
+void ConfigDialog::setPDPath(const QString& path)
+{
+  config->setPDPath(path);
+}
+
+/** Choose PD binary path. */
+void ConfigDialog::choosePDPath()
+{
+  QString filename;
+  QString pdDir = QFileInfo(pdPathView->text()).filePath();
+
+#ifdef USE_NATIVE_FILEDIALOGS
+  filename = QFileDialog::getOpenFileName(pdDir,
+#ifdef WINDOWS
+                                          "All files (*.*)",
+#else /* UNIX */
+                                          "All files (*)",
+#endif
+                                          this,
+                                          "open file dialog",
+                                          "Choose Pure Data binary");
+#else
+  QTKFileDialog fileDialog(this, "Choose Pure Data binary");
+  fileDialog.setFilter("All files|*.*");
+  fileDialog.setHomeDirectoryCdUpEnable(true);
+
+  // Set directory
+  fileDialog.setDirectory(pdDir);
+  fileDialog.showMaximized();
+
+  if(fileDialog.exec() == QDialog::Accepted)
+  {
+     filename  = fileDialog.getFileName();
+  }
+#endif
+
+  if(filename.length() > 0)
+    pdPathView->setText(filename);
+}
+
+/** Set default PD binary path. */
+void ConfigDialog::defaultPDPath()
+{
+  pdPathView->setText(PD_COMMAND);
+}
+
+/** Set whether to start Pure Data when loading patch. */
+void ConfigDialog::setPDStart(bool state)
+{
+  config->setPDStart(state);
 }
 
 
@@ -733,13 +848,13 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
 
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
+  menuBar()->insertItem("&Config", this, SLOT(configure()), CTRL+Key_P);
   menuBar()->insertItem("&About", this, SLOT(about()), Key_F1);
 
   // Get configuration entries
-  QString configFilename;
-  configFilename.append(QDir::homeDirPath());
-  configFilename.append(QDir::separator());
-  configFilename.append(".pdqtrc");
+  configFilename.append(QDir::homeDirPath()).\
+                 append(QDir::separator()).\
+                 append(".pdqtrc");
   config = new Config(configFilename);
 
   // Set widget flags for double-buffering 
@@ -877,8 +992,13 @@ void PDQt::load()
 
 #ifdef USE_NATIVE_FILEDIALOGS
   filename = QFileDialog::getOpenFileName(config->patchDirectory(),
+#ifdef WINDOWS
                                           "PureData patches (*.pd);;" \
                                           "All files (*.*)",
+#else /* UNIX */
+                                          "PureData patches (*.pd);;" \
+                                          "All files (*)",
+#endif
                                           this,
                                           "open file dialog",
                                           "Load PureData patches");
@@ -973,6 +1093,28 @@ void PDQt::load(const char* filename)
   setStatus("Running patch");
 }
 
+/** Show configuration dialog. */
+void PDQt::configure()
+{
+  // Make config dialog
+  ConfigDialog configDialog(config, configFilename, this, "Configuration dialog");
+
+  // Show dialog, do configuration
+  int result = configDialog.exec();
+
+  // Dependent on result, store new configuration or drop it
+  switch(result)
+  {
+    case QDialog::Accepted:
+      config->copyFrom(configDialog.getConfig());
+      break;
+
+    case QDialog::Rejected:
+    default:
+      break;
+  }
+}
+
 /** Show About dialog. */
 void PDQt::about()
 {
@@ -994,6 +1136,13 @@ void PDQt::buttonActionBackpress()
 /** Start PD core. */
 void PDQt::startPD()
 {
+  // If no start required, do as if
+  if(!config->pdStart())
+  {
+    running = true;
+    return;
+  }
+
   running = false;
 
   pdPid = vfork();

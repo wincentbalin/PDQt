@@ -39,6 +39,12 @@
 #include <qpainter.h>
 #include <qcolor.h>
 #include <qtimer.h>
+#include <qlayout.h>
+#include <qhgroupbox.h>
+#include <qframe.h>
+#include <qlineedit.h>
+#include <qcheckbox.h>
+#include <qpushbutton.h>
 
 
 namespace pdqt
@@ -311,8 +317,11 @@ namespace pdqt
     Config(const char* filename_, bool check_only_ = false);
     ~Config();
     //
+    void copyFrom(Config& otherConfig);
     QString pdPath() const { return pdPath_; }
     void setPDPath(QString path) { pdPath_ = path; }
+    bool pdStart() const { return pdStart_; }
+    void setPDStart(bool state) { pdStart_ = state; }
     QString patchDirectory() const { return patchDirectory_; }
     void setPatchDirectory(QString dir) { patchDirectory_ = dir; }
   private:
@@ -322,7 +331,27 @@ namespace pdqt
     bool check_only;
     //
     QString pdPath_;
+    bool pdStart_;
     QString patchDirectory_;
+  };
+
+  class ConfigDialog : public QDialog
+  {
+    Q_OBJECT
+  public:
+    ConfigDialog(Config* currentConfig, QString filename,
+                 QWidget *parent = 0, const char *name = 0);
+    ~ConfigDialog() { delete config; }
+    Config& getConfig() { return *config; }
+  private slots:
+    void setPDPath(const QString& path);
+    void choosePDPath();
+    void defaultPDPath();
+    void setPDStart(bool state);
+  private:
+    Config* config;
+    QLineEdit* pdPathView;
+    QCheckBox* pdStartView;
   };
 
   class PDQt : public QMainWindow, Main
@@ -334,6 +363,7 @@ namespace pdqt
   public slots:
     void load();
     void load(const char* filename);
+    void configure();
     void about();
   protected:
     void keyPressEvent(QKeyEvent*);
@@ -384,6 +414,7 @@ namespace pdqt
     QFont font;
     QFontMetrics* fm;
     //
+    QString configFilename;
     Config* config;
   };
 }
