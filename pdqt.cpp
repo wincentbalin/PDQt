@@ -790,7 +790,7 @@ void ConfigDialog::choosePDPath()
 
 #ifdef USE_NATIVE_FILEDIALOGS
   filename = QFileDialog::getOpenFileName(pdDir,
-#ifdef WINDOWS
+#ifdef WIN32
                                           "All files (*.*)",
 #else /* UNIX */
                                           "All files (*)",
@@ -992,7 +992,7 @@ void PDQt::load()
 
 #ifdef USE_NATIVE_FILEDIALOGS
   filename = QFileDialog::getOpenFileName(config->patchDirectory(),
-#ifdef WINDOWS
+#ifdef WIN32
                                           "PureData patches (*.pd);;" \
                                           "All files (*.*)",
 #else /* UNIX */
