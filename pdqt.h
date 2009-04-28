@@ -9,11 +9,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+
+#ifdef UNIX
+  #include <unistd.h>
+  #include <signal.h>
+  #include <sys/types.h>
+  #include <sys/wait.h>
+#endif
 
 #ifdef QTOPIA
   #include <qpe/qpeapplication.h>
@@ -147,6 +150,7 @@ namespace pdqt
     Main* main;
   };
 
+  
   class BaseWidget
   {
   public:
@@ -279,6 +283,7 @@ namespace pdqt
     QString text;
   };
 
+  
   class View
   {
   public:
@@ -311,6 +316,7 @@ namespace pdqt
     QValueList<BaseWidget*>* widgets;
   };
 
+  
   class Config
   {
   public:
@@ -353,6 +359,7 @@ namespace pdqt
     QLineEdit* pdPathView;
     QCheckBox* pdStartView;
   };
+
 
   class PDQt : public QMainWindow, Main
   {
@@ -401,7 +408,9 @@ namespace pdqt
     //
     QString patch;
     //
+#ifdef UNIX
     pid_t pdPid; // Process ID of the forked PD starter
+#endif
     QSocketDevice* pdTx;
     QSocketDevice* pdRx;
     QSocketNotifier* pdReadNotifier;

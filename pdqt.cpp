@@ -221,6 +221,7 @@ int SourAppleController::wheelValue()
   return wheel.value();
 }
 
+
 /** Create bang widget. */
 BangWidget::BangWidget(QStringList& parameters, float scale)
 {
@@ -608,6 +609,7 @@ void CustomView::repaint(QPainter& p)
     (*widget)->paint(p);
 }
 
+
 /** Configuration class constructor. */
 Config::Config(const char* filename_, bool check_only_)
 {
@@ -623,7 +625,11 @@ Config::Config(const char* filename_, bool check_only_)
   if(pdPath_.isEmpty() || patchDirectory_.isEmpty())
   {
     pdPath_ = PD_COMMAND;
+#ifdef UNIX
     pdStart_ = true;
+#else /* WIN32 */
+    pdStart_ = false;
+#endif
     patchDirectory_ = PATCH_DIRECTORY;
   }
 
@@ -731,7 +737,6 @@ void Config::write()
   f.close();
 }
 
-
 /** Configuration dialog constructor. */
 ConfigDialog::ConfigDialog(Config* currentConfig, QString filename,
                            QWidget* parent, const char* name) :
@@ -790,10 +795,10 @@ void ConfigDialog::choosePDPath()
 
 #ifdef USE_NATIVE_FILEDIALOGS
   filename = QFileDialog::getOpenFileName(pdDir,
-#ifdef WIN32
-                                          "All files (*.*)",
-#else /* UNIX */
+#ifdef UNIX
                                           "All files (*)",
+#else /* WIN32 */
+                                          "Executable files (*.exe;*.com)",
 #endif
                                           this,
                                           "open file dialog",
@@ -848,7 +853,9 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
 
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
+#ifdef UNIX
   menuBar()->insertItem("&Config", this, SLOT(configure()), CTRL+Key_P);
+#endif
   menuBar()->insertItem("&About", this, SLOT(about()), Key_F1);
 
   // Get configuration entries
@@ -992,12 +999,12 @@ void PDQt::load()
 
 #ifdef USE_NATIVE_FILEDIALOGS
   filename = QFileDialog::getOpenFileName(config->patchDirectory(),
-#ifdef WIN32
-                                          "PureData patches (*.pd);;" \
-                                          "All files (*.*)",
-#else /* UNIX */
+#ifdef UNIX
                                           "PureData patches (*.pd);;" \
                                           "All files (*)",
+#else /* WIN32 */
+                                          "PureData patches (*.pd);;" \
+                                          "All files (*.*)",
 #endif
                                           this,
                                           "open file dialog",
@@ -1143,6 +1150,7 @@ void PDQt::startPD()
     return;
   }
 
+#ifdef UNIX
   running = false;
 
   pdPid = vfork();
@@ -1163,6 +1171,7 @@ void PDQt::startPD()
     // Failed to fork
     return;
   }
+#endif /* UNIX */
 }
 
 /** Connect to the PD core. */
@@ -1228,6 +1237,7 @@ void PDQt::disconnectPD()
 /** Stop PD core. */
 void PDQt::stopPD()
 {
+#ifdef UNIX
   int pd_status;
   int result;
 
@@ -1236,6 +1246,7 @@ void PDQt::stopPD()
 
   running = false;
   status->setText("Stopped PDa");
+#endif /* UNIX */
 }
 
 /** Send message to PD core. */
