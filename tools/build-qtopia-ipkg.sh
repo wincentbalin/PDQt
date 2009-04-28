@@ -3,6 +3,10 @@
 # Build ipk of pdqt
 
 VERSION=0.6
+SKELETON_DIR=./skeletons
+QTOPIA_SKELETON_DIR=$SKELETON_DIR/qtopia
+CURRENT_DIR=`readlink -f .`
+
 
 # Check whether we have pdqt binary
 if [ ! -x pdqt ]; then
@@ -32,10 +36,10 @@ rm control
 
 # Prepare and copy pdqt binary
 arm-linux-strip pdqt
-cp pdqt ./opt/QtPalmtop/bin/
+cp pdqt $QTOPIA_SKELETON_DIR/opt/QtPalmtop/bin/
 
 # Pack package data
-tar cvf data.tar ./opt --exclude .svn
+(cd $QTOPIA_SKELETON_DIR; tar cvf $CURRENT_DIR/data.tar ./opt --exclude .svn)
 gzip -fv9 data.tar
 
 # Create debian-binary file
@@ -46,5 +50,5 @@ tar zcvf pdqt_"$VERSION"_arm.ipk ./control.tar.gz ./data.tar.gz ./debian-binary
 
 # Clean up
 rm data.tar* control.tar* debian-binary
-rm opt/QtPalmtop/bin/pdqt
+rm $QTOPIA_SKELETON_DIR/opt/QtPalmtop/bin/pdqt
 
