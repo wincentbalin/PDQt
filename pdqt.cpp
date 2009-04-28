@@ -774,11 +774,13 @@ ConfigDialog::ConfigDialog(Config* currentConfig, QString filename,
   pdStartView->setChecked(config->pdStart());
   connect(pdStartView, SIGNAL(toggled(bool)), this, SLOT(setPDStart(bool)));
 
-  // Create (default) OK button
+#ifndef QTOPIA
+  // Create (default) OK button, Qtopia makes one automatically
   QPushButton* configOK = new QPushButton("&OK", this);
   configOK->setDefault(true);
   grid->addWidget(configOK, 2, 8);
   connect(configOK, SIGNAL(clicked()), this, SLOT(accept()));
+#endif /* QTOPIA */
 }
 
 /** Set PD binary path. */
