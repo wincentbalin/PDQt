@@ -11,6 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __linux__
+#define UNIX 1
+#endif
+
 #ifdef UNIX
   #include <unistd.h>
   #include <signal.h>
