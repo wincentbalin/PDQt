@@ -1,0 +1,47 @@
+README
+------
+Wincent Balin < wincent.balin AT gmail DOT com >
+
+
+DISCLAIMER
+----------
+Everything in this directory is provided AS IS without any WARRANTY or
+LIABILITIY of any kind implicitly or explicitly whatsoever.
+In other words: IF SOMETHING GOES WRONG, IT'S YOUR FAULT, NOT MINE!
+
+
+PREREQUISITES
+-------------
+PDQt was successfully compiled and executed on Qtopia environment, running
+on Sharp Zaurus clamshell devices, and on any Qt3 platform.
+
+In order to build PDQt, you'll need a working Qtopia or Qt3 SDK, if needed --
+a working cross-compiler setup and the usual build tools (make, binutils etc).
+You might take a look at the instructions how to build the Quasar Media Player
+project (http://katastrophos.net/quasar). You will not need ccache, though.
+
+
+MANUAL BUILD
+------------
+
+In the tools directory you will find scripts to set up a building environment.
+
+For Qtopia use the following command to create a Makefile:
+
+tmake pdqt-qtopia-zaurus.pro > Makefile
+
+To compile with the MinGW toolchain please use:
+
+qmake quasar-qt3-mingw.pro
+
+For native X11 compilation use this:
+
+qmake quasar-qt3-release.pro
+
+If the Makefile was created successfully, do a simple
+
+make
+
+to create the "pdqt" or "pdqt.exe" binary.
+
+
