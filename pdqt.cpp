@@ -837,6 +837,83 @@ void ConfigDialog::setPDStart(bool state)
 }
 
 
+/** About dialog constructor. */
+AboutDialog::AboutDialog(QWidget* parent, const char* name, WFlags f) :
+                                             QDialog(parent, name, f)
+{
+  // Set up dialog
+  setCaption("About PDQt");
+  setWFlags(getWFlags() | Qt::WDestructiveClose);
+
+  // Create scroll bars
+  QScrollView* scrollView = new QScrollView(this);
+  scrollView->setFrameStyle(QScrollView::NoFrame);
+  scrollView->setMargin(4);
+  scrollView->setResizePolicy(QScrollView::AutoOneFit);
+
+  // Create main box
+  QVBox* mainBox = new QVBox(scrollView->viewport());
+  mainBox->setSpacing(4);
+  scrollView->addChild(mainBox);
+
+  // Add copyright group
+  QVGroupBox* copyrightBox = new QVGroupBox("Copyright information", mainBox);
+  QTextView* about = new QTextView(copyrightBox);
+  about->setTextFormat(Qt::RichText);
+
+  // Create "About..." text
+  about->setText
+  (
+    "<h1>Pure Data for Qt</h1><br/>"
+    "Copyright (C) 2008, 2009 by Wincent Balin "
+      "<a href=\"mailto:wincent.balin@gmail.com\">(wincent.balin@gmail.com)</a><br/>"
+    "<br/>"
+    "This software is licensed under the terms of the GNU General Public License version 2.<br/>"
+    "<br/>"
+    "For more information please visit: "
+    "<a href=\"http://katastrophos.net/wincent/blog/software/pdqt/\">"
+      "http://katastrophos.net/wincent/blog/software/pdqt/</a><br/>"
+    "<br/>"
+    "This software is based upon PdPod "
+      "(<a href=\"http://www.ipodlinux.org/wiki/PdPod\">"
+      "http://www.ipodlinux.org/wiki/PdPod</a>) by Martin Kaltenbrunner<br/>"
+    "PdPod is a graphical user interface for Pure Data Anywhere "
+      "(<a href=\"http://gige.xdv.org/pda/\">http://gige.xdv.org/pda/</a>) "
+      "by Guenter Geiger<br/>"
+    "Pure Data Anywhere is a fixed-point implementation "
+      "of the Pure Data audio environment "
+      "(<a href=\"http://puredata.info/\">"
+      "http://puredata.info/</a>) by Miller Puckette et al.<br/>"
+    "TK File Dialog (C) by TKmix, modified by AGAWA Koji and Andre Beckedorf<br/>"
+    "<br/>"
+    "Many thanks go to Andre Beckedorf, "
+      "author of the very inspiring audio player package called Quasar "
+      "(<a href=\"http://katastrophos.net/quasar/\">http://katastrophos.net/quasar/</a>), "
+      "for providing both his knowledge and his ressources. "
+      "Without him this piece of software would not be."
+  );
+
+  // Add text view to the viewport
+  QHBoxLayout* layout = new QHBoxLayout(this);
+  layout->addWidget(scrollView);
+
+  // Set size and show
+#ifdef QTOPIA
+  showMaximized();
+#else
+  if (qApp->desktop()->width() < 640 || qApp->desktop()->height() < 480)
+  {
+    showMaximized();
+  }
+  else
+  {
+    resize(640, 480);
+    show();
+  }
+#endif
+}
+
+
 /** PD Qt GUI constructor. */
 PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
 {
@@ -1127,12 +1204,8 @@ void PDQt::configure()
 /** Show About dialog. */
 void PDQt::about()
 {
-    QMessageBox::about(this, "About PDQt...", "Qtopia GUI for PDa\n"
-                                              "(c) 2008, 2009 by Wincent Balin\n"
-                                              "            and Andre Beckedorf\n"
-                                              "PdPod: Martin Kaltenbrunner\n"
-                                              "PDa iPod port: Guenter Geiger\n"
-                                              "Pure Data (pd): Miller Puckette");
+  AboutDialog* aboutDialog = new AboutDialog();
+  aboutDialog->show();
 }
 
 /** Press back action button. */

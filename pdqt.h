@@ -52,6 +52,10 @@
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
+#include <qscrollview.h>
+#include <qvbox.h>
+#include <qvgroupbox.h>
+#include <qtextview.h>
 
 
 namespace pdqt
@@ -362,6 +366,14 @@ namespace pdqt
     Config* config;
     QLineEdit* pdPathView;
     QCheckBox* pdStartView;
+  };
+
+
+  class AboutDialog : public QDialog
+  {
+    Q_OBJECT
+  public:
+    AboutDialog(QWidget* parent = 0, const char* name = 0, WFlags f = 0);
   };
 
 
