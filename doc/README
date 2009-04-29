@@ -34,6 +34,8 @@ To compile with the MinGW toolchain please use:
 
 qmake quasar-qt3-mingw.pro
 
+You will probably have to delete "-lqt" from the resulting Makefile.
+
 For native X11 compilation use this:
 
 qmake quasar-qt3-release.pro
@@ -44,4 +46,6 @@ make
 
 to create the "pdqt" or "pdqt.exe" binary.
 
+With ./tools/build-qt3-tgz.sh or ./tools/build-qtopia-ipkg.sh
+you can create a needed package then.
 
