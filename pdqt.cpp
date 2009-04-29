@@ -837,6 +837,105 @@ void ConfigDialog::setPDStart(bool state)
 }
 
 
+/** Help dialog contructor. */
+HelpDialog::HelpDialog(QWidget* parent, const char* name, WFlags f) :
+                                             QDialog(parent, name, f)
+{
+  // Set up dialog
+  setCaption("PDQt help");
+  setWFlags(getWFlags() | Qt::WDestructiveClose);
+
+  // Create scroll bars
+  QScrollView* scrollView = new QScrollView(this);
+  scrollView->setFrameStyle(QScrollView::NoFrame);
+  scrollView->setMargin(4);
+  scrollView->setResizePolicy(QScrollView::AutoOneFit);
+
+  // Create main box
+  QVBox* mainBox = new QVBox(scrollView->viewport());
+  mainBox->setSpacing(4);
+  scrollView->addChild(mainBox);
+
+  // Add copyright group
+  QTextBrowser* help = new QTextBrowser(mainBox);
+  help->setTextFormat(Qt::RichText);
+
+  // Create help text
+  help->setText
+  (
+    "<h1>PDQt help</h1><br/>"
+    "<h2><a name=\"contents\">Contents</a></h2>"
+    "<ul>"
+      "<li><a href=\"#generalcosiderations\">General considerations</a></li>"
+      "<li><a href=\"#standardinterface\">Standard interface</a></li>"
+      "<li><a href=\"#custominterface\">Custom interface</a></li>"
+    "</ul><br/>"
+    ""
+    "<h2><a name=\"generalconsiderations\">General considerations</a></h2><br/>"
+    "  The aim of the user interface was to emulate the user interface"
+    "  of an audio player with a certain fame. While trying to do so,"
+    "  the control keys had to be chosen carefully, lest they do not"
+    "  land wide apart on different keyboards.<br/>"
+    "  <center>"
+    "    <table>"
+    "    <caption>The keys are:</caption>"
+    "      <tbody>"
+    "        <tr><td><h3>Key</h3></td><td><h3>Function</h3></td></tr>"
+    "        <tr><td>C</td><td>Play</td></tr>"
+    "        <tr><td>R</td><td>Menu</td></tr>"
+    "        <tr><td>D</td><td>Action</td></tr>"
+    "        <tr><td>S</td><td>Rewind</td></tr>"
+    "        <tr><td>F</td><td>Forward</td></tr>"
+    "        <tr><td>E</td><td>Rotate clockwise</td></tr>"
+    "        <tr><td>X</td><td>Rotate counterclockwise</td></tr>"
+    "      </tbody>"
+    "    </table>"
+    "  </center><br/>"
+    "  Some controls maintain their function in all interfaces."
+    "  Rotation buttons are used quite often to increase and decrease"
+    "  a value. Pressing <b>Action</b> button together with rotation buttons"
+    "  multiplies value change by 10. Pressing <b>Action</b> button together"
+    "  with <b>Play</b> button pauses and unpauses the current patch.<br/>"
+    "  <a href=\"#contents\">Back to contents</a><br/>"
+    ""
+    "<h2><a name=\"standardinterface\">Standard interface</a></h2><br/>"
+    "  The standard interface presentes itself like a wheel. You may use"
+    "  four buttons (<b>Menu</b>, <b>Forward</b>, <b>Play</b> and <b>Rewind</b>)"
+    "  to activate four functions, and if you look at the table in the previous"
+    "  section, you will notice that the plays of the mentioned keys on the wheel"
+    "  correspond with their place on the keyboard. The actual functions"
+    "  of the keys depend on the playing patch.<br/>"
+    "  In the middle of the wheel there is a value that you can change with"
+    "  rotation buttons. <b>Action</b>&nbsp;button may activate, depending on the"
+    "  current patch, some secondary functions.<br/>"
+    "  <a href=\"#contents\">Back to contents</a><br/>"
+    ""
+    "<h2><a name=\"custominterface\">Custom interface</a></h2><br/>"
+    "  You will have to figure out what the controls do by yourself, "
+    "  as the functions of the control keys are entirely customized here.<br/>"
+    "  <a href=\"#contents\">Back to contents</a><br/>"
+  );
+
+  // Add text view to the viewport
+  QHBoxLayout* layout = new QHBoxLayout(this);
+  layout->addWidget(scrollView);
+
+  // Set size and show
+#ifdef QTOPIA
+  showMaximized();
+#else
+  if (qApp->desktop()->width() < 640 || qApp->desktop()->height() < 480)
+  {
+    showMaximized();
+  }
+  else
+  {
+    resize(640, 480);
+    show();
+  }
+#endif
+}
+
 /** About dialog constructor. */
 AboutDialog::AboutDialog(QWidget* parent, const char* name, WFlags f) :
                                              QDialog(parent, name, f)
@@ -933,9 +1032,10 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
 #ifdef UNIX
-  menuBar()->insertItem("&Config", this, SLOT(configure()), CTRL+Key_P);
+  menuBar()->insertItem("&Config", this, SLOT(configure()));
 #endif
-  menuBar()->insertItem("&About", this, SLOT(about()), Key_F1);
+  menuBar()->insertItem("&Help", this, SLOT(help()), Key_F1);
+  menuBar()->insertItem("&About", this, SLOT(about()), SHIFT+Key_F1);
 
   // Get configuration entries
   configFilename.append(QDir::homeDirPath()).\
@@ -1199,6 +1299,13 @@ void PDQt::configure()
     default:
       break;
   }
+}
+
+/** Show Help dialog. */
+void PDQt::help()
+{
+  HelpDialog* helpDialog = new HelpDialog();
+  helpDialog->show();
 }
 
 /** Show About dialog. */

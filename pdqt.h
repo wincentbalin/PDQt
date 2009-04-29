@@ -56,6 +56,7 @@
 #include <qvbox.h>
 #include <qvgroupbox.h>
 #include <qtextview.h>
+#include <qtextbrowser.h>
 
 
 namespace pdqt
@@ -158,7 +159,7 @@ namespace pdqt
     Main* main;
   };
 
-  
+
   class BaseWidget
   {
   public:
@@ -291,7 +292,7 @@ namespace pdqt
     QString text;
   };
 
-  
+
   class View
   {
   public:
@@ -324,7 +325,7 @@ namespace pdqt
     QValueList<BaseWidget*>* widgets;
   };
 
-  
+
   class Config
   {
   public:
@@ -369,6 +370,13 @@ namespace pdqt
   };
 
 
+  class HelpDialog : public QDialog
+  {
+    Q_OBJECT
+  public:
+    HelpDialog(QWidget* parent = 0, const char* name = 0, WFlags f = 0);
+  };
+
   class AboutDialog : public QDialog
   {
     Q_OBJECT
@@ -387,6 +395,7 @@ namespace pdqt
     void load();
     void load(const char* filename);
     void configure();
+    void help();
     void about();
   protected:
     void keyPressEvent(QKeyEvent*);
