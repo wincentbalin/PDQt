@@ -845,16 +845,9 @@ HelpDialog::HelpDialog(QWidget* parent, const char* name, WFlags f) :
   setCaption("PDQt help");
   setWFlags(getWFlags() | Qt::WDestructiveClose);
 
-  // Create scroll bars
-  QScrollView* scrollView = new QScrollView(this);
-  scrollView->setFrameStyle(QScrollView::NoFrame);
-  scrollView->setMargin(4);
-  scrollView->setResizePolicy(QScrollView::AutoOneFit);
-
   // Create main box
-  QVBox* mainBox = new QVBox(scrollView->viewport());
+  QVBox* mainBox = new QVBox(this);
   mainBox->setSpacing(4);
-  scrollView->addChild(mainBox);
 
   // Add copyright group
   QTextBrowser* help = new QTextBrowser(mainBox);
@@ -918,7 +911,7 @@ HelpDialog::HelpDialog(QWidget* parent, const char* name, WFlags f) :
 
   // Add text view to the viewport
   QHBoxLayout* layout = new QHBoxLayout(this);
-  layout->addWidget(scrollView);
+  layout->addWidget(mainBox);
 
   // Set size and show
 #ifdef QTOPIA
