@@ -18,12 +18,12 @@ fi
 
 # Prepare and copy pdqt binary
 strip pdqt
-cp pdqt $LINUX_SKELETON_DIR/usr/bin/
+cp pdqt $LINUX_SKELETON_DIR/opt/pdqt/bin/
 
 # Pack package data
-(cd $LINUX_SKELETON_DIR; tar cvf $CURRENT_DIR/$TAR_FILE ./usr --exclude .svn)
+(cd $LINUX_SKELETON_DIR; tar cvf $CURRENT_DIR/$TAR_FILE ./opt --exclude .svn)
 gzip -fv9 $TAR_FILE
 
 # Clean up
-rm $LINUX_SKELETON_DIR/usr/bin/pdqt
+rm $LINUX_SKELETON_DIR/opt/pdqt/bin/pdqt
 
