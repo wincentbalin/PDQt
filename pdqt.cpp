@@ -41,7 +41,7 @@ SourAppleController::SourAppleController(Main* main_)
 }
 
 /** Get a button. */
-Button& SourAppleController::getButton(enum BUTTONID id)
+Button& SourAppleController::getButton(enum BUTTON_ID id)
 {
   return buttons[id];
 }
@@ -210,7 +210,7 @@ bool SourAppleController::anyButtonPressed()
 }
 
 /** Is a button pressed? */
-bool SourAppleController::buttonPressed(enum BUTTONID button)
+bool SourAppleController::buttonPressed(enum BUTTON_ID button)
 {
   return buttons[button].pressed();
 }
@@ -1491,7 +1491,7 @@ void PDQt::receiveMessage()
         // If widget is addressed, set it's value
         if(w->getName() == addressedWidgetName)
         {
-          enum WIDGETID widgetId = w->getId();
+          enum WIDGET_ID widgetId = w->getId();
 
           // Ensure that the message does not go to a non-geometric widget
           if(widgetId == PD_SYMBOL || widgetId == PD_TEXT)
