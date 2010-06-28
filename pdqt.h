@@ -61,7 +61,7 @@
 
 namespace pdqt
 {
-  enum BUTTON_ID
+  enum ButtonID
   {
     BUTTON_PLAY            = 0,
     BUTTON_MENU            = 1,
@@ -73,7 +73,7 @@ namespace pdqt
     BUTTONS
   };
 
-  enum WIDGET_ID
+  enum WidgetID
   {
     PD_BANG    = 0,
     PD_VSLIDER = 1,
@@ -85,7 +85,7 @@ namespace pdqt
     PD_TEXT    = 7
   };
 
-  enum WIDGET_PROPERTY
+  enum WidgetProperty
   {
     WIDGET_PROPERTY_NAME,
     WIDGET_PROPERTY_X,
@@ -146,11 +146,11 @@ namespace pdqt
   class Controller
   {
   public:
-    virtual Button& getButton(enum BUTTON_ID id) = 0;
+    virtual Button& getButton(enum ButtonID id) = 0;
     virtual bool pressKey(int key) = 0;
     virtual bool unpressKey(int key) = 0;
     virtual bool anyButtonPressed() = 0;
-    virtual bool buttonPressed(enum BUTTON_ID button) = 0;
+    virtual bool buttonPressed(enum ButtonID button) = 0;
     virtual int  wheelValue() = 0;
   };
 
@@ -158,11 +158,11 @@ namespace pdqt
   {
   public:
     SourAppleController(Main*);
-    Button& getButton(enum BUTTON_ID id);
+    Button& getButton(enum ButtonID id);
     bool pressKey(int key);
     bool unpressKey(int key);
     bool anyButtonPressed();
-    bool buttonPressed(enum BUTTON_ID button);
+    bool buttonPressed(enum ButtonID button);
     int  wheelValue();
   private:
     bool shift;
@@ -180,7 +180,7 @@ namespace pdqt
   {
   public:
     virtual ~BaseWidget() {}
-    virtual enum WIDGET_ID getId() = 0;
+    virtual enum WidgetID getId() = 0;
     virtual void paint(QPainter&) = 0;
     virtual QString& getName()    = 0;
     virtual int minValue()        = 0;
@@ -188,7 +188,7 @@ namespace pdqt
     virtual float getValue()      = 0;
     virtual void setValue(float)  = 0;
   protected:
-    enum WIDGET_ID id;
+    enum WidgetID id;
     WidgetProperties properties;
     int x;
     int y;
@@ -200,7 +200,7 @@ namespace pdqt
   public:
     GeometricWidget() { blackBrush = QBrush(Qt::black); }
     virtual ~GeometricWidget() {}
-    virtual enum WIDGET_ID getId() { return id; }
+    virtual enum WidgetID getId() { return id; }
     virtual QString& getName() { return name; }
     virtual int minValue() { return min; }
     virtual int maxValue() { return max; }
@@ -221,7 +221,7 @@ namespace pdqt
   public:
     TextualWidget() {}
     virtual ~TextualWidget() {}
-    virtual enum WIDGET_ID getId() { return id; }
+    virtual enum WidgetID getId() { return id; }
     virtual QString& getName() { return name; }
     // Placeholders
     virtual int minValue() { return 0; }
