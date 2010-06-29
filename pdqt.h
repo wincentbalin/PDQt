@@ -230,7 +230,7 @@ namespace pdqt
     virtual ~TextualWidget() {}
     virtual enum WidgetID getId() { return id; }
     virtual QString& getName() { return name; }
-    // Placeholders
+    // Place holders
     virtual int minValue() { return 0; }
     virtual int maxValue() { return 0; }
     virtual float getValue() { return 0; }
