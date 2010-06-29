@@ -85,18 +85,6 @@ namespace pdqt
     PD_TEXT    = 7
   };
 
-  enum WidgetProperty
-  {
-    WIDGET_PROPERTY_NAME,
-    WIDGET_PROPERTY_X,
-    WIDGET_PROPERTY_Y,
-    WIDGET_PROPERTY_WIDTH,
-    WIDGET_PROPERTY_HEIGHT,
-    WIDGET_PROPERTY_MIN,
-    WIDGET_PROPERTY_MAX,
-    WIDGET_PROPERTY_VALUE
-  };
-
 
   class ScrollWheel
   {
