@@ -172,15 +172,20 @@ namespace pdqt
     int max;
     float value;
     bool selected;
-    QBrush blackBrush;
-    //
-    QFont font;
-    QFontMetrics* fm;
     //
     QPointArray contour;
     QString sv; // string value
     //
     QString text;
+  };
+
+  class GraphicProperties
+  {
+  private:
+    QBrush blackBrush;
+    //
+    QFont font;
+    QFontMetrics* fm;
   };
 
   class Widget
