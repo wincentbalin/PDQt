@@ -162,27 +162,34 @@ namespace pdqt
   class WidgetProperties
   {
   public:
-    WidgetProperties(){}    // TODO Remove after complete implementation
-    WidgetProperties(int x, int y, QString name) : x(x), y(y), name(name) {}
+    WidgetProperties() {}
     int getX() { return x; }
+    void setX(int x_) { x = x_; }
     int getY() { return y; }
+    void setY(int y_) { y = y_; }
     QString& getName() { return name; }
+    void setName(QString& name_) { name = name_; }
   private:
     int x;
     int y;
     QString name;
     //
+    QPointArray contour;
+    QString sv; // string value
+    //
+    QString text;
+  };
+
+  class GeometricWidgetProperties : public WidgetProperties
+  {
+  public:
+    GeometricWidgetProperties() {}
+  private:
     int w;
     int h;
     int min;
     int max;
     float value;
-    bool selected;
-    //
-    QPointArray contour;
-    QString sv; // string value
-    //
-    QString text;
   };
 
   class GraphicProperties
