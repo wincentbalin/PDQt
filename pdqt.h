@@ -161,7 +161,26 @@ namespace pdqt
 
   class WidgetProperties
   {
-
+  private:
+    int x;
+    int y;
+    QString name;
+    //
+    int w;
+    int h;
+    int min;
+    int max;
+    float value;
+    bool selected;
+    QBrush blackBrush;
+    //
+    QFont font;
+    QFontMetrics* fm;
+    //
+    QPointArray contour;
+    QString sv; // string value
+    //
+    QString text;
   };
 
   class Widget
