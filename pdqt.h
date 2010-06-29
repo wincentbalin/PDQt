@@ -161,6 +161,12 @@ namespace pdqt
 
   class WidgetProperties
   {
+  public:
+    WidgetProperties(){}    // TODO Remove after complete implementation
+    WidgetProperties(int x, int y, QString name) : x(x), y(y), name(name) {}
+    int getX() { return x; }
+    int getY() { return y; }
+    QString& getName() { return name; }
   private:
     int x;
     int y;
