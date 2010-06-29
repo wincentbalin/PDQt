@@ -596,7 +596,7 @@ void StandardView::repaint(QPainter& p)
 }
 
 /** Create custom user interface. */
-CustomView::CustomView(QValueList<BaseWidget*>* widgets_)
+CustomView::CustomView(QValueList<Widget*>* widgets_)
 {
   widgets = widgets_;
 }
@@ -605,7 +605,7 @@ CustomView::CustomView(QValueList<BaseWidget*>* widgets_)
 void CustomView::repaint(QPainter& p)
 {
   // Paint widgets
-  for(QValueList<BaseWidget*>::Iterator widget = widgets->begin(); widget != widgets->end(); widget++)
+  for(QValueList<Widget*>::Iterator widget = widgets->begin(); widget != widgets->end(); widget++)
     (*widget)->paint(p);
 }
 
@@ -1232,7 +1232,7 @@ void PDQt::load(const char* filename)
   loaded = false;
 
   // Erase widget objects
-  for(QValueList<BaseWidget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
+  for(QValueList<Widget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
     delete *widget;
   // Clear widgets
   widgets.clear();
@@ -1483,10 +1483,10 @@ void PDQt::receiveMessage()
         argval = 0;
       }
 
-      for(QValueList<BaseWidget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
+      for(QValueList<Widget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
       {
         // Get widget from the iterator
-        BaseWidget* w = *widget;
+        Widget* w = *widget;
 
         // If widget is addressed, set it's value
         if(w->getName() == addressedWidgetName)

@@ -176,10 +176,10 @@ namespace pdqt
 
   };
 
-  class BaseWidget
+  class Widget
   {
   public:
-    virtual ~BaseWidget() {}
+    virtual ~Widget() {}
     virtual enum WidgetID getId() = 0;
     virtual void paint(QPainter&) = 0;
     virtual QString& getName()    = 0;
@@ -195,7 +195,7 @@ namespace pdqt
     QString name;
   };
 
-  class GeometricWidget : public BaseWidget
+  class GeometricWidget : public Widget
   {
   public:
     GeometricWidget() { blackBrush = QBrush(Qt::black); }
@@ -216,7 +216,7 @@ namespace pdqt
     QBrush blackBrush;
   };
 
-  class TextualWidget : public BaseWidget
+  class TextualWidget : public Widget
   {
   public:
     TextualWidget() {}
@@ -335,11 +335,11 @@ namespace pdqt
   class CustomView : virtual public View
   {
   public:
-    CustomView(QValueList<BaseWidget*>*);
+    CustomView(QValueList<Widget*>*);
     virtual ~CustomView() {}
     void repaint(QPainter&);
   private:
-    QValueList<BaseWidget*>* widgets;
+    QValueList<Widget*>* widgets;
   };
 
 
@@ -443,7 +443,7 @@ namespace pdqt
     QLabel* status;
     QPixmap paintPixmap;
     //
-    QValueList<BaseWidget*> widgets;
+    QValueList<Widget*> widgets;
     void createWidget(QString& line);
     View* view;
     Controller* controller;
