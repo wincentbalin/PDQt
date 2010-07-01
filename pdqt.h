@@ -207,14 +207,14 @@ namespace pdqt
   public:
     GraphicProperties() { blackBrush = QBrush(Qt::black); }
     QBrush getBlackBrush() { return blackBrush; }
-    void setFont(QFont& f) { font = f; }
-    QFont& getFont() { return font; }
+    void setFont(QFont* f) { font = f; }
+    QFont* getFont() { return font; }
     void setFontMetrics(QFontMetrics* fm) { fontMetrics = fm; }
     QFontMetrics* getFontMetrics() { return fontMetrics; }
   private:
     QBrush blackBrush;
     //
-    QFont& font;
+    QFont* font;
     QFontMetrics* fontMetrics;
   };
 
