@@ -499,7 +499,7 @@ TextWidget::TextWidget(QStringList& parameters, float scale, QFont& widgetFont, 
   for(unsigned int i = 5; i < parameters.count(); i++)
     text += parameters[i];
 
-  // Cut off the last semi-colon
+  // Cut off the last semicolon
   text.truncate(text.length()-1);
 
   // Set font and it's metrics
@@ -637,7 +637,7 @@ Config::Config(const char* filename_, bool check_only_)
     patchDirectory_ = PATCH_DIRECTORY;
   }
 
-  // If config file does not exist, write it
+  // If configuration file does not exist, write it
   QFile configFile(filename);
   if(!configFile.exists())
     write();
@@ -646,7 +646,7 @@ Config::Config(const char* filename_, bool check_only_)
 /** Configuration class destructor. */
 Config::~Config()
 {
-  // If this config was used for checking only, return
+  // If this configuration was used for checking only, return
   if(check_only)
     return;
 
@@ -663,7 +663,7 @@ Config::~Config()
   delete originalConfig;
 }
 
-/** Copy data from other config. */
+/** Copy data from another configuration. */
 void Config::copyFrom(Config& otherConfig)
 {
   // Copy data
