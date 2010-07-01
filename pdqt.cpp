@@ -1038,11 +1038,10 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   // Initialize input
   controller = new SourAppleController(this);
 
-  // Initialize graphic properties, needed for the standard GUI
+  // Initialize graphic properties
+  GraphicProperties gp = GraphicProperties::getInstance();
   QFont font = QFont("helvetica", 24, QFont::Bold);
-  QFontMetrics* fm = new QFontMetrics(font);
   gp.setFont(font);
-  gp.setFontMetrics(fm);
 
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);

@@ -134,9 +134,8 @@ namespace pdqt
   public:
     static GraphicProperties& getInstance() { return instance; }
     QBrush getBlackBrush() { return blackBrush; }
-    void setFont(QFont& f) { font = f; }
+    void setFont(QFont& f) { font = f; fontMetrics = new QFontMetrics(font); }
     QFont& getFont() { return font; }
-    void setFontMetrics(QFontMetrics* fm) { fontMetrics = fm; }
     QFontMetrics* getFontMetrics() { return fontMetrics; }
   private:
     // singleton parts
