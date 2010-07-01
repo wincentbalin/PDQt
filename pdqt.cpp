@@ -990,7 +990,7 @@ AboutDialog::AboutDialog(QWidget* parent, const char* name, WFlags f) :
       "(<a href=\"http://www.ipodlinux.org/wiki/PdPod\">"
       "http://www.ipodlinux.org/wiki/PdPod</a>) by Martin Kaltenbrunner<br/>"
     "PdPod is a graphical user interface for Pure Data Anywhere "
-      "(<a href=\"http://gige.xdv.org/pda/\">http://gige.xdv.org/pda/</a>) "
+      "(<a href=\"http://pd-anywhere.sf.net/\">http://pd-anywhere.sf.net/</a>) "
       "by Guenter Geiger<br/>"
     "Pure Data Anywhere is a fixed-point implementation "
       "of the Pure Data audio environment "
@@ -1001,7 +1001,7 @@ AboutDialog::AboutDialog(QWidget* parent, const char* name, WFlags f) :
     "Many thanks go to Andre Beckedorf, "
       "author of the very inspiring audio player package called Quasar "
       "(<a href=\"http://katastrophos.net/quasar/\">http://katastrophos.net/quasar/</a>), "
-      "for providing both his knowledge and his ressources. "
+      "for providing both his knowledge and his resources. "
       "Without him this piece of software would not be."
   );
 
