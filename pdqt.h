@@ -86,79 +86,6 @@ namespace pdqt
   };
 
 
-  class ScrollWheel
-  {
-  public:
-    ScrollWheel(int value = 0) : value_(value) {}
-    void scrollUp(unsigned int steps = 1) { value_ += steps; }
-    void scrollDown(unsigned int steps = 1) { value_ -= steps; }
-    int value() const { return value_; }
-    inline ScrollWheel& operator += (const int i) { value_ += i; return *this; }
-    inline ScrollWheel& operator -= (const int i) { value_ -= i; return *this; }
-  private:
-    int value_;
-  };
-
-  class MessageSender
-  {
-  public:
-    virtual void sendMessage(const char*) = 0;
-  };
-
-  class Main : virtual public MessageSender
-  {
-  public:
-    virtual bool patchLoaded() const = 0;
-    virtual bool pdRunning() const = 0;
-    virtual void pdPause(bool pause) = 0;
-    virtual bool pdPaused() const = 0;
-    virtual void setStatus(const char*) = 0;
-    virtual bool isStandardView() const = 0;
-  };
-
-  class Button
-  {
-  public:
-    Button() : key_(0), pressed_(false) {}
-    Button(int key) : key_(key), pressed_(false) {}
-    Button(const Button& b) : key_(b.key_), pressed_(b.pressed_) {}
-    int key() const { return key_; }
-    void press(bool buttonpressed = true) { pressed_ = buttonpressed; }
-    bool pressed() const { return pressed_; }
-    inline bool operator == (const int key) { return (key_ == key); }
-  private:
-    int key_;
-    bool pressed_;
-  };
-
-  class Controller
-  {
-  public:
-    virtual Button& getButton(enum ButtonID id) = 0;
-    virtual bool pressKey(int key) = 0;
-    virtual bool unpressKey(int key) = 0;
-    virtual bool anyButtonPressed() = 0;
-    virtual bool buttonPressed(enum ButtonID button) = 0;
-    virtual int  wheelValue() = 0;
-  };
-
-  class SourAppleController : virtual public Controller
-  {
-  public:
-    SourAppleController(Main*);
-    Button& getButton(enum ButtonID id);
-    bool pressKey(int key);
-    bool unpressKey(int key);
-    bool anyButtonPressed();
-    bool buttonPressed(enum ButtonID button);
-    int  wheelValue();
-  private:
-    bool shift;
-    Button buttons[BUTTONS];
-    ScrollWheel wheel;
-    Main* main;
-  };
-
   class WidgetProperties
   {
   public:
@@ -352,6 +279,64 @@ namespace pdqt
   };
 
 
+  class ScrollWheel
+  {
+  public:
+    ScrollWheel(int value = 0) : value_(value) {}
+    void scrollUp(unsigned int steps = 1) { value_ += steps; }
+    void scrollDown(unsigned int steps = 1) { value_ -= steps; }
+    int value() const { return value_; }
+    inline ScrollWheel& operator += (const int i) { value_ += i; return *this; }
+    inline ScrollWheel& operator -= (const int i) { value_ -= i; return *this; }
+  private:
+    int value_;
+  };
+
+  class Button
+  {
+  public:
+    Button() : key_(0), pressed_(false) {}
+    Button(int key) : key_(key), pressed_(false) {}
+    Button(const Button& b) : key_(b.key_), pressed_(b.pressed_) {}
+    int key() const { return key_; }
+    void press(bool buttonpressed = true) { pressed_ = buttonpressed; }
+    bool pressed() const { return pressed_; }
+    inline bool operator == (const int key) { return (key_ == key); }
+  private:
+    int key_;
+    bool pressed_;
+  };
+
+  class Controller
+  {
+  public:
+    virtual Button& getButton(enum ButtonID id) = 0;
+    virtual bool pressKey(int key) = 0;
+    virtual bool unpressKey(int key) = 0;
+    virtual bool anyButtonPressed() = 0;
+    virtual bool buttonPressed(enum ButtonID button) = 0;
+    virtual int  wheelValue() = 0;
+  };
+
+  class Main;
+  class SourAppleController : virtual public Controller
+  {
+  public:
+    SourAppleController(Main*);
+    Button& getButton(enum ButtonID id);
+    bool pressKey(int key);
+    bool unpressKey(int key);
+    bool anyButtonPressed();
+    bool buttonPressed(enum ButtonID button);
+    int  wheelValue();
+  private:
+    bool shift;
+    Button buttons[BUTTONS];
+    ScrollWheel wheel;
+    Main* main;
+  };
+
+
   class View
   {
   public:
@@ -382,6 +367,23 @@ namespace pdqt
     void repaint(QPainter&);
   private:
     QValueList<Widget*>* widgets;
+  };
+
+  class MessageSender
+  {
+  public:
+    virtual void sendMessage(const char*) = 0;
+  };
+
+  class Main : virtual public MessageSender
+  {
+  public:
+    virtual bool patchLoaded() const = 0;
+    virtual bool pdRunning() const = 0;
+    virtual void pdPause(bool pause) = 0;
+    virtual bool pdPaused() const = 0;
+    virtual void setStatus(const char*) = 0;
+    virtual bool isStandardView() const = 0;
   };
 
 
