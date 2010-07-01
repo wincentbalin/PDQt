@@ -1005,7 +1005,7 @@ AboutDialog::AboutDialog(QWidget* parent, const char* name, WFlags f) :
       "Without him this piece of software would not be."
   );
 
-  // Add text view to the viewport
+  // Add text view to the view port
   QHBoxLayout* layout = new QHBoxLayout(this);
   layout->addWidget(scrollView);
 
