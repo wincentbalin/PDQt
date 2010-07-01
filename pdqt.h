@@ -184,6 +184,16 @@ namespace pdqt
   {
   public:
     GeometricWidgetProperties() {}
+    void setWidth(int width) { w = width; }
+    int getWidth() { return w; }
+    void setHeight(int height) { h = height; }
+    int getHeight() { return h; }
+    void setMinValue(int v) { min = v; }
+    int getMinValue() { return min; }
+    void setMaxValue(int v) { max = v; }
+    int getMaxValue() { return max; }
+    void setValue(float v) { value = v; }
+    float getValue() { return value; }
   private:
     int w;
     int h;
@@ -194,11 +204,18 @@ namespace pdqt
 
   class GraphicProperties
   {
+  public:
+    GraphicProperties() { blackBrush = QBrush(Qt::black); }
+    QBrush getBlackBrush() { return blackBrush; }
+    void setFont(QFont& f) { font = f; }
+    QFont& getFont() { return font; }
+    void setFontMetrics(QFontMetrics* fm) { fontMetrics = fm; }
+    QFontMetrics* getFontMetrics() { return fontMetrics; }
   private:
     QBrush blackBrush;
     //
-    QFont font;
-    QFontMetrics* fm;
+    QFont& font;
+    QFontMetrics* fontMetrics;
   };
 
   class Widget
