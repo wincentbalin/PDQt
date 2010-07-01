@@ -18,6 +18,10 @@ using namespace pdqt;
 #define PATCH_DIRECTORY "/opt/QtPalmtop/share/pdqt"
 #endif
 
+#ifndef CONFIG_FILE
+#define CONFIG_FILE ".pdqtrc"
+#endif
+
 #define DPRINTF(x...) fprintf(stderr, x);
 
 
@@ -1031,9 +1035,7 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   menuBar()->insertItem("&About", this, SLOT(about()), SHIFT+Key_F1);
 
   // Get configuration entries
-  configFilename.append(QDir::homeDirPath()).\
-                 append(QDir::separator()).\
-                 append(".pdqtrc");
+  configFilename = QDir::homeDirPath() + QDir::separator() + CONFIG_FILE;
   config = new Config(configFilename);
 
   // Set widget flags for double-buffering 
