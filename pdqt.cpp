@@ -913,7 +913,7 @@ HelpDialog::HelpDialog(QWidget* parent, const char* name, WFlags f) :
     "  <a href=\"#contents\">Back to contents</a><br/>"
   );
 
-  // Add text view to the viewport
+  // Add text view to the view port
   QHBoxLayout* layout = new QHBoxLayout(this);
   layout->addWidget(mainBox);
 
@@ -1277,7 +1277,7 @@ void PDQt::load(const char* filename)
 /** Show configuration dialog. */
 void PDQt::configure()
 {
-  // Make config dialog
+  // Make configuration dialog
   ConfigDialog configDialog(config, configFilename, this, "Configuration dialog");
 
   // Show dialog, do configuration
@@ -1337,7 +1337,7 @@ void PDQt::startPD()
     running = true;
     status->setText("Running PDa");
     execl(config->pdPath(), "pd", "-r", "22050", "-nogui", "-rt", "-nomidi", "-noadc", patch.latin1(), NULL);
-    // If exec fails display message and exit forked process
+    // If execution fails, display message and exit forked process
     running = false;
     status->clear();
     QMessageBox::critical(this, "PD start failed", "Failed to start PD engine!");
