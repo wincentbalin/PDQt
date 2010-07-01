@@ -2,10 +2,10 @@ PDQt is an effort to reproduce the idea of a synthesizer-on-an-audio-player
 (as done by Martin Kaltenbrunner, Günther Geiger et al., see for example
 http://www.youtube.com/watch?v=kukNp4uwcKc , read
 http://modin.yuri.at/publications/ipod_icmc2005.pdf and
-http://gige.xdv.org/pda/ICMC2003.pdf ).
+http://pd-anywhere.sf.net/ICMC2003.pdf ).
 
 The sources for PDanywhere, the fixed-point version of Pure Data environment
-came from http://gige.xdv.org/pda/ , the source for the user interface
+came from http://pd-anywhere.sf.net/ , the source for the user interface
 on the notorious audio player came from http://ipodlinux.org/wiki/PdPod .
 
 The goal is to develop a sound synthesizing environment based on Pure Data
