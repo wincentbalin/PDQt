@@ -147,7 +147,7 @@ bool SourAppleController::pressKey(int key)
   return false;
 }
 
-/** Unpress a key. */
+/** Release a key. */
 bool SourAppleController::unpressKey(int key)
 {
   // Elaborate control logic
