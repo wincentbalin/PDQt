@@ -497,7 +497,7 @@ TextWidget::TextWidget(QStringList& parameters, float scale, QFont& widgetFont, 
 
   // Append all tokens to the text (which is the value)
   for(unsigned int i = 5; i < parameters.count(); i++)
-    text.append(parameters[i]);
+    text += parameters[i];
 
   // Cut off the last semi-colon
   text.truncate(text.length()-1);
@@ -609,7 +609,7 @@ CustomView::CustomView(QValueList<Widget*>* widgets_)
 void CustomView::repaint(QPainter& p)
 {
   // Paint widgets
-  for(QValueList<Widget*>::Iterator widget = widgets->begin(); widget != widgets->end(); widget++)
+  for(QValueList<Widget*>::ConstIterator widget = widgets->begin(); widget != widgets->end(); widget++)
     (*widget)->paint(p);
 }
 
