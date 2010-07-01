@@ -167,7 +167,6 @@ namespace pdqt
   class GeometricWidget : public Widget
   {
   public:
-    GeometricWidget() { blackBrush = QBrush(Qt::black); }
     virtual ~GeometricWidget() {}
     virtual enum WidgetID getId() { return id; }
     virtual QString& getName() { return name; }
@@ -175,14 +174,15 @@ namespace pdqt
     virtual int maxValue() { return max; }
     virtual float getValue() { return value; }
     virtual void setValue(float value_) { value = value_; }
+    virtual void setGraphicProperties(GraphicProperties& gp) { g = gp; }
   protected:
     int w;
     int h;
     int min;
     int max;
     float value;
+    GraphicProperties g;
     bool selected;
-    QBrush blackBrush;
   };
 
   class TextualWidget : public Widget
@@ -216,35 +216,35 @@ namespace pdqt
   class BangWidget : public GeometricWidget
   {
   public:
-    BangWidget(QStringList& parameters, float scale);
+    BangWidget(QStringList& parameters, float scale, GraphicProperties& gp);
     virtual void paint(QPainter& p);
   };
 
   class HorizontalSliderWidget : public SliderWidget
   {
   public:
-    HorizontalSliderWidget(QStringList& parameters, float scale);
+    HorizontalSliderWidget(QStringList& parameters, float scale, GraphicProperties& gp);
     virtual void paint(QPainter& p);
   };
 
   class VerticalSliderWidget : public SliderWidget
   {
   public:
-    VerticalSliderWidget(QStringList& parameters, float scale);
+    VerticalSliderWidget(QStringList& parameters, float scale, GraphicProperties& gp);
     virtual void paint(QPainter& p);
   };
 
   class HorizontalRadioWidget : public RadioWidget
   {
   public:
-    HorizontalRadioWidget(QStringList& parameters, float scale);
+    HorizontalRadioWidget(QStringList& parameters, float scale, GraphicProperties& gp);
     virtual void paint(QPainter& p);
   };
 
   class VerticalRadioWidget : public RadioWidget
   {
   public:
-    VerticalRadioWidget(QStringList& parameters, float scale);
+    VerticalRadioWidget(QStringList& parameters, float scale, GraphicProperties& gp);
     virtual void paint(QPainter& p);
   };
 
@@ -263,7 +263,7 @@ namespace pdqt
   class SymbolWidget : public TextualWidget
   {
   public:
-    SymbolWidget(QStringList& parameters, float scale);
+    SymbolWidget(QStringList& parameters, float scale, GraphicProperties& gp);
     virtual void paint(QPainter&);
   };
 

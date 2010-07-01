@@ -227,7 +227,7 @@ int SourAppleController::wheelValue()
 
 
 /** Create bang widget. */
-BangWidget::BangWidget(QStringList& parameters, float scale)
+BangWidget::BangWidget(QStringList& parameters, float scale, GraphicProperties& gp)
 {
   // Set id of the widget
   id = PD_BANG;
@@ -244,6 +244,9 @@ BangWidget::BangWidget(QStringList& parameters, float scale)
 
   // Set name
   name = parameters[10];
+
+  // Set graphic properties
+  g = gp;
 }
 
 /** Paint bang widget. */
@@ -259,7 +262,7 @@ void BangWidget::paint(QPainter& p)
   if(value == 1)
   {
     QBrush backupBrush = p.brush();
-    p.setBrush(blackBrush);
+    p.setBrush(g.getBlackBrush());
   }
 
   // Draw ellipse, filled if selected
@@ -274,7 +277,7 @@ void BangWidget::paint(QPainter& p)
 }
 
 /** Create horizontal slider widget. */
-HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters, float scale)
+HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters, float scale, GraphicProperties& gp)
 {
   // Set id of the widget
   id = PD_HSLIDER;
@@ -291,6 +294,9 @@ HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters, float sc
 
   // Set name
   name = parameters[12];
+
+  // Set graphic properties
+  g = gp;
 }
 
 /** Paint horizontal slider widget. */
@@ -303,11 +309,11 @@ void HorizontalSliderWidget::paint(QPainter& p)
   position = (int) ((float) w / max - min) * (int) (max - value);
 
   // Draw slider
-  p.fillRect(x + w - position, y, 2, h, blackBrush);
+  p.fillRect(x + w - position, y, 2, h, g.getBlackBrush());
 }
 
 /** Create vertical slider widget. */
-VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters, float scale)
+VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters, float scale, GraphicProperties& gp)
 {
   // Set id of the widget
   id = PD_VSLIDER;
@@ -324,6 +330,9 @@ VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters, float scale)
 
   // Set name
   name = parameters[12];
+
+  // Set graphic properties
+  g = gp;
 }
 
 /** Paint vertical slider widget. */
@@ -336,11 +345,11 @@ void VerticalSliderWidget::paint(QPainter& p)
   position = (int) ((float) h / max - min) * (int) (max - value);
 
   // Draw slider
-  p.fillRect(x, y + position, 2, h, blackBrush);
+  p.fillRect(x, y + position, 2, h, g.getBlackBrush());
 }
 
 /** Create horizontal radio widget. */
-HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters, float scale)
+HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters, float scale, GraphicProperties& gp)
 {
   // Set id of the widget
   id = PD_HRADIO;
@@ -361,6 +370,9 @@ HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters, float scal
   // Save amount of radio buttons and adjust maximal value
   radioButtons = max;
   max--;
+
+  // Set graphic properties
+  g = gp;
 }
 
 /** Paint horizontal radio widget. */
@@ -373,12 +385,12 @@ void HorizontalRadioWidget::paint(QPainter& p)
 
     // Mark current radio button
     if(i == value)
-      p.fillRect(x + h * i + 2, y + 2, h - 4, h - 4, blackBrush);
+      p.fillRect(x + h * i + 2, y + 2, h - 4, h - 4, g.getBlackBrush());
   }
 }
 
 /** Create vertical radio widget. */
-VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters, float scale)
+VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters, float scale, GraphicProperties& gp)
 {
   // Set id of the widget
   id = PD_VRADIO;
@@ -399,6 +411,9 @@ VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters, float scale)
   // Save amount of radio buttons and adjust maximal value
   radioButtons = max;
   max--;
+
+  // Set graphic properties
+  g = gp;
 }
 
 /** Paint vertical radio widget. */
@@ -411,7 +426,7 @@ void VerticalRadioWidget::paint(QPainter& p)
 
     // Mark current radio button
     if(i == value)
-      p.fillRect(x + 2, y + w * i + 2, w - 4, w - 4, blackBrush);
+      p.fillRect(x + 2, y + w * i + 2, w - 4, w - 4, g.getBlackBrush());
   }
 }
 
@@ -463,7 +478,7 @@ void NumberWidget::paint(QPainter& p)
 }
 
 /** Create symbol widget. */
-SymbolWidget::SymbolWidget(QStringList& parameters, float scale)
+SymbolWidget::SymbolWidget(QStringList& parameters, float scale, GraphicProperties& gp)
 {
   // Set id of the widget
   id = PD_SYMBOL;
@@ -474,6 +489,9 @@ SymbolWidget::SymbolWidget(QStringList& parameters, float scale)
 
   // Set name
   name = parameters[9];
+
+  // Set graphic properties
+  g = gp;
 }
 
 /** Paint symbol widget. */
@@ -1573,17 +1591,17 @@ void PDQt::createWidget(QString& line)
   if(line.contains("floatatom") && line.contains("pod_"))
     widgets.append(new NumberWidget(tokens, screenMultiplier, gp));
   else if(line.contains("symbolatom") && line.contains("pod_"))
-    widgets.append(new SymbolWidget(tokens, screenMultiplier));
+    widgets.append(new SymbolWidget(tokens, screenMultiplier, gp));
   else if(line.contains("vsl") && line.contains("pod_"))
-    widgets.append(new VerticalSliderWidget(tokens, screenMultiplier));
+    widgets.append(new VerticalSliderWidget(tokens, screenMultiplier, gp));
   else if(line.contains("hsl") && line.contains("pod_"))
-    widgets.append(new HorizontalSliderWidget(tokens, screenMultiplier));
+    widgets.append(new HorizontalSliderWidget(tokens, screenMultiplier, gp));
   else if(line.contains("vradio") && line.contains("pod_"))
-    widgets.append(new VerticalRadioWidget(tokens, screenMultiplier));
+    widgets.append(new VerticalRadioWidget(tokens, screenMultiplier, gp));
   else if(line.contains("hradio") && line.contains("pod_"))
-    widgets.append(new HorizontalRadioWidget(tokens, screenMultiplier));
+    widgets.append(new HorizontalRadioWidget(tokens, screenMultiplier, gp));
   else if(line.contains("bng") && line.contains("pod_"))
-    widgets.append(new BangWidget(tokens, screenMultiplier));
+    widgets.append(new BangWidget(tokens, screenMultiplier, gp));
   else if(line.contains("text"))
     widgets.append(new TextWidget(tokens, screenMultiplier, gp));
 }
