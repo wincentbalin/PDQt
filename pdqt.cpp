@@ -912,7 +912,7 @@ HelpDialog::HelpDialog(QWidget* parent, const char* name, WFlags f) :
     "  <a href=\"#contents\">Back to contents</a><br/>"
     ""
     "<h2><a name=\"standardinterface\">Standard interface</a></h2><br/>"
-    "  The standard interface presentes itself like a wheel. You may use"
+    "  The standard interface presents itself like a wheel. You may use"
     "  four buttons (<b>Menu</b>, <b>Forward</b>, <b>Play</b> and <b>Rewind</b>)"
     "  to activate four functions, and if you look at the table in the previous"
     "  section, you will notice that the plays of the mentioned keys on the wheel"
