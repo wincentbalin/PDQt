@@ -132,15 +132,19 @@ namespace pdqt
   class GraphicProperties
   {
   public:
-    GraphicProperties() { blackBrush = QBrush(Qt::black); }
+    static GraphicProperties& getInstance() { return instance; }
     QBrush getBlackBrush() { return blackBrush; }
     void setFont(QFont& f) { font = f; }
     QFont& getFont() { return font; }
     void setFontMetrics(QFontMetrics* fm) { fontMetrics = fm; }
     QFontMetrics* getFontMetrics() { return fontMetrics; }
   private:
+    // singleton parts
+    GraphicProperties() { blackBrush = QBrush(Qt::black); }
+    static GraphicProperties instance;
+    // single instance of a black brush
     QBrush blackBrush;
-    //
+    // font variables
     QFont font;
     QFontMetrics* fontMetrics;
   };
