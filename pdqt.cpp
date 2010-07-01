@@ -416,7 +416,7 @@ void VerticalRadioWidget::paint(QPainter& p)
 }
 
 /** Create number widget. */
-NumberWidget::NumberWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics)
+NumberWidget::NumberWidget(QStringList& parameters, float scale, GraphicProperties& gp)
 {
   // Set id of the widget
   id = PD_NUMBER;
@@ -444,9 +444,8 @@ NumberWidget::NumberWidget(QStringList& parameters, float scale, QFont& widgetFo
   // Set name
   name = parameters[9];
 
-  // Set font and it's metrics
-  font = widgetFont;
-  fm = widgetFontMetrics;
+  // Set graphic properties
+  g = gp;
 }
 
 /** Paint number widget. */
@@ -456,11 +455,11 @@ void NumberWidget::paint(QPainter& p)
   sv = QString::number(value, 'f', 1); 
 
   // Set font
-  p.setFont(font);
+  p.setFont(g.getFont());
 
   // Draw contour and text
   p.drawPolyline(contour);
-  p.drawText(x + 12, y + fm->height() + 12, sv, sv.length());
+  p.drawText(x + 12, y + g.getFontMetrics()->height() + 12, sv, sv.length());
 }
 
 /** Create symbol widget. */
@@ -483,7 +482,7 @@ void SymbolWidget::paint(QPainter&)
 }
 
 /** Create text widget. */
-TextWidget::TextWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics)
+TextWidget::TextWidget(QStringList& parameters, float scale, GraphicProperties& gp)
 {
   // Set id of the widget
   id = PD_TEXT;
@@ -502,26 +501,24 @@ TextWidget::TextWidget(QStringList& parameters, float scale, QFont& widgetFont, 
   // Cut off the last semicolon
   text.truncate(text.length()-1);
 
-  // Set font and it's metrics
-  font = widgetFont;
-  fm = widgetFontMetrics;
+  // Set graphic properties
+  g = gp;
 }
 
 /** Paint text widget. */
 void TextWidget::paint(QPainter& p)
 {
-  p.setFont(font);
-  p.drawText(x + 12, y + fm->height() + 12, text, text.length());
+  p.setFont(g.getFont());
+  p.drawText(x + 12, y + g.getFontMetrics()->height() + 12, text, text.length());
 }
 
 /** Create standard user interface. */
-StandardView::StandardView(Controller* controller_, int width_, int height_, QFont* font_, QFontMetrics* fm_)
+StandardView::StandardView(Controller* controller_, int width_, int height_, GraphicProperties* gp_)
 {
   controller = controller_;
   width = width_;
   height = height_;
-  font = font_;
-  fm = fm_;
+  gp = gp_;
 }
 
 /** Paint standard user interface. */
@@ -592,7 +589,8 @@ void StandardView::repaint(QPainter& p)
   // Draw scroll wheel value
   p.setPen(Qt::black);
   QString sv(QString("%1").arg(controller->wheelValue()));
-  p.setFont(*font);
+  p.setFont(gp->getFont());
+  QFontMetrics* fm = gp->getFontMetrics();
   p.drawText(width / 2 - fm->width(sv) / 2,
              height / 2 + fm->height() / 2,
              sv,
@@ -1022,9 +1020,11 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   // Initialize input
   controller = new SourAppleController(this);
 
-  // Initialize standard GUI font
-  font = QFont("helvetica", 24, QFont::Bold);
-  fm = new QFontMetrics(font);
+  // Initialize graphic properties, needed for the standard GUI
+  QFont font = QFont("helvetica", 24, QFont::Bold);
+  QFontMetrics* fm = new QFontMetrics(font);
+  gp.setFont(font);
+  gp.setFontMetrics(fm);
 
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
@@ -1066,9 +1066,6 @@ PDQt::~PDQt()
 
   // Delete controller
   delete controller;
-
-  // Delete created font metrics
-  delete fm;
 }
 
 /** Mark key as pressed. */
@@ -1264,7 +1261,7 @@ void PDQt::load(const char* filename)
   connectPD();
   // (Re-)Create view
   if(isStandardView())
-    view = new StandardView(controller, screenWidth, screenHeight, &font, fm);
+    view = new StandardView(controller, screenWidth, screenHeight, &gp);
   else
     view = new CustomView(&widgets);
 
@@ -1574,7 +1571,7 @@ void PDQt::createWidget(QString& line)
 
   // Check whether line contains widget information; if so, create it
   if(line.contains("floatatom") && line.contains("pod_"))
-    widgets.append(new NumberWidget(tokens, screenMultiplier, font, fm));
+    widgets.append(new NumberWidget(tokens, screenMultiplier, gp));
   else if(line.contains("symbolatom") && line.contains("pod_"))
     widgets.append(new SymbolWidget(tokens, screenMultiplier));
   else if(line.contains("vsl") && line.contains("pod_"))
@@ -1588,7 +1585,7 @@ void PDQt::createWidget(QString& line)
   else if(line.contains("bng") && line.contains("pod_"))
     widgets.append(new BangWidget(tokens, screenMultiplier));
   else if(line.contains("text"))
-    widgets.append(new TextWidget(tokens, screenMultiplier, font, fm));
+    widgets.append(new TextWidget(tokens, screenMultiplier, gp));
 }
 
 /** Program entry. */

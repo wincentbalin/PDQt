@@ -198,8 +198,7 @@ namespace pdqt
     virtual float getValue() { return 0; }
     virtual void setValue(float) {}
   protected:
-    QFont font;
-    QFontMetrics* fm;
+    GraphicProperties g;
   };
 
   class SliderWidget : public GeometricWidget
@@ -252,11 +251,10 @@ namespace pdqt
   class NumberWidget : public GeometricWidget
   {
   public:
-    NumberWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
+    NumberWidget(QStringList& parameters, float scale, GraphicProperties& gp);
     virtual void paint(QPainter& p);
   protected:
-    QFont font;
-    QFontMetrics* fm;
+    GraphicProperties g;
   private:
     QPointArray contour;
     QString sv; // string value
@@ -272,7 +270,7 @@ namespace pdqt
   class TextWidget : public TextualWidget
   {
   public:
-    TextWidget(QStringList& parameters, float scale, QFont& widgetFont, QFontMetrics* widgetFontMetrics);
+    TextWidget(QStringList& parameters, float scale, GraphicProperties& gp);
     virtual void paint(QPainter& p);
   private:
     QString text;
@@ -345,18 +343,18 @@ namespace pdqt
   protected:
     int width;
     int height;
-    QFont* font;
-    QFontMetrics* fm;
+    GraphicProperties gp;
   };
 
   class StandardView : virtual public View
   {
   public:
-    StandardView(Controller* controller_, int width_, int height_, QFont* font_, QFontMetrics* fm_);
+    StandardView(Controller* controller_, int width_, int height_, GraphicProperties* gp_);
     virtual ~StandardView() {}
     void repaint(QPainter& p);
   private:
     Controller* controller;
+    GraphicProperties* gp;
   };
 
   class CustomView : virtual public View
@@ -506,8 +504,7 @@ namespace pdqt
     bool connected; // Is GUI connected to PD?
     bool paused; // Is PD paused?
     //
-    QFont font;
-    QFontMetrics* fm;
+    GraphicProperties gp;
     //
     QString configFilename;
     Config* config;
