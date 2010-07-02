@@ -227,12 +227,13 @@ int SourAppleController::wheelValue()
 
 
 /** Create bang widget. */
-BangWidget::BangWidget(QStringList& parameters, float scale, GraphicProperties& gp)
+BangWidget::BangWidget(QStringList& parameters)
 {
   // Set id of the widget
   id = PD_BANG;
 
   // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   w = (int) (parameters[5].toInt() * scale);
@@ -244,9 +245,6 @@ BangWidget::BangWidget(QStringList& parameters, float scale, GraphicProperties& 
 
   // Set name
   name = parameters[10];
-
-  // Set graphic properties
-  g = gp;
 }
 
 /** Paint bang widget. */
@@ -262,7 +260,8 @@ void BangWidget::paint(QPainter& p)
   if(value == 1)
   {
     QBrush backupBrush = p.brush();
-    p.setBrush(g.getBlackBrush());
+    GraphicProperties gp = GraphicProperties::getInstance();
+    p.setBrush(gp.getBlackBrush());
   }
 
   // Draw ellipse, filled if selected
@@ -277,12 +276,13 @@ void BangWidget::paint(QPainter& p)
 }
 
 /** Create horizontal slider widget. */
-HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters, float scale, GraphicProperties& gp)
+HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters)
 {
   // Set id of the widget
   id = PD_HSLIDER;
 
   // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   w = (int) (parameters[5].toInt() * scale);
@@ -294,9 +294,6 @@ HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters, float sc
 
   // Set name
   name = parameters[12];
-
-  // Set graphic properties
-  g = gp;
 }
 
 /** Paint horizontal slider widget. */
@@ -309,16 +306,18 @@ void HorizontalSliderWidget::paint(QPainter& p)
   position = (int) ((float) w / max - min) * (int) (max - value);
 
   // Draw slider
-  p.fillRect(x + w - position, y, 2, h, g.getBlackBrush());
+  GraphicProperties gp = GraphicProperties::getInstance();
+  p.fillRect(x + w - position, y, 2, h, gp.getBlackBrush());
 }
 
 /** Create vertical slider widget. */
-VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters, float scale, GraphicProperties& gp)
+VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters)
 {
   // Set id of the widget
   id = PD_VSLIDER;
 
   // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   w = (int) (parameters[5].toInt() * scale);
@@ -330,9 +329,6 @@ VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters, float scale,
 
   // Set name
   name = parameters[12];
-
-  // Set graphic properties
-  g = gp;
 }
 
 /** Paint vertical slider widget. */
@@ -345,11 +341,12 @@ void VerticalSliderWidget::paint(QPainter& p)
   position = (int) ((float) h / max - min) * (int) (max - value);
 
   // Draw slider
-  p.fillRect(x, y + position, 2, h, g.getBlackBrush());
+  GraphicProperties gp = GraphicProperties::getInstance();
+  p.fillRect(x, y + position, 2, h, gp.getBlackBrush());
 }
 
 /** Create horizontal radio widget. */
-HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters, float scale, GraphicProperties& gp)
+HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters)
 {
   // Set id of the widget
   id = PD_HRADIO;
@@ -359,6 +356,7 @@ HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters, float scal
   max = parameters[8].toInt();
 
   // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   h = (int) (parameters[5].toInt() * scale);
@@ -370,9 +368,6 @@ HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters, float scal
   // Save amount of radio buttons and adjust maximal value
   radioButtons = max;
   max--;
-
-  // Set graphic properties
-  g = gp;
 }
 
 /** Paint horizontal radio widget. */
@@ -385,12 +380,15 @@ void HorizontalRadioWidget::paint(QPainter& p)
 
     // Mark current radio button
     if(i == value)
-      p.fillRect(x + h * i + 2, y + 2, h - 4, h - 4, g.getBlackBrush());
+    {
+      GraphicProperties gp = GraphicProperties::getInstance();
+      p.fillRect(x + h * i + 2, y + 2, h - 4, h - 4, gp.getBlackBrush());
+    }
   }
 }
 
 /** Create vertical radio widget. */
-VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters, float scale, GraphicProperties& gp)
+VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters)
 {
   // Set id of the widget
   id = PD_VRADIO;
@@ -400,6 +398,7 @@ VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters, float scale, G
   max = parameters[8].toInt();
 
   // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   w = (int) (parameters[5].toInt() * scale);
@@ -411,9 +410,6 @@ VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters, float scale, G
   // Save amount of radio buttons and adjust maximal value
   radioButtons = max;
   max--;
-
-  // Set graphic properties
-  g = gp;
 }
 
 /** Paint vertical radio widget. */
@@ -426,17 +422,22 @@ void VerticalRadioWidget::paint(QPainter& p)
 
     // Mark current radio button
     if(i == value)
-      p.fillRect(x + 2, y + w * i + 2, w - 4, w - 4, g.getBlackBrush());
+    {
+      GraphicProperties gp = GraphicProperties::getInstance();
+      p.fillRect(x + 2, y + w * i + 2, w - 4, w - 4, gp.getBlackBrush());
+    }
   }
 }
 
 /** Create number widget. */
-NumberWidget::NumberWidget(QStringList& parameters, float scale, GraphicProperties& gp)
+NumberWidget::NumberWidget(QStringList& parameters)
 {
   // Set id of the widget
   id = PD_NUMBER;
 
   // Set dimensions
+  GraphicProperties gp = GraphicProperties::getInstance();
+  float scale = gp.getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   w = (int) (parameters[4].toInt() * 7 * scale);
@@ -458,9 +459,6 @@ NumberWidget::NumberWidget(QStringList& parameters, float scale, GraphicProperti
 
   // Set name
   name = parameters[9];
-
-  // Set graphic properties
-  g = gp;
 }
 
 /** Paint number widget. */
@@ -469,29 +467,24 @@ void NumberWidget::paint(QPainter& p)
   // Convert value to string
   sv = QString::number(value, 'f', 1); 
 
-  // Set font
-  p.setFont(g.getFont());
-
   // Draw contour and text
   p.drawPolyline(contour);
-  p.drawText(x + 12, y + g.getFontMetrics()->height() + 12, sv, sv.length());
+  p.drawText(x + 12, y + p.fontMetrics().height() + 12, sv, sv.length());
 }
 
 /** Create symbol widget. */
-SymbolWidget::SymbolWidget(QStringList& parameters, float scale, GraphicProperties& gp)
+SymbolWidget::SymbolWidget(QStringList& parameters)
 {
   // Set id of the widget
   id = PD_SYMBOL;
 
   // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
 
   // Set name
   name = parameters[9];
-
-  // Set graphic properties
-  g = gp;
 }
 
 /** Paint symbol widget. */
@@ -500,12 +493,13 @@ void SymbolWidget::paint(QPainter&)
 }
 
 /** Create text widget. */
-TextWidget::TextWidget(QStringList& parameters, float scale, GraphicProperties& gp)
+TextWidget::TextWidget(QStringList& parameters)
 {
   // Set id of the widget
   id = PD_TEXT;
 
   // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
 
@@ -518,25 +512,21 @@ TextWidget::TextWidget(QStringList& parameters, float scale, GraphicProperties& 
 
   // Cut off the last semicolon
   text.truncate(text.length()-1);
-
-  // Set graphic properties
-  g = gp;
 }
 
 /** Paint text widget. */
 void TextWidget::paint(QPainter& p)
 {
-  p.setFont(g.getFont());
-  p.drawText(x + 12, y + g.getFontMetrics()->height() + 12, text, text.length());
+  GraphicProperties gp = GraphicProperties::getInstance();
+  p.drawText(x + 12, y + p.fontMetrics().height() + 12, text, text.length());
 }
 
 /** Create standard user interface. */
-StandardView::StandardView(Controller* controller_, int width_, int height_, GraphicProperties* gp_)
+StandardView::StandardView(Controller* controller_, int width_, int height_)
 {
   controller = controller_;
   width = width_;
   height = height_;
-  gp = gp_;
 }
 
 /** Paint standard user interface. */
@@ -607,10 +597,9 @@ void StandardView::repaint(QPainter& p)
   // Draw scroll wheel value
   p.setPen(Qt::black);
   QString sv(QString("%1").arg(controller->wheelValue()));
-  p.setFont(gp->getFont());
-  QFontMetrics* fm = gp->getFontMetrics();
-  p.drawText(width / 2 - fm->width(sv) / 2,
-             height / 2 + fm->height() / 2,
+  QFontMetrics fm = p.fontMetrics();
+  p.drawText(width / 2 - fm.width(sv) / 2,
+             height / 2 + fm.height() / 2,
              sv,
              sv.length());
 }
@@ -1038,10 +1027,12 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   // Initialize input
   controller = new SourAppleController(this);
 
+  // Initialize standard GUI font
+  font = QFont("helvetica", 24, QFont::Bold);
+
+
   // Initialize graphic properties
   GraphicProperties gp = GraphicProperties::getInstance();
-  QFont font = QFont("helvetica", 24, QFont::Bold);
-  gp.setFont(font);
 
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
@@ -1130,7 +1121,8 @@ void PDQt::resizeEvent(QResizeEvent *)
   }
 
   // Calculate size factor
-  screenMultiplier = screenWidth / 160.0f;
+  float screenMultiplier = screenWidth / 160.0f;
+  GraphicProperties::getInstance().setScale(screenMultiplier);
 }
 
 /** Paint GUI. */
@@ -1143,10 +1135,9 @@ void PDQt::paintEvent(QPaintEvent*)
   paintPixmap.fill();
   QPainter p(&paintPixmap);
 
-  QBrush brush(Qt::black); // Solid black
-
   p.setBackgroundColor(white);
   p.setPen(black);
+  p.setFont(font);
 
   view->repaint(p);
 
@@ -1278,7 +1269,7 @@ void PDQt::load(const char* filename)
   connectPD();
   // (Re-)Create view
   if(isStandardView())
-    view = new StandardView(controller, screenWidth, screenHeight, &gp);
+    view = new StandardView(controller, screenWidth, screenHeight);
   else
     view = new CustomView(&widgets);
 
@@ -1588,21 +1579,21 @@ void PDQt::createWidget(QString& line)
 
   // Check whether line contains widget information; if so, create it
   if(line.contains("floatatom") && line.contains("pod_"))
-    widgets.append(new NumberWidget(tokens, screenMultiplier, gp));
+    widgets.append(new NumberWidget(tokens));
   else if(line.contains("symbolatom") && line.contains("pod_"))
-    widgets.append(new SymbolWidget(tokens, screenMultiplier, gp));
+    widgets.append(new SymbolWidget(tokens));
   else if(line.contains("vsl") && line.contains("pod_"))
-    widgets.append(new VerticalSliderWidget(tokens, screenMultiplier, gp));
+    widgets.append(new VerticalSliderWidget(tokens));
   else if(line.contains("hsl") && line.contains("pod_"))
-    widgets.append(new HorizontalSliderWidget(tokens, screenMultiplier, gp));
+    widgets.append(new HorizontalSliderWidget(tokens));
   else if(line.contains("vradio") && line.contains("pod_"))
-    widgets.append(new VerticalRadioWidget(tokens, screenMultiplier, gp));
+    widgets.append(new VerticalRadioWidget(tokens));
   else if(line.contains("hradio") && line.contains("pod_"))
-    widgets.append(new HorizontalRadioWidget(tokens, screenMultiplier, gp));
+    widgets.append(new HorizontalRadioWidget(tokens));
   else if(line.contains("bng") && line.contains("pod_"))
-    widgets.append(new BangWidget(tokens, screenMultiplier, gp));
+    widgets.append(new BangWidget(tokens));
   else if(line.contains("text"))
-    widgets.append(new TextWidget(tokens, screenMultiplier, gp));
+    widgets.append(new TextWidget(tokens));
 }
 
 /** Program entry. */

@@ -132,20 +132,17 @@ namespace pdqt
   class GraphicProperties
   {
   public:
-    static GraphicProperties& getInstance() { return instance; }
-    QBrush getBlackBrush() { return blackBrush; }
-    void setFont(QFont& f) { font = f; fontMetrics = new QFontMetrics(font); }
-    QFont& getFont() { return font; }
-    QFontMetrics* getFontMetrics() { return fontMetrics; }
+    static GraphicProperties& getInstance() { static GraphicProperties instance; return instance; }
+    void setScale(const float f) { scale = f; }
+    float getScale() { return scale; }
+    const QBrush& getBlackBrush() { return blackBrush; }
   private:
     // singleton parts
     GraphicProperties() { blackBrush = QBrush(Qt::black); }
-    static GraphicProperties instance;
+    // scaling factor
+    float scale;
     // single instance of a black brush
     QBrush blackBrush;
-    // font variables
-    QFont font;
-    QFontMetrics* fontMetrics;
   };
 
   class Widget
@@ -177,14 +174,12 @@ namespace pdqt
     virtual int maxValue() { return max; }
     virtual float getValue() { return value; }
     virtual void setValue(float value_) { value = value_; }
-    virtual void setGraphicProperties(GraphicProperties& gp) { g = gp; }
   protected:
     int w;
     int h;
     int min;
     int max;
     float value;
-    GraphicProperties g;
     bool selected;
   };
 
@@ -200,8 +195,6 @@ namespace pdqt
     virtual int maxValue() { return 0; }
     virtual float getValue() { return 0; }
     virtual void setValue(float) {}
-  protected:
-    GraphicProperties g;
   };
 
   class SliderWidget : public GeometricWidget
@@ -219,45 +212,43 @@ namespace pdqt
   class BangWidget : public GeometricWidget
   {
   public:
-    BangWidget(QStringList& parameters, float scale, GraphicProperties& gp);
+    BangWidget(QStringList& parameters);
     virtual void paint(QPainter& p);
   };
 
   class HorizontalSliderWidget : public SliderWidget
   {
   public:
-    HorizontalSliderWidget(QStringList& parameters, float scale, GraphicProperties& gp);
+    HorizontalSliderWidget(QStringList& parameters);
     virtual void paint(QPainter& p);
   };
 
   class VerticalSliderWidget : public SliderWidget
   {
   public:
-    VerticalSliderWidget(QStringList& parameters, float scale, GraphicProperties& gp);
+    VerticalSliderWidget(QStringList& parameters);
     virtual void paint(QPainter& p);
   };
 
   class HorizontalRadioWidget : public RadioWidget
   {
   public:
-    HorizontalRadioWidget(QStringList& parameters, float scale, GraphicProperties& gp);
+    HorizontalRadioWidget(QStringList& parameters);
     virtual void paint(QPainter& p);
   };
 
   class VerticalRadioWidget : public RadioWidget
   {
   public:
-    VerticalRadioWidget(QStringList& parameters, float scale, GraphicProperties& gp);
+    VerticalRadioWidget(QStringList& parameters);
     virtual void paint(QPainter& p);
   };
 
   class NumberWidget : public GeometricWidget
   {
   public:
-    NumberWidget(QStringList& parameters, float scale, GraphicProperties& gp);
+    NumberWidget(QStringList& parameters);
     virtual void paint(QPainter& p);
-  protected:
-    GraphicProperties g;
   private:
     QPointArray contour;
     QString sv; // string value
@@ -266,17 +257,35 @@ namespace pdqt
   class SymbolWidget : public TextualWidget
   {
   public:
-    SymbolWidget(QStringList& parameters, float scale, GraphicProperties& gp);
+    SymbolWidget(QStringList& parameters);
     virtual void paint(QPainter&);
   };
 
   class TextWidget : public TextualWidget
   {
   public:
-    TextWidget(QStringList& parameters, float scale, GraphicProperties& gp);
+    TextWidget(QStringList& parameters);
     virtual void paint(QPainter& p);
   private:
     QString text;
+  };
+
+
+  class MessageSender
+  {
+  public:
+    virtual void sendMessage(const char*) = 0;
+  };
+
+  class Main : public MessageSender
+  {
+  public:
+    virtual bool patchLoaded() const = 0;
+    virtual bool pdRunning() const = 0;
+    virtual void pdPause(bool pause) = 0;
+    virtual bool pdPaused() const = 0;
+    virtual void setStatus(const char*) = 0;
+    virtual bool isStandardView() const = 0;
   };
 
 
@@ -319,7 +328,6 @@ namespace pdqt
     virtual int  wheelValue() = 0;
   };
 
-  class Main;
   class SourAppleController : virtual public Controller
   {
   public:
@@ -337,7 +345,6 @@ namespace pdqt
     Main* main;
   };
 
-
   class View
   {
   public:
@@ -346,18 +353,16 @@ namespace pdqt
   protected:
     int width;
     int height;
-    GraphicProperties gp;
   };
 
   class StandardView : virtual public View
   {
   public:
-    StandardView(Controller* controller_, int width_, int height_, GraphicProperties* gp_);
+    StandardView(Controller* controller_, int width_, int height_);
     virtual ~StandardView() {}
     void repaint(QPainter& p);
   private:
     Controller* controller;
-    GraphicProperties* gp;
   };
 
   class CustomView : virtual public View
@@ -368,23 +373,6 @@ namespace pdqt
     void repaint(QPainter&);
   private:
     QValueList<Widget*>* widgets;
-  };
-
-  class MessageSender
-  {
-  public:
-    virtual void sendMessage(const char*) = 0;
-  };
-
-  class Main : virtual public MessageSender
-  {
-  public:
-    virtual bool patchLoaded() const = 0;
-    virtual bool pdRunning() const = 0;
-    virtual void pdPause(bool pause) = 0;
-    virtual bool pdPaused() const = 0;
-    virtual void setStatus(const char*) = 0;
-    virtual bool isStandardView() const = 0;
   };
 
 
@@ -484,7 +472,6 @@ namespace pdqt
     //
     int screenWidth;
     int screenHeight;
-    float screenMultiplier;
     QLabel* status;
     QPixmap paintPixmap;
     //
@@ -502,12 +489,12 @@ namespace pdqt
     QSocketDevice* pdRx;
     QSocketNotifier* pdReadNotifier;
     //
+    QFont font;
+    //
     bool loaded; // Is a patch loaded?
     bool running; // Is PD running?
     bool connected; // Is GUI connected to PD?
     bool paused; // Is PD paused?
-    //
-    GraphicProperties gp;
     //
     QString configFilename;
     Config* config;
