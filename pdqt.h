@@ -86,6 +86,89 @@ namespace pdqt
   };
 
 
+  namespace widget
+  {
+    namespace properties
+    {
+      class Base
+      {
+
+      };
+
+      class Geometric : public Base
+      {
+
+      };
+
+      class Textual : public Base
+      {
+
+      };
+
+      class Bang : public Geometric
+      {
+
+      };
+
+      class Slider : public Geometric
+      {
+
+      };
+
+      class Radio : public Geometric
+      {
+
+      };
+
+    }
+
+    class Base
+    {
+      virtual void paint(QPainter&) = 0;
+    };
+
+    class Bang : public Base
+    {
+
+    };
+
+    class HorizontalSlider
+    {
+
+    };
+
+    class VerticalSlider
+    {
+
+    };
+
+    class HorizontalRadio
+    {
+
+    };
+
+    class VerticalRadio
+    {
+
+    };
+
+    class Number
+    {
+
+    };
+
+    class Text
+    {
+
+    };
+
+    class Symbol
+    {
+
+    };
+  }
+
+
   class WidgetProperties
   {
   public:
