@@ -322,7 +322,7 @@ void widget::HorizontalSlider::paint(QPainter& p)
   p.drawRect(x, y, width, height);
 
   // Draw indicator
-  p.fillRect(x + width - position, y, 2, height, blackBrush);
+  p.fillRect(x + width - position, y, IndicatorThickness, height, blackBrush);
 }
 
 void widget::properties::Radio::setValue(float f)

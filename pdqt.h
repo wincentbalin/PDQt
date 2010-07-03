@@ -126,6 +126,7 @@ namespace pdqt
         void setValue(float f);
       protected:
         int position;
+        const static unsigned int IndicatorThickness = 2;
       };
 
       class Radio : public Geometric
