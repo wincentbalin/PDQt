@@ -178,12 +178,14 @@ namespace pdqt
 
     class Number : public Base
     {
-
+    private:
+      QPointArray contour;
     };
 
     class Text : public Base
     {
-
+    private:
+      QString text;
     };
 
     class Symbol : public Base
