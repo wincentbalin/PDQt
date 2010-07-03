@@ -371,6 +371,50 @@ void widget::properties::Radio::setValue(float f)
   value = f;
 }
 
+widget::HorizontalRadio::HorizontalRadio(QStringList& parameters)
+{
+  // Set minimal and maximal values first (needed for dimension calculations)
+  min = 0;
+  max = parameters[8].toInt();
+
+  // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  height = (int) (parameters[5].toInt() * scale);
+  width = height * max;
+
+  // Set name
+  name_ = parameters[10];
+
+  // Save amount of radio buttons and adjust maximal value
+  buttons = max;
+  max = max - 1; // Because first index is 0
+
+  // Set black brush
+  GraphicProperties gp = GraphicProperties::getInstance();
+  blackBrush = gp.getBlackBrush();
+}
+
+void widget::HorizontalRadio::paint(QPainter& p)
+{
+  for(unsigned int i = 0; i < buttons; i++)
+  {
+    // Draw a radio button
+    p.drawRect(x + height * i, y, height, height);
+
+    // Mark current radio button
+    if(i == value)
+    {
+      p.fillRect(x + height * i + MarkMargin,
+                 y + MarkMargin,
+                 height - MarkMargin * 2,
+                 height - MarkMargin * 2,
+                 blackBrush);
+    }
+  }
+}
+
 
 /** Create bang widget. */
 BangWidget::BangWidget(QStringList& parameters)
