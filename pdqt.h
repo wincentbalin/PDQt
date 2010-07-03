@@ -137,6 +137,8 @@ namespace pdqt
     class Base
     {
     public:
+      /** Get name of the widget. */
+      virtual QString name(void) const = 0;
       /** Set value of the widget. */
       virtual void setValue(float f) = 0;
       /** Paint the widget. */
