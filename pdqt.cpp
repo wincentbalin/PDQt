@@ -295,6 +295,36 @@ void widget::properties::Slider::setValue(float f)
   position = (int) ((float) width / max - min) * (int) (max - value);
 }
 
+widget::HorizontalSlider::HorizontalSlider(QStringList& parameters)
+{
+  // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  width = (int) (parameters[5].toInt() * scale);
+  height = (int) (parameters[6].toInt() * scale);
+
+  // Set minimal and maximal values
+  min = parameters[7].toInt();
+  max = parameters[8].toInt();
+
+  // Set name
+  name_ = parameters[12];
+
+  // Set black brush
+  GraphicProperties gp = GraphicProperties::getInstance();
+  blackBrush = gp.getBlackBrush();
+}
+
+void widget::HorizontalSlider::paint(QPainter& p)
+{
+  // Draw field
+  p.drawRect(x, y, width, height);
+
+  // Draw indicator
+  p.fillRect(x + width - position, y, 2, height, blackBrush);
+}
+
 void widget::properties::Radio::setValue(float f)
 {
   // Restrict range of values
