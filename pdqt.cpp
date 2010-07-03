@@ -459,6 +459,49 @@ void widget::VerticalRadio::paint(QPainter& p)
   }
 }
 
+widget::Number::Number(QStringList& parameters)
+{
+  // Set dimensions
+  GraphicProperties gp = GraphicProperties::getInstance();
+  float scale = gp.getScale();
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  width = (int) (parameters[4].toInt() * 7 * scale);
+  height = (int) (16 * scale);
+
+  // Create contour
+  contour = QPointArray(6);
+
+  // Set contour
+  contour.setPoint(0, QPoint(x, y));
+  contour.setPoint(1, QPoint(x + width - 5 * (int) scale, y));
+  contour.setPoint(2, QPoint(x + width, y + 5 * (int) scale));
+  contour.setPoint(3, QPoint(x + width, y + height));
+  contour.setPoint(4, QPoint(x, y + height));
+  contour.setPoint(5, QPoint(x, y));
+
+  // Set value
+  value = 0.0f;
+
+  // Set name
+  name_ = parameters[9];
+}
+
+void widget::Number::setValue(float f)
+{
+  value = f;
+}
+
+void widget::Number::paint(QPainter& p)
+{
+  // Convert value to string
+  sv = QString::number(value, 'f', 1);
+
+  // Draw contour and text
+  p.drawPolyline(contour);
+  p.drawText(x + 12, y + p.fontMetrics().height() + 12, sv, sv.length());
+}
+
 
 /** Create bang widget. */
 BangWidget::BangWidget(QStringList& parameters)

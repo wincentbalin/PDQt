@@ -196,10 +196,15 @@ namespace pdqt
       QBrush blackBrush;
     };
 
-    class Number : public Base
+    class Number : public Base, public properties::Geometric
     {
+    public:
+      Number(QStringList& parameters);
+      void setValue(float f);
+      void paint(QPainter&);
     private:
       QPointArray contour;
+      QString sv;
     };
 
     class Text : public Base
