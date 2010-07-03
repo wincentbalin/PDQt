@@ -148,7 +148,6 @@ namespace pdqt
     {
     public:
       Bang(QStringList& parameters);
-      virtual ~Bang() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter&);
@@ -161,7 +160,6 @@ namespace pdqt
     {
     public:
       HorizontalSlider(QStringList& parameters);
-      virtual ~HorizontalSlider() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Slider::setValue(f); }
       void paint(QPainter&);
@@ -173,7 +171,6 @@ namespace pdqt
     {
     public:
       VerticalSlider(QStringList& parameters);
-      virtual ~VerticalSlider() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Slider::setValue(f); }
       void paint(QPainter&);
@@ -185,7 +182,6 @@ namespace pdqt
     {
     public:
       HorizontalRadio(QStringList& parameters);
-      virtual ~HorizontalRadio() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Radio::setValue(f); }
       void paint(QPainter&);
@@ -197,7 +193,6 @@ namespace pdqt
     {
     public:
       VerticalRadio(QStringList& parameters);
-      virtual ~VerticalRadio() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Radio::setValue(f); }
       void paint(QPainter&);
@@ -209,7 +204,6 @@ namespace pdqt
     {
     public:
       Number(QStringList& parameters);
-      virtual ~Number() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter&);
@@ -222,7 +216,6 @@ namespace pdqt
     {
     public:
       Text(QStringList& parameters);
-      virtual ~Text() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Textual::setValue(f); }
       void paint(QPainter&);
@@ -235,7 +228,6 @@ namespace pdqt
     {
     public:
       Symbol(QStringList& parameters);
-      virtual ~Symbol() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter& p);
