@@ -539,6 +539,27 @@ void widget::Text::paint(QPainter& p)
   p.drawText(x + 12, y + p.fontMetrics().height() + 12, text, textLength);
 }
 
+widget::Symbol::Symbol(QStringList& parameters)
+{
+  // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+
+  // Set name
+  name_ = parameters[9];
+}
+
+void widget::Symbol::setValue(float f)
+{
+  (void) f; // No setting of a new value possible
+}
+
+void widget::Symbol::paint(QPainter& p)
+{
+  (void) p; // Symbols do not get painted
+}
+
 
 /** Create bang widget. */
 BangWidget::BangWidget(QStringList& parameters)

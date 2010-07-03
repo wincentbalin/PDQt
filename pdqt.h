@@ -218,9 +218,12 @@ namespace pdqt
       unsigned int textLength;
     };
 
-    class Symbol : public Base
+    class Symbol : public Base, public properties::Base
     {
-
+    public:
+      Symbol(QStringList& parameters);
+      void setValue(float f);
+      void paint(QPainter& p);
     };
   }
 
