@@ -122,12 +122,14 @@ namespace pdqt
 
       class Slider : public Geometric
       {
-
+      protected:
+        int position;
       };
 
       class Radio : public Geometric
       {
-
+      protected:
+        unsigned int buttons;
       };
 
     }
