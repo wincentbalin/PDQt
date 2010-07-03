@@ -133,6 +133,7 @@ namespace pdqt
         void setValue(float f);
       protected:
         unsigned int buttons;
+        const static unsigned int MarkMargin = 2;
       };
 
     }
