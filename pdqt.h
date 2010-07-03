@@ -187,9 +187,13 @@ namespace pdqt
       QBrush blackBrush;
     };
 
-    class VerticalRadio : public Base
+    class VerticalRadio : public Base, public properties::Radio
     {
-
+    public:
+      VerticalRadio(QStringList& parameters);
+      void paint(QPainter&);
+    private:
+      QBrush blackBrush;
     };
 
     class Number : public Base
