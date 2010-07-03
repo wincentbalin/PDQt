@@ -149,6 +149,9 @@ namespace pdqt
       Bang(QStringList& parameters);
       void setValue(float f);
       void paint(QPainter&);
+    private:
+      QBrush backupBrush;
+      QBrush blackBrush;
     };
 
     class HorizontalSlider : public Base

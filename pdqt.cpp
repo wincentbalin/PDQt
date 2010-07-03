@@ -241,22 +241,22 @@ widget::Bang::Bang(QStringList& parameters)
 
   // Set name
   name_ = parameters[10];
+
+  // Set black brush
+  GraphicProperties gp = GraphicProperties::getInstance();
+  blackBrush = gp.getBlackBrush();
 }
 
 void widget::Bang::paint(QPainter& p)
 {
-  // Backup brush
-  QBrush backupBrush;
-
-  // Draw contour
+   // Draw contour
   p.drawRect(x, y, width, height);
 
   // If selected, backup current brush and set solid black one
   if(value == 1)
   {
-    QBrush backupBrush = p.brush();
-    GraphicProperties gp = GraphicProperties::getInstance();
-    p.setBrush(gp.getBlackBrush());
+    backupBrush = p.brush();
+    p.setBrush(blackBrush);
   }
 
   // Draw ellipse, filled if selected
