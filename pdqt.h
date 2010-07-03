@@ -73,24 +73,19 @@ namespace pdqt
     BUTTONS
   };
 
-  enum WidgetID
-  {
-    PD_BANG    = 0,
-    PD_VSLIDER = 1,
-    PD_HSLIDER = 2,
-    PD_VRADIO  = 3,
-    PD_HRADIO  = 4,
-    PD_NUMBER  = 5,
-    PD_SYMBOL  = 6,
-    PD_TEXT    = 7
-  };
-
 
   namespace widget
   {
     namespace properties
     {
-      class Base
+      class Named
+      {
+      public:
+        /** Get name of the widget. */
+        virtual QString name(void) const = 0;
+      };
+
+      class Base : public virtual Named
       {
       public:
         QString name(void) const { return name_; }
@@ -118,6 +113,7 @@ namespace pdqt
 
       class Bang : public Geometric
       {
+      public:
       };
 
       class Slider : public Geometric
@@ -139,21 +135,21 @@ namespace pdqt
       };
     }
 
-    class Base
+    class Widget : public virtual properties::Named
     {
     public:
-      /** Get name of the widget. */
-      virtual QString name(void) const = 0;
       /** Set value of the widget. */
       virtual void setValue(float f) = 0;
       /** Paint the widget. */
       virtual void paint(QPainter&) = 0;
     };
 
-    class Bang : public Base, public properties::Bang
+    class Bang : public Widget, public properties::Bang
     {
     public:
       Bang(QStringList& parameters);
+      virtual ~Bang() {}
+      QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter&);
     private:
@@ -161,46 +157,60 @@ namespace pdqt
       QBrush blackBrush;
     };
 
-    class HorizontalSlider : public Base, public properties::Slider
+    class HorizontalSlider : public Widget, public properties::Slider
     {
     public:
       HorizontalSlider(QStringList& parameters);
+      virtual ~HorizontalSlider() {}
+      QString name(void) const { return properties::Base::name(); }
+      void setValue(float f) { properties::Slider::setValue(f); }
       void paint(QPainter&);
     private:
       QBrush blackBrush;
     };
 
-    class VerticalSlider : public Base, public properties::Slider
+    class VerticalSlider : public Widget, public properties::Slider
     {
     public:
       VerticalSlider(QStringList& parameters);
+      virtual ~VerticalSlider() {}
+      QString name(void) const { return properties::Base::name(); }
+      void setValue(float f) { properties::Slider::setValue(f); }
       void paint(QPainter&);
     private:
       QBrush blackBrush;
     };
 
-    class HorizontalRadio : public Base, public properties::Radio
+    class HorizontalRadio : public Widget, public properties::Radio
     {
     public:
       HorizontalRadio(QStringList& parameters);
+      virtual ~HorizontalRadio() {}
+      QString name(void) const { return properties::Base::name(); }
+      void setValue(float f) { properties::Radio::setValue(f); }
       void paint(QPainter&);
     private:
       QBrush blackBrush;
     };
 
-    class VerticalRadio : public Base, public properties::Radio
+    class VerticalRadio : public Widget, public properties::Radio
     {
     public:
       VerticalRadio(QStringList& parameters);
+      virtual ~VerticalRadio() {}
+      QString name(void) const { return properties::Base::name(); }
+      void setValue(float f) { properties::Radio::setValue(f); }
       void paint(QPainter&);
     private:
       QBrush blackBrush;
     };
 
-    class Number : public Base, public properties::Geometric
+    class Number : public Widget, public properties::Geometric
     {
     public:
       Number(QStringList& parameters);
+      virtual ~Number() {}
+      QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter&);
     private:
@@ -208,68 +218,30 @@ namespace pdqt
       QString sv;
     };
 
-    class Text : public Base, public properties::Textual
+    class Text : public Widget, public properties::Textual
     {
     public:
       Text(QStringList& parameters);
+      virtual ~Text() {}
+      QString name(void) const { return properties::Base::name(); }
+      void setValue(float f) { properties::Textual::setValue(f); }
       void paint(QPainter&);
     private:
       QString text;
       unsigned int textLength;
     };
 
-    class Symbol : public Base, public properties::Base
+    class Symbol : public Widget, public properties::Base
     {
     public:
       Symbol(QStringList& parameters);
+      virtual ~Symbol() {}
+      QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter& p);
     };
   }
 
-
-  class WidgetProperties
-  {
-  public:
-    WidgetProperties() {}
-    int getX() { return x; }
-    void setX(int x_) { x = x_; }
-    int getY() { return y; }
-    void setY(int y_) { y = y_; }
-    QString& getName() { return name; }
-    void setName(QString& name_) { name = name_; }
-  private:
-    int x;
-    int y;
-    QString name;
-    //
-    QPointArray contour;
-    QString sv; // string value
-    //
-    QString text;
-  };
-
-  class GeometricWidgetProperties : public WidgetProperties
-  {
-  public:
-    GeometricWidgetProperties() {}
-    void setWidth(int width) { w = width; }
-    int getWidth() { return w; }
-    void setHeight(int height) { h = height; }
-    int getHeight() { return h; }
-    void setMinValue(int v) { min = v; }
-    int getMinValue() { return min; }
-    void setMaxValue(int v) { max = v; }
-    int getMaxValue() { return max; }
-    void setValue(float v) { value = v; }
-    float getValue() { return value; }
-  private:
-    int w;
-    int h;
-    int min;
-    int max;
-    float value;
-  };
 
   class GraphicProperties
   {
@@ -285,131 +257,6 @@ namespace pdqt
     float scale;
     // single instance of a black brush
     QBrush blackBrush;
-  };
-
-  class Widget
-  {
-  public:
-    virtual ~Widget() {}
-    virtual enum WidgetID getId() = 0;
-    virtual void paint(QPainter&) = 0;
-    virtual QString& getName()    = 0;
-    virtual int minValue()        = 0;
-    virtual int maxValue()        = 0;
-    virtual float getValue()      = 0;
-    virtual void setValue(float)  = 0;
-  protected:
-    enum WidgetID id;
-    WidgetProperties properties;
-    int x;
-    int y;
-    QString name;
-  };
-
-  class GeometricWidget : public Widget
-  {
-  public:
-    virtual ~GeometricWidget() {}
-    virtual enum WidgetID getId() { return id; }
-    virtual QString& getName() { return name; }
-    virtual int minValue() { return min; }
-    virtual int maxValue() { return max; }
-    virtual float getValue() { return value; }
-    virtual void setValue(float value_) { value = value_; }
-  protected:
-    int w;
-    int h;
-    int min;
-    int max;
-    float value;
-    bool selected;
-  };
-
-  class TextualWidget : public Widget
-  {
-  public:
-    TextualWidget() {}
-    virtual ~TextualWidget() {}
-    virtual enum WidgetID getId() { return id; }
-    virtual QString& getName() { return name; }
-    // Place holders
-    virtual int minValue() { return 0; }
-    virtual int maxValue() { return 0; }
-    virtual float getValue() { return 0; }
-    virtual void setValue(float) {}
-  };
-
-  class SliderWidget : public GeometricWidget
-  {
-  protected:
-    int position;
-  };
-
-  class RadioWidget : public GeometricWidget
-  {
-  protected:
-    unsigned int radioButtons;
-  };
-
-  class BangWidget : public GeometricWidget
-  {
-  public:
-    BangWidget(QStringList& parameters);
-    virtual void paint(QPainter& p);
-  };
-
-  class HorizontalSliderWidget : public SliderWidget
-  {
-  public:
-    HorizontalSliderWidget(QStringList& parameters);
-    virtual void paint(QPainter& p);
-  };
-
-  class VerticalSliderWidget : public SliderWidget
-  {
-  public:
-    VerticalSliderWidget(QStringList& parameters);
-    virtual void paint(QPainter& p);
-  };
-
-  class HorizontalRadioWidget : public RadioWidget
-  {
-  public:
-    HorizontalRadioWidget(QStringList& parameters);
-    virtual void paint(QPainter& p);
-  };
-
-  class VerticalRadioWidget : public RadioWidget
-  {
-  public:
-    VerticalRadioWidget(QStringList& parameters);
-    virtual void paint(QPainter& p);
-  };
-
-  class NumberWidget : public GeometricWidget
-  {
-  public:
-    NumberWidget(QStringList& parameters);
-    virtual void paint(QPainter& p);
-  private:
-    QPointArray contour;
-    QString sv; // string value
-  };
-
-  class SymbolWidget : public TextualWidget
-  {
-  public:
-    SymbolWidget(QStringList& parameters);
-    virtual void paint(QPainter&);
-  };
-
-  class TextWidget : public TextualWidget
-  {
-  public:
-    TextWidget(QStringList& parameters);
-    virtual void paint(QPainter& p);
-  private:
-    QString text;
   };
 
 
@@ -510,11 +357,11 @@ namespace pdqt
   class CustomView : virtual public View
   {
   public:
-    CustomView(QValueList<Widget*>*);
+    CustomView(QValueList<widget::Widget*>*);
     virtual ~CustomView() {}
     void repaint(QPainter&);
   private:
-    QValueList<Widget*>* widgets;
+    QValueList<widget::Widget*>* widgets;
   };
 
 
@@ -617,8 +464,8 @@ namespace pdqt
     QLabel* status;
     QPixmap paintPixmap;
     //
-    QValueList<Widget*> widgets;
-    void createWidget(QString& line);
+    QValueList<widget::Widget*> widgets;
+    widget::Widget* createWidget(QString& line);
     View* view;
     Controller* controller;
     //

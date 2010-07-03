@@ -561,301 +561,6 @@ void widget::Symbol::paint(QPainter& p)
 }
 
 
-/** Create bang widget. */
-BangWidget::BangWidget(QStringList& parameters)
-{
-  // Set id of the widget
-  id = PD_BANG;
-
-  // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
-  x = (int) (parameters[2].toInt() * scale);
-  y = (int) (parameters[3].toInt() * scale);
-  w = (int) (parameters[5].toInt() * scale);
-  h = w;
-
-  // Set minimal and maximal values (i.e. false and true)
-  min = 0;
-  max = 1;
-
-  // Set name
-  name = parameters[10];
-}
-
-/** Paint bang widget. */
-void BangWidget::paint(QPainter& p)
-{
-  // Backup brush
-  QBrush backupBrush;
-
-  // Draw contour
-  p.drawRect(x, y, w-1, h-1);
-
-  // If selected, backup current brush and set solid black one
-  if(value == 1)
-  {
-    QBrush backupBrush = p.brush();
-    GraphicProperties gp = GraphicProperties::getInstance();
-    p.setBrush(gp.getBlackBrush());
-  }
-
-  // Draw ellipse, filled if selected
-  p.drawEllipse(x, y, w-1, h-1);
-
-  // If widget selected, deselect and restore brush
-  if(value == 1)
-  {
-    value = 0;
-    p.setBrush(backupBrush);
-  }
-}
-
-/** Create horizontal slider widget. */
-HorizontalSliderWidget::HorizontalSliderWidget(QStringList& parameters)
-{
-  // Set id of the widget
-  id = PD_HSLIDER;
-
-  // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
-  x = (int) (parameters[2].toInt() * scale);
-  y = (int) (parameters[3].toInt() * scale);
-  w = (int) (parameters[5].toInt() * scale);
-  h = (int) (parameters[6].toInt() * scale);
-
-  // Set minimal and maximal values
-  min = parameters[7].toInt();
-  max = parameters[8].toInt();
-
-  // Set name
-  name = parameters[12];
-}
-
-/** Paint horizontal slider widget. */
-void HorizontalSliderWidget::paint(QPainter& p)
-{
-  // Draw contour
-  p.drawRect(x, y, w, h);
-
-  // Calculate position of the slider
-  position = (int) ((float) w / max - min) * (int) (max - value);
-
-  // Draw slider
-  GraphicProperties gp = GraphicProperties::getInstance();
-  p.fillRect(x + w - position, y, 2, h, gp.getBlackBrush());
-}
-
-/** Create vertical slider widget. */
-VerticalSliderWidget::VerticalSliderWidget(QStringList& parameters)
-{
-  // Set id of the widget
-  id = PD_VSLIDER;
-
-  // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
-  x = (int) (parameters[2].toInt() * scale);
-  y = (int) (parameters[3].toInt() * scale);
-  w = (int) (parameters[5].toInt() * scale);
-  h = (int) (parameters[6].toInt() * scale);
-
-  // Set minimal and maximal values
-  min = parameters[7].toInt();
-  max = parameters[8].toInt();
-
-  // Set name
-  name = parameters[12];
-}
-
-/** Paint vertical slider widget. */
-void VerticalSliderWidget::paint(QPainter& p)
-{
-  // Draw contour
-  p.drawRect(x, y, w, h);
-
-  // Calculate position of the slider
-  position = (int) ((float) h / max - min) * (int) (max - value);
-
-  // Draw slider
-  GraphicProperties gp = GraphicProperties::getInstance();
-  p.fillRect(x, y + position, 2, h, gp.getBlackBrush());
-}
-
-/** Create horizontal radio widget. */
-HorizontalRadioWidget::HorizontalRadioWidget(QStringList& parameters)
-{
-  // Set id of the widget
-  id = PD_HRADIO;
-
-  // Set minimal and maximal values first (needed for dimension calculations)
-  min = 0;
-  max = parameters[8].toInt();
-
-  // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
-  x = (int) (parameters[2].toInt() * scale);
-  y = (int) (parameters[3].toInt() * scale);
-  h = (int) (parameters[5].toInt() * scale);
-  w = h * max;
-
-  // Set name
-  name = parameters[10];
-
-  // Save amount of radio buttons and adjust maximal value
-  radioButtons = max;
-  max--;
-}
-
-/** Paint horizontal radio widget. */
-void HorizontalRadioWidget::paint(QPainter& p)
-{
-  for(unsigned int i = 0; i < radioButtons; i++)
-  {
-    // Draw a radio button
-    p.drawRect(x + h * i, y, h, h);
-
-    // Mark current radio button
-    if(i == value)
-    {
-      GraphicProperties gp = GraphicProperties::getInstance();
-      p.fillRect(x + h * i + 2, y + 2, h - 4, h - 4, gp.getBlackBrush());
-    }
-  }
-}
-
-/** Create vertical radio widget. */
-VerticalRadioWidget::VerticalRadioWidget(QStringList& parameters)
-{
-  // Set id of the widget
-  id = PD_VRADIO;
-
-  // Set minimal and maximal values first (needed for dimension calculations)
-  min = 0;
-  max = parameters[8].toInt();
-
-  // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
-  x = (int) (parameters[2].toInt() * scale);
-  y = (int) (parameters[3].toInt() * scale);
-  w = (int) (parameters[5].toInt() * scale);
-  h = w * max;
-
-  // Set name
-  name = parameters[10];
-
-  // Save amount of radio buttons and adjust maximal value
-  radioButtons = max;
-  max--;
-}
-
-/** Paint vertical radio widget. */
-void VerticalRadioWidget::paint(QPainter& p)
-{
-  for(unsigned int i = 0; i < radioButtons; i++)
-  {
-    // Draw a radio button
-    p.drawRect(x, y + w * i, w, w);
-
-    // Mark current radio button
-    if(i == value)
-    {
-      GraphicProperties gp = GraphicProperties::getInstance();
-      p.fillRect(x + 2, y + w * i + 2, w - 4, w - 4, gp.getBlackBrush());
-    }
-  }
-}
-
-/** Create number widget. */
-NumberWidget::NumberWidget(QStringList& parameters)
-{
-  // Set id of the widget
-  id = PD_NUMBER;
-
-  // Set dimensions
-  GraphicProperties gp = GraphicProperties::getInstance();
-  float scale = gp.getScale();
-  x = (int) (parameters[2].toInt() * scale);
-  y = (int) (parameters[3].toInt() * scale);
-  w = (int) (parameters[4].toInt() * 7 * scale);
-  h = (int) (                       16 * scale);
-
-  // Create contour
-  contour = QPointArray(6);
-
-  // Set contour
-  contour.setPoint(0, QPoint(x, y));
-  contour.setPoint(1, QPoint(x + w - 5 * (int) scale, y));
-  contour.setPoint(2, QPoint(x + w, y + 5 * (int) scale));
-  contour.setPoint(3, QPoint(x + w, y + h));
-  contour.setPoint(4, QPoint(x, y + h));
-  contour.setPoint(5, QPoint(x, y));
-
-  // Set value
-  value = 0.0f;
-
-  // Set name
-  name = parameters[9];
-}
-
-/** Paint number widget. */
-void NumberWidget::paint(QPainter& p)
-{
-  // Convert value to string
-  sv = QString::number(value, 'f', 1); 
-
-  // Draw contour and text
-  p.drawPolyline(contour);
-  p.drawText(x + 12, y + p.fontMetrics().height() + 12, sv, sv.length());
-}
-
-/** Create symbol widget. */
-SymbolWidget::SymbolWidget(QStringList& parameters)
-{
-  // Set id of the widget
-  id = PD_SYMBOL;
-
-  // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
-  x = (int) (parameters[2].toInt() * scale);
-  y = (int) (parameters[3].toInt() * scale);
-
-  // Set name
-  name = parameters[9];
-}
-
-/** Paint symbol widget. */
-void SymbolWidget::paint(QPainter&)
-{
-}
-
-/** Create text widget. */
-TextWidget::TextWidget(QStringList& parameters)
-{
-  // Set id of the widget
-  id = PD_TEXT;
-
-  // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
-  x = (int) (parameters[2].toInt() * scale);
-  y = (int) (parameters[3].toInt() * scale);
-
-  // Copy fourth parameter to the text
-  text = parameters[4];
-
-  // Append all tokens to the text (which is the value)
-  for(unsigned int i = 5; i < parameters.count(); i++)
-    text += parameters[i];
-
-  // Cut off the last semicolon
-  text.truncate(text.length()-1);
-}
-
-/** Paint text widget. */
-void TextWidget::paint(QPainter& p)
-{
-  GraphicProperties gp = GraphicProperties::getInstance();
-  p.drawText(x + 12, y + p.fontMetrics().height() + 12, text, text.length());
-}
-
 /** Create standard user interface. */
 StandardView::StandardView(Controller* controller_, int width_, int height_)
 {
@@ -940,7 +645,7 @@ void StandardView::repaint(QPainter& p)
 }
 
 /** Create custom user interface. */
-CustomView::CustomView(QValueList<Widget*>* widgets_)
+CustomView::CustomView(QValueList<widget::Widget*>* widgets_)
 {
   widgets = widgets_;
 }
@@ -949,8 +654,12 @@ CustomView::CustomView(QValueList<Widget*>* widgets_)
 void CustomView::repaint(QPainter& p)
 {
   // Paint widgets
-  for(QValueList<Widget*>::ConstIterator widget = widgets->begin(); widget != widgets->end(); widget++)
+  for(QValueList<widget::Widget*>::ConstIterator widget = widgets->begin();
+      widget != widgets->end();
+      widget++)
+  {
     (*widget)->paint(p);
+  }
 }
 
 
@@ -1574,8 +1283,13 @@ void PDQt::load(const char* filename)
   loaded = false;
 
   // Erase widget objects
-  for(QValueList<Widget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
+  for(QValueList<widget::Widget*>::Iterator widget = widgets.begin();
+      widget != widgets.end();
+      widget++)
+  {
     delete *widget;
+  }
+
   // Clear widgets
   widgets.clear();
 
@@ -1590,7 +1304,10 @@ void PDQt::load(const char* filename)
       continue;
 
     // Parse line and add the new widget, if one was created
-    createWidget(line);
+    widget::Widget* widget = createWidget(line);
+
+    if(widget)
+      widgets.append(widget);
   }
 
   f.close();
@@ -1825,42 +1542,23 @@ void PDQt::receiveMessage()
         argval = 0;
       }
 
-      for(QValueList<Widget*>::Iterator widget = widgets.begin(); widget != widgets.end(); widget++)
+      for(QValueList<widget::Widget*>::Iterator widget = widgets.begin();
+          widget != widgets.end();
+          widget++)
       {
         // Get widget from the iterator
-        Widget* w = *widget;
+        widget::Widget* w = *widget;
 
         // If widget is addressed, set it's value
-        if(w->getName() == addressedWidgetName)
+        if(w->name() == addressedWidgetName)
         {
-          enum WidgetID widgetId = w->getId();
+          // Set new value of the widget
+          w->setValue(argval);
 
-          // Ensure that the message does not go to a non-geometric widget
-          if(widgetId == PD_SYMBOL || widgetId == PD_TEXT)
-            continue;
-
-          // Make addressed widget a geometric widget.
-          GeometricWidget* gw = static_cast<GeometricWidget*>(w);
-
-          // If widget is not a number, set correct number boundaries
-          if(widgetId != PD_NUMBER)  // Number widgets do not have min and max set
-          {
-            if(argval < gw->minValue())
-              argval = gw->minValue();
-            else if(argval > gw->maxValue())
-              argval = gw->maxValue();
-          }
-
-          // If addressed widget is a bang, activate it
-          if(widgetId == PD_BANG)
-            argval = 1;
-
-          // Set value of the geometric widget
-          gw->setValue(argval);
+          // Update GUI to reflect change of the value
+          updateGUI = true;
         }
       }
-
-      updateGUI = true;
     }
   }
 
@@ -1907,28 +1605,48 @@ bool PDQt::isStandardView() const
 
 
 /** Widget builder (pattern of the same name). */
-void PDQt::createWidget(QString& line)
+widget::Widget* PDQt::createWidget(QString& line)
 {
+  widget::Widget* widget = NULL;
+
   // Split line to tokens
   QStringList tokens = QStringList::split(' ', line.stripWhiteSpace());
 
   // Check whether line contains widget information; if so, create it
   if(line.contains("floatatom") && line.contains("pod_"))
-    widgets.append(new NumberWidget(tokens));
+  {
+    widget = new widget::Number(tokens);
+  }
   else if(line.contains("symbolatom") && line.contains("pod_"))
-    widgets.append(new SymbolWidget(tokens));
+  {
+    widget = new widget::Symbol(tokens);
+  }
   else if(line.contains("vsl") && line.contains("pod_"))
-    widgets.append(new VerticalSliderWidget(tokens));
+  {
+    widget = new widget::VerticalSlider(tokens);
+  }
   else if(line.contains("hsl") && line.contains("pod_"))
-    widgets.append(new HorizontalSliderWidget(tokens));
+  {
+    widget = new widget::HorizontalSlider(tokens);
+  }
   else if(line.contains("vradio") && line.contains("pod_"))
-    widgets.append(new VerticalRadioWidget(tokens));
+  {
+    widget = new widget::VerticalRadio(tokens);
+  }
   else if(line.contains("hradio") && line.contains("pod_"))
-    widgets.append(new HorizontalRadioWidget(tokens));
+  {
+    widget = new widget::HorizontalRadio(tokens);
+  }
   else if(line.contains("bng") && line.contains("pod_"))
-    widgets.append(new BangWidget(tokens));
+  {
+    widget = new widget::Bang(tokens);
+  }
   else if(line.contains("text"))
-    widgets.append(new TextWidget(tokens));
+  {
+    widget = new widget::Text(tokens);
+  }
+
+  return widget;
 }
 
 /** Program entry. */
