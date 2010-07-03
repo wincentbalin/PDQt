@@ -149,37 +149,37 @@ namespace pdqt
       void paint(QPainter&);
     };
 
-    class HorizontalSlider
+    class HorizontalSlider : public Base
     {
 
     };
 
-    class VerticalSlider
+    class VerticalSlider : public Base
     {
 
     };
 
-    class HorizontalRadio
+    class HorizontalRadio : public Base
     {
 
     };
 
-    class VerticalRadio
+    class VerticalRadio : public Base
     {
 
     };
 
-    class Number
+    class Number : public Base
     {
 
     };
 
-    class Text
+    class Text : public Base
     {
 
     };
 
-    class Symbol
+    class Symbol : public Base
     {
 
     };
