@@ -92,12 +92,22 @@ namespace pdqt
     {
       class Base
       {
-
+      public:
+        QString name(void) const { return name_; }
+      protected:
+        QString name_;
+        int x;
+        int y;
       };
 
       class Geometric : public Base
       {
-
+      protected:
+        float value;
+        int min;
+        int max;
+        int width;
+        int height;
       };
 
       class Textual : public Base
@@ -124,12 +134,19 @@ namespace pdqt
 
     class Base
     {
+    public:
+      /** Set value of the widget. */
+      virtual void setValue(float f) = 0;
+      /** Paint the widget. */
       virtual void paint(QPainter&) = 0;
     };
 
-    class Bang : public Base
+    class Bang : public Base, public properties::Bang
     {
-
+    public:
+      Bang(QStringList& parameters);
+      void setValue(float f);
+      void paint(QPainter&);
     };
 
     class HorizontalSlider

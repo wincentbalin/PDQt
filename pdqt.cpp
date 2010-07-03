@@ -226,6 +226,56 @@ int SourAppleController::wheelValue()
 }
 
 
+widget::Bang::Bang(QStringList& parameters)
+{
+  // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+  width = (int) (parameters[5].toInt() * scale) - 1; // Size correction here
+  height = width;
+
+  // Set minimal and maximal values (i.e. false and true)
+  min = 0;
+  max = 1;
+
+  // Set name
+  name_ = parameters[10];
+}
+
+void widget::Bang::paint(QPainter& p)
+{
+  // Backup brush
+  QBrush backupBrush;
+
+  // Draw contour
+  p.drawRect(x, y, width, height);
+
+  // If selected, backup current brush and set solid black one
+  if(value == 1)
+  {
+    QBrush backupBrush = p.brush();
+    GraphicProperties gp = GraphicProperties::getInstance();
+    p.setBrush(gp.getBlackBrush());
+  }
+
+  // Draw ellipse, filled if selected
+  p.drawEllipse(x, y, width, height);
+
+  // If widget selected, reset it and restore brush
+  if(value == 1)
+  {
+    value = 0;
+    p.setBrush(backupBrush);
+  }
+}
+
+void widget::Bang::setValue(float f)
+{
+  (void) f;
+  value = 1;
+}
+
 /** Create bang widget. */
 BangWidget::BangWidget(QStringList& parameters)
 {
