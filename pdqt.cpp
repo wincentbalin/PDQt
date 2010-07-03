@@ -290,6 +290,9 @@ void widget::properties::Slider::setValue(float f)
 
   // Set new value
   value = f;
+
+  // Calculate position of the slider
+  position = (int) ((float) width / max - min) * (int) (max - value);
 }
 
 /** Create bang widget. */
