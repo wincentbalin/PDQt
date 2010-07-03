@@ -135,7 +135,6 @@ namespace pdqt
         unsigned int buttons;
         const static unsigned int MarkMargin = 2;
       };
-
     }
 
     class Base
