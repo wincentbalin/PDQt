@@ -507,6 +507,38 @@ void widget::properties::Textual::setValue(float f)
   (void) f; // No new value possible here
 }
 
+widget::Text::Text(QStringList& parameters)
+{
+  // Set dimensions
+  float scale = GraphicProperties::getInstance().getScale();
+  x = (int) (parameters[2].toInt() * scale);
+  y = (int) (parameters[3].toInt() * scale);
+
+  // Copy fourth parameter to the text
+  text = parameters[4];
+
+  // Append all tokens to the text (which is the value)
+  for(unsigned int i = 5; i < parameters.count(); i++)
+  {
+    // Append whitespace
+    text.append(' ');
+
+    // Append text
+    text.append(parameters[i]);
+  }
+
+  // Cut off the last semicolon
+  text.truncate(text.length()-1);
+
+  // Set length of the resulting text
+  textLength = text.length();
+}
+
+void widget::Text::paint(QPainter& p)
+{
+  p.drawText(x + 12, y + p.fontMetrics().height() + 12, text, textLength);
+}
+
 
 /** Create bang widget. */
 BangWidget::BangWidget(QStringList& parameters)

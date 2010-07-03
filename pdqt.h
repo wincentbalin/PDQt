@@ -208,10 +208,14 @@ namespace pdqt
       QString sv;
     };
 
-    class Text : public Base
+    class Text : public Base, public properties::Textual
     {
+    public:
+      Text(QStringList& parameters);
+      void paint(QPainter&);
     private:
       QString text;
+      unsigned int textLength;
     };
 
     class Symbol : public Base
