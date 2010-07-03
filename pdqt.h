@@ -130,6 +130,8 @@ namespace pdqt
 
       class Radio : public Geometric
       {
+      public:
+        void setValue(float f);
       protected:
         unsigned int buttons;
       };
