@@ -276,6 +276,22 @@ void widget::Bang::setValue(float f)
   value = 1;
 }
 
+void widget::properties::Slider::setValue(float f)
+{
+  // Restrict range of values
+  if(f > max)
+  {
+    f = max;
+  }
+  else if(f < min)
+  {
+    f = min;
+  }
+
+  // Set new value
+  value = f;
+}
+
 /** Create bang widget. */
 BangWidget::BangWidget(QStringList& parameters)
 {

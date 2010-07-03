@@ -122,6 +122,8 @@ namespace pdqt
 
       class Slider : public Geometric
       {
+      public:
+        void setValue(float f);
       protected:
         int position;
       };
