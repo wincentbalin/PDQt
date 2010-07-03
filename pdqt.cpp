@@ -232,7 +232,7 @@ widget::Bang::Bang(QStringList& parameters)
   float scale = GraphicProperties::getInstance().getScale();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
-  width = (int) (parameters[5].toInt() * scale) - 1; // Size correction here
+  width = (int) (parameters[5].toInt() * scale);
   height = width;
 
   // Set minimal and maximal values (i.e. false and true)
