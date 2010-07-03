@@ -169,9 +169,13 @@ namespace pdqt
       QBrush blackBrush;
     };
 
-    class VerticalSlider : public Base
+    class VerticalSlider : public Base, public properties::Slider
     {
-
+    public:
+      VerticalSlider(QStringList& parameters);
+      void paint(QPainter&);
+    private:
+      QBrush blackBrush;
     };
 
     class HorizontalRadio : public Base
