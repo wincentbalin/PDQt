@@ -502,6 +502,11 @@ void widget::Number::paint(QPainter& p)
   p.drawText(x + 12, y + p.fontMetrics().height() + 12, sv, sv.length());
 }
 
+void widget::properties::Textual::setValue(float f)
+{
+  (void) f; // No new value possible here
+}
+
 
 /** Create bang widget. */
 BangWidget::BangWidget(QStringList& parameters)

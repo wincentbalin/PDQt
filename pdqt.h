@@ -112,6 +112,8 @@ namespace pdqt
 
       class Textual : public Base
       {
+      public:
+        void setValue(float f);
       };
 
       class Bang : public Geometric
