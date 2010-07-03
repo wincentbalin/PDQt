@@ -112,12 +112,10 @@ namespace pdqt
 
       class Textual : public Base
       {
-
       };
 
       class Bang : public Geometric
       {
-
       };
 
       class Slider : public Geometric
