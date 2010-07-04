@@ -249,7 +249,7 @@ widget::Bang::Bang(QStringList& parameters)
 
 void widget::Bang::paint(QPainter& p)
 {
-   // Draw contour
+  // Draw contour
   p.drawRect(x, y, width, height);
 
   // If selected, backup current brush and set solid black one
