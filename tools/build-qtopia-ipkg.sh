@@ -2,7 +2,7 @@
 #
 # Build ipk of pdqt
 
-VERSION=0.6
+VERSION=0.7
 SKELETON_DIR=./skeletons
 QTOPIA_SKELETON_DIR=$SKELETON_DIR/qtopia
 CURRENT_DIR=`readlink -f .`

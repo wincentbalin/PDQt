@@ -2,7 +2,7 @@
 #
 # Build tgz of pdqt
 
-VERSION=0.6
+VERSION=0.7
 SKELETON_DIR=./skeletons
 LINUX_SKELETON_DIR=$SKELETON_DIR/linux
 CURRENT_DIR=`readlink -f .`
