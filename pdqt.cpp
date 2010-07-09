@@ -1377,6 +1377,12 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
   repaint(false);
 }
 
+/** Mouse was moved (while mouse button was pressed. */
+void PDQt::mouseMoveEvent(QMouseEvent* m)
+{
+
+}
+
 /** Mouse wheel was turned. */
 void PDQt::wheelEvent(QWheelEvent* w)
 {

@@ -460,6 +460,7 @@ namespace pdqt
   protected:
     void keyPressEvent(QKeyEvent*);
     void keyReleaseEvent(QKeyEvent*);
+    void mouseMoveEvent(QMouseEvent*);
     void wheelEvent(QWheelEvent*);
     void resizeEvent(QResizeEvent*);
     void paintEvent(QPaintEvent*);
