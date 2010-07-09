@@ -328,6 +328,7 @@ namespace pdqt
     bool anyButtonPressed();
     bool buttonPressed(enum ButtonID button);
     int  wheelValue();
+    void addToWheel(const int i) { (void) i; }
   private:
     bool shift;
     Button buttons[BUTTONS];
