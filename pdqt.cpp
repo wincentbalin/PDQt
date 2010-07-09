@@ -233,7 +233,14 @@ SweetSourAppleController::SweetSourAppleController(Main* main_)
   // No shift on start
   shift = false;
 
-
+  // Initialize buttons
+  buttons[BUTTON_PLAY]     = Button(Qt::Key_Space);
+  buttons[BUTTON_MENU]     = Button(Qt::Key_Menu);
+  buttons[BUTTON_ACTION]   = Button(Qt::Key_Shift);
+  buttons[BUTTON_REWIND]   = Button(Qt::Key_Left);
+  buttons[BUTTON_FORWARD]  = Button(Qt::Key_Right);
+  buttons[WHEEL_CLOCKWISE] = Button(Qt::Key_Up);
+  buttons[WHEEL_COUNTERCLOCKWISE] = Button(Qt::Key_Down);
 }
 
 /** Get a button. */
