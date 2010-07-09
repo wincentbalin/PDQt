@@ -1155,6 +1155,8 @@ HelpDialog::HelpDialog(QWidget* parent, const char* name, WFlags f) :
     "        <tr><td>Right</td><td>Forward</td></tr>"
     "        <tr><td>Up</td><td>Rotate clockwise</td></tr>"
     "        <tr><td>Down</td><td>Rotate counterclockwise</td></tr>"
+    "        <tr><td>Mouse wheel up</td><td>Rotate clockwise</td></tr>"
+    "        <tr><td>Mouse wheel down</td><td>Rotate counterclockwise</td></tr>"
     "      </tbody>"
     "    </table>"
     "  </center><br/>"
