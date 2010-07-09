@@ -427,13 +427,22 @@ int SweetSourAppleController::wheelValue()
 /** Change value of the wheel. */
 void SweetSourAppleController::addToWheel(const int i)
 {
-  if(shift) // If shift pressed, multiply amount of steps
+  const int clockwiseKey = buttons[WHEEL_CLOCKWISE].key();
+  const int counterClockwiseKey = buttons[WHEEL_COUNTERCLOCKWISE].key();
+
+  if(i < 0)
   {
-    wheel += i * 10;
+    for(int j = 0; j > i; j--)
+    {
+      pressKey(counterClockwiseKey);
+    }
   }
   else
   {
-    wheel += i;
+    for(int j = 0; j < i; j++)
+    {
+      pressKey(clockwiseKey);
+    }
   }
 }
 
