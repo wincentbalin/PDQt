@@ -424,6 +424,19 @@ int SweetSourAppleController::wheelValue()
   return wheel.value();
 }
 
+/** Change value of the wheel. */
+void SweetSourAppleController::addToWheel(const int i)
+{
+  if(shift) // If shift pressed, multiply amount of steps
+  {
+    wheel += i * 10;
+  }
+  else
+  {
+    wheel += i;
+  }
+}
+
 
 widget::Bang::Bang(QStringList& parameters)
 {
