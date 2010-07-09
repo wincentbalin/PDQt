@@ -1374,6 +1374,18 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
   repaint(false);
 }
 
+/** Mouse wheel was turned. */
+void PDQt::wheelEvent(QWheelEvent* w)
+{
+#define WHEEL_DELTA 120
+
+  // Change value of the wheel
+  controller->addToWheel(w->delta() / WHEEL_DELTA);
+
+  // We accept every mouse wheel event
+  w->accept();
+}
+
 void PDQt::resizeEvent(QResizeEvent *)
 {
   // Get screen dimensions
