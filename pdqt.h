@@ -315,6 +315,7 @@ namespace pdqt
     virtual bool anyButtonPressed() = 0;
     virtual bool buttonPressed(enum ButtonID button) = 0;
     virtual int  wheelValue() = 0;
+    virtual void addToWheel(const int i) = 0;
   };
 
   class SourAppleController : virtual public Controller
