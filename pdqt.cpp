@@ -1268,7 +1268,7 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   paused = false;
 
   // Initialize input
-  controller = new SourAppleController(this);
+  controller = new SweetSourAppleController(this);
 
   // Initialize standard GUI font
   font = QFont("helvetica", 24, QFont::Bold);
