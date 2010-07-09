@@ -427,11 +427,10 @@ int SweetSourAppleController::wheelValue()
 /** Change value of the wheel. */
 void SweetSourAppleController::addToWheel(const int i)
 {
-  const int clockwiseKey = buttons[WHEEL_CLOCKWISE].key();
-  const int counterClockwiseKey = buttons[WHEEL_COUNTERCLOCKWISE].key();
-
   if(i < 0)
   {
+    const int counterClockwiseKey = buttons[WHEEL_COUNTERCLOCKWISE].key();
+
     for(int j = 0; j > i; j--)
     {
       pressKey(counterClockwiseKey);
@@ -439,6 +438,8 @@ void SweetSourAppleController::addToWheel(const int i)
   }
   else
   {
+    const int clockwiseKey = buttons[WHEEL_CLOCKWISE].key();
+
     for(int j = 0; j < i; j++)
     {
       pressKey(clockwiseKey);
