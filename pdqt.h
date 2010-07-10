@@ -319,6 +319,7 @@ namespace pdqt
     virtual Button& getButton(enum ButtonID id) = 0;
     virtual bool pressKey(int key) = 0;
     virtual bool unpressKey(int key) = 0;
+    virtual bool knownKey(int key) = 0;
     virtual bool anyButtonPressed() = 0;
     virtual bool buttonPressed(enum ButtonID button) = 0;
     virtual int  wheelValue() = 0;
@@ -332,6 +333,7 @@ namespace pdqt
     Button& getButton(enum ButtonID id);
     bool pressKey(int key);
     bool unpressKey(int key);
+    bool knownKey(int key);
     bool anyButtonPressed();
     bool buttonPressed(enum ButtonID button);
     int  wheelValue();
@@ -350,6 +352,7 @@ namespace pdqt
     Button& getButton(enum ButtonID id);
     bool pressKey(int key);
     bool unpressKey(int key);
+    bool knownKey(int key);
     bool anyButtonPressed();
     bool buttonPressed(enum ButtonID button);
     int  wheelValue();
@@ -368,6 +371,7 @@ namespace pdqt
     Button& getButton(enum ButtonID id);
     bool pressKey(int key);
     bool unpressKey(int key);
+    bool knownKey(int key);
     bool anyButtonPressed();
     bool buttonPressed(enum ButtonID button);
     int  wheelValue();

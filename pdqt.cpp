@@ -201,13 +201,31 @@ bool SourAppleController::unpressKey(int key)
   return false;
 }
 
+/** Is the key known? */
+bool SourAppleController::knownKey(int key)
+{
+  for(unsigned int i = 0; i < BUTTONS; i++)
+  {
+    if(buttons[i].key() == key)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 /** Is any button pressed? */
 bool SourAppleController::anyButtonPressed()
 {
   // If any button pressed, return true
   for(unsigned int i = 0; i < BUTTONS; i++)
+  {
     if(buttons[i].pressed())
+    {
       return true;
+    }
+  }
 
   // No button pressed
   return false;
@@ -400,13 +418,31 @@ bool SweetSourAppleController::unpressKey(int key)
   return false;
 }
 
+/** Is the key known? */
+bool SweetSourAppleController::knownKey(int key)
+{
+  for(unsigned int i = 0; i < BUTTONS; i++)
+  {
+    if(buttons[i].key() == key)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 /** Is any button pressed? */
 bool SweetSourAppleController::anyButtonPressed()
 {
   // If any button pressed, return true
   for(unsigned int i = 0; i < BUTTONS; i++)
+  {
     if(buttons[i].pressed())
+    {
       return true;
+    }
+  }
 
   // No button pressed
   return false;
@@ -637,13 +673,31 @@ bool SweetAppleController::unpressKey(int key)
   return false;
 }
 
+/** Is the key known? */
+bool SweetAppleController::knownKey(int key)
+{
+  for(unsigned int i = 0; i < BUTTONS; i++)
+  {
+    if(buttons[i].key() == key)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 /** Is any button pressed? */
 bool SweetAppleController::anyButtonPressed()
 {
   // If any button pressed, return true
   for(unsigned int i = 0; i < BUTTONS; i++)
+  {
     if(buttons[i].pressed())
+    {
       return true;
+    }
+  }
 
   // No button pressed
   return false;
