@@ -740,7 +740,7 @@ void StandardView::repaint(QPainter& p)
 
   if(controller->buttonPressed(BUTTON_REWIND))
   {
-    p.drawEllipse(width / 3 - height / 8,
+    p.drawEllipse(width / 2 - 2 * height / 5,
                   height / 2 - height / 8,
                   height / 4,
                   height / 4);
@@ -748,7 +748,7 @@ void StandardView::repaint(QPainter& p)
 
   if(controller->buttonPressed(BUTTON_FORWARD))
   {
-    p.drawEllipse(2 * width / 3  + 1 - height / 8,
+    p.drawEllipse(width / 2 + 2 * height / 5 - height / 4,
                   height / 2 - height / 8,
                   height / 4,
                   height / 4);
