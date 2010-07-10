@@ -354,6 +354,24 @@ namespace pdqt
     Main* main;
   };
 
+  class SweetAppleController : virtual public Controller
+  {
+  public:
+    SweetAppleController(Main*);
+    Button& getButton(enum ButtonID id);
+    bool pressKey(int key);
+    bool unpressKey(int key);
+    bool anyButtonPressed();
+    bool buttonPressed(enum ButtonID button);
+    int  wheelValue();
+    void addToWheel(const int i);
+  private:
+    bool shift;
+    Button buttons[BUTTONS];
+    ScrollWheel wheel;
+    Main* main;
+  };
+
 
   class View
   {
