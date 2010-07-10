@@ -1212,6 +1212,8 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
 
   // Initialize input
   controller = new SweetAppleController(this);
+  turningGestureRecognizer.setController(controller);
+  turningGestureRecognizer.setScreenProperties(this);
 
   // Initialize standard GUI font
   font = QFont("helvetica", 24, QFont::Bold);
@@ -1304,10 +1306,10 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
   repaint(false);
 }
 
-/** Mouse was moved (while mouse button was pressed. */
+/** Mouse was moved (while mouse button was pressed). */
 void PDQt::mouseMoveEvent(QMouseEvent* m)
 {
-
+  turningGestureRecognizer.nextCoordinates(m->x(), m->y());
 }
 
 /** Mouse wheel was turned. */

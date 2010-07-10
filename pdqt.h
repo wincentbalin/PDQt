@@ -556,6 +556,7 @@ namespace pdqt
     widget::Widget* createWidget(QString& line);
     View* view;
     Controller* controller;
+    TurningGestureRecognizer turningGestureRecognizer;
     //
     QString patch;
     //
