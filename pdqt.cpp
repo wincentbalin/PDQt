@@ -51,7 +51,7 @@ Button& SourAppleController::getButton(enum ButtonID id)
 }
 
 /** Press a key. */
-bool SourAppleController::pressKey(int key)
+void SourAppleController::pressKey(const int key)
 {
   // Elaborate control logic
   if(buttons[BUTTON_MENU] == key)
@@ -59,61 +59,85 @@ bool SourAppleController::pressKey(int key)
     if(main->pdRunning() && ! main->pdPaused())
     {
       main->sendMessage("m 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_MENU].press();
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_ACTION] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
-    {
-      main->sendMessage("b;\n");
-      if(main->isStandardView())
-        buttons[BUTTON_ACTION].press();
-    }
     if(main->pdRunning())
+    {
+      if(!main->pdPaused())
+      {
+        main->sendMessage("b;\n");
+
+        if(main->isStandardView())
+        {
+          buttons[BUTTON_ACTION].press();
+        }
+      }
+
       shift = true;
-    return true;
+    }
   }
   else if(buttons[BUTTON_REWIND] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("w 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_REWIND].press();
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_FORWARD] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("f 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_FORWARD].press();
+      }
     }
-    return true;
   }
   else if(buttons[WHEEL_COUNTERCLOCKWISE] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
-      if(shift) { wheel -= 10; main->sendMessage("l 10;\n"); }
-      else      { wheel -=  1; main->sendMessage("l 1;\n");  }
+      if(shift)
+      {
+        wheel -= 10;
+        main->sendMessage("l 10;\n");
+      }
+      else
+      {
+        wheel -= 1;
+        main->sendMessage("l 1;\n");
+      }
     }
-    return true;
   }
   else if(buttons[WHEEL_CLOCKWISE] == key)
   {
-    buttons[WHEEL_CLOCKWISE].press();
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
-      if(shift) { wheel += 10; main->sendMessage("r 10;\n"); }
-      else      { wheel +=  1; main->sendMessage("r 1;\n");  }
+      if(shift)
+      {
+        wheel += 10;
+        main->sendMessage("r 10;\n");
+      }
+      else
+      {
+        wheel += 1;
+        main->sendMessage("r 1;\n");
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_PLAY] == key)
   {
@@ -121,9 +145,9 @@ bool SourAppleController::pressKey(int key)
     {
       if(shift)
       {
-        main->pdPause( ! main->pdPaused());
+        main->pdPause(!main->pdPaused());
 
-        if(main->pdPaused()) 
+        if(main->pdPaused())
         {
           main->setStatus("Paused");
           main->sendMessage("p 0;\n");
@@ -134,71 +158,78 @@ bool SourAppleController::pressKey(int key)
           main->sendMessage("p 1;\n");
         }
       }
-      else if( ! main->pdPaused())
+      else if(!main->pdPaused())
       {
         main->sendMessage("d 1;\n");
+
         if(main->isStandardView())
-          buttons[BUTTON_PLAY].press();
+        {
+            buttons[BUTTON_PLAY].press();
+        }
       }
     }
-    return true;
   }
-
-  return false;
 }
 
 /** Release a key. */
-bool SourAppleController::unpressKey(int key)
+void SourAppleController::unpressKey(int key)
 {
   // Elaborate control logic
   if(buttons[BUTTON_MENU] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused() && ! shift)
+    if(main->pdRunning() && !main->pdPaused() && !shift)
     {
       main->sendMessage("m 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_MENU].press(false);
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_ACTION] == key)
   {
     if(main->pdRunning())
+    {
       shift = false;
-    return true;
+    }
   }
   else if(buttons[BUTTON_REWIND] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("w 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_REWIND].press(false);
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_FORWARD] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("f 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_FORWARD].press(false);
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_PLAY] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused() && ! shift)
+    if(main->pdRunning() && !main->pdPaused() && !shift)
     {
       main->sendMessage("d 0;\n");
-      if(main->isStandardView())
-        buttons[BUTTON_PLAY].press(false);
-    }
-    return true;
-  }
 
-  return false;
+      if(main->isStandardView())
+      {
+        buttons[BUTTON_PLAY].press(false);
+      }
+    }
+  }
 }
 
 /** Is the key known? */
@@ -268,69 +299,93 @@ Button& SweetSourAppleController::getButton(enum ButtonID id)
 }
 
 /** Press a key. */
-bool SweetSourAppleController::pressKey(int key)
+void SweetSourAppleController::pressKey(const int key)
 {
   // Elaborate control logic
   if(buttons[BUTTON_MENU] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("m 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_MENU].press();
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_ACTION] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("b;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_ACTION].press();
+      }
     }
+
     if(main->pdRunning())
+    {
       shift = true;
-    return true;
+    }
   }
   else if(buttons[BUTTON_REWIND] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("w 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_REWIND].press();
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_FORWARD] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("f 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_FORWARD].press();
+      }
     }
-    return true;
   }
   else if(buttons[WHEEL_COUNTERCLOCKWISE] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
-      if(shift) { wheel -= 10; main->sendMessage("l 10;\n"); }
-      else      { wheel -=  1; main->sendMessage("l 1;\n");  }
+      if(shift)
+      {
+        wheel -= 10;
+        main->sendMessage("l 10;\n");
+      }
+      else
+      {
+        wheel -= 1;
+        main->sendMessage("l 1;\n");
+      }
     }
-    return true;
   }
   else if(buttons[WHEEL_CLOCKWISE] == key)
   {
-    buttons[WHEEL_CLOCKWISE].press();
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
-      if(shift) { wheel += 10; main->sendMessage("r 10;\n"); }
-      else      { wheel +=  1; main->sendMessage("r 1;\n");  }
+      if(shift)
+      {
+        wheel += 10;
+        main->sendMessage("r 10;\n");
+      }
+      else
+      {
+        wheel += 1;
+        main->sendMessage("r 1;\n");
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_PLAY] == key)
   {
@@ -338,7 +393,7 @@ bool SweetSourAppleController::pressKey(int key)
     {
       if(shift)
       {
-        main->pdPause( ! main->pdPaused());
+        main->pdPause(!main->pdPaused());
 
         if(main->pdPaused())
         {
@@ -351,71 +406,78 @@ bool SweetSourAppleController::pressKey(int key)
           main->sendMessage("p 1;\n");
         }
       }
-      else if( ! main->pdPaused())
+      else if(!main->pdPaused())
       {
         main->sendMessage("d 1;\n");
+
         if(main->isStandardView())
+        {
           buttons[BUTTON_PLAY].press();
+        }
       }
     }
-    return true;
   }
-
-  return false;
 }
 
 /** Release a key. */
-bool SweetSourAppleController::unpressKey(int key)
+void SweetSourAppleController::unpressKey(const int key)
 {
   // Elaborate control logic
   if(buttons[BUTTON_MENU] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused() && ! shift)
+    if(main->pdRunning() && !main->pdPaused() && !shift)
     {
       main->sendMessage("m 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_MENU].press(false);
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_ACTION] == key)
   {
     if(main->pdRunning())
+    {
       shift = false;
-    return true;
+    }
   }
   else if(buttons[BUTTON_REWIND] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("w 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_REWIND].press(false);
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_FORWARD] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("f 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_FORWARD].press(false);
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_PLAY] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused() && ! shift)
+    if(main->pdRunning() && !main->pdPaused() && !shift)
     {
       main->sendMessage("d 0;\n");
-      if(main->isStandardView())
-        buttons[BUTTON_PLAY].press(false);
-    }
-    return true;
-  }
 
-  return false;
+      if(main->isStandardView())
+      {
+        buttons[BUTTON_PLAY].press(false);
+      }
+    }
+  }
 }
 
 /** Is the key known? */
@@ -509,76 +571,95 @@ Button& SweetAppleController::getButton(enum ButtonID id)
 }
 
 /** Press a key. */
-bool SweetAppleController::pressKey(int key)
+void SweetAppleController::pressKey(int key)
 {
-  // Set shift if needed
+  // Elaborate control logic
   if(buttons[BUTTON_SHIFT] == key)
   {
-    shift = true;
-    return true;
+    if(main->pdRunning())
+    {
+      shift = true;
+    }
   }
-
-  // Elaborate control logic
-  if(buttons[BUTTON_MENU] == key)
+  else if(buttons[BUTTON_MENU] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("m 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_MENU].press();
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_ACTION] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("b;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_ACTION].press();
+      }
     }
-    if(main->pdRunning())
-      shift = true;
-    return true;
   }
   else if(buttons[BUTTON_REWIND] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("w 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_REWIND].press();
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_FORWARD] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("f 1;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_FORWARD].press();
+      }
     }
-    return true;
   }
   else if(buttons[WHEEL_COUNTERCLOCKWISE] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
-      if(shift) { wheel -= 10; main->sendMessage("l 10;\n"); }
-      else      { wheel -=  1; main->sendMessage("l 1;\n");  }
+      if(shift)
+      {
+        wheel -= 10;
+        main->sendMessage("l 10;\n");
+      }
+      else
+      {
+        wheel -= 1;
+        main->sendMessage("l 1;\n");
+      }
     }
-    return true;
   }
   else if(buttons[WHEEL_CLOCKWISE] == key)
   {
-    buttons[WHEEL_CLOCKWISE].press();
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
-      if(shift) { wheel += 10; main->sendMessage("r 10;\n"); }
-      else      { wheel +=  1; main->sendMessage("r 1;\n");  }
+      if(shift)
+      {
+        wheel += 10;
+        main->sendMessage("r 10;\n");
+      }
+      else
+      {
+        wheel += 1;
+        main->sendMessage("r 1;\n");
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_PLAY] == key)
   {
@@ -586,7 +667,7 @@ bool SweetAppleController::pressKey(int key)
     {
       if(shift)
       {
-        main->pdPause( ! main->pdPaused());
+        main->pdPause(!main->pdPaused());
 
         if(main->pdPaused())
         {
@@ -599,78 +680,78 @@ bool SweetAppleController::pressKey(int key)
           main->sendMessage("p 1;\n");
         }
       }
-      else if( ! main->pdPaused())
+      else if(!main->pdPaused())
       {
         main->sendMessage("d 1;\n");
+
         if(main->isStandardView())
+        {
           buttons[BUTTON_PLAY].press();
+        }
       }
     }
-    return true;
   }
-
-  return false;
 }
 
 /** Release a key. */
-bool SweetAppleController::unpressKey(int key)
+void SweetAppleController::unpressKey(int key)
 {
-  // Reset shift if needed
+  // Elaborate control logic
   if(buttons[BUTTON_SHIFT] == key)
   {
-    shift = false;
-    return true;
+    if(main->pdRunning())
+    {
+      shift = false;
+    }
   }
-
-  // Elaborate control logic
-  if(buttons[BUTTON_MENU] == key)
+  else if(buttons[BUTTON_MENU] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused() && ! shift)
+    if(main->pdRunning() && !main->pdPaused() && !shift)
     {
       main->sendMessage("m 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_MENU].press(false);
+      }
     }
-    return true;
-  }
-  else if(buttons[BUTTON_ACTION] == key)
-  {
-    if(main->pdRunning())
-      shift = false;
-    return true;
   }
   else if(buttons[BUTTON_REWIND] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("w 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_REWIND].press(false);
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_FORWARD] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused())
+    if(main->pdRunning() && !main->pdPaused())
     {
       main->sendMessage("f 0;\n");
+
       if(main->isStandardView())
+      {
         buttons[BUTTON_FORWARD].press(false);
+      }
     }
-    return true;
   }
   else if(buttons[BUTTON_PLAY] == key)
   {
-    if(main->pdRunning() && ! main->pdPaused() && ! shift)
+    if(main->pdRunning() && !main->pdPaused() && !shift)
     {
       main->sendMessage("d 0;\n");
-      if(main->isStandardView())
-        buttons[BUTTON_PLAY].press(false);
-    }
-    return true;
-  }
 
-  return false;
+      if(main->isStandardView())
+      {
+        buttons[BUTTON_PLAY].press(false);
+      }
+    }
+  }
 }
 
 /** Is the key known? */
@@ -1640,10 +1721,15 @@ void PDQt::keyPressEvent(QKeyEvent* k)
 {
   int key = k->key();
 
-  bool known_key = controller->pressKey(key);
-
-  if(!known_key)
+  if(controller->knownKey(key))
+  {
+    k->accept();
+    controller->pressKey(key);
+  }
+  else
+  {
     k->ignore();
+  }
 
   // Release action button automatically after 10 msec
   if(controller->getButton(BUTTON_ACTION) == key && isStandardView() &&
@@ -1659,10 +1745,15 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
 {
   int key = k->key();
 
-  bool known_key = controller->unpressKey(key);
-
-  if(!known_key)
+  if(controller->knownKey(key))
+  {
+    k->accept();
+    controller->unpressKey(key);
+  }
+  else
+  {
     k->ignore();
+  }
 
   // Repaint everything
   repaint(false);

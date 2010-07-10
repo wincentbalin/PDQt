@@ -317,9 +317,9 @@ namespace pdqt
   {
   public:
     virtual Button& getButton(enum ButtonID id) = 0;
-    virtual bool pressKey(int key) = 0;
-    virtual bool unpressKey(int key) = 0;
-    virtual bool knownKey(int key) = 0;
+    virtual void pressKey(const int key) = 0;
+    virtual void unpressKey(const int key) = 0;
+    virtual bool knownKey(const int key) = 0;
     virtual bool anyButtonPressed() = 0;
     virtual bool buttonPressed(enum ButtonID button) = 0;
     virtual int  wheelValue() = 0;
@@ -331,9 +331,9 @@ namespace pdqt
   public:
     SourAppleController(Main*);
     Button& getButton(enum ButtonID id);
-    bool pressKey(int key);
-    bool unpressKey(int key);
-    bool knownKey(int key);
+    void pressKey(const int key);
+    void unpressKey(const int key);
+    bool knownKey(const int key);
     bool anyButtonPressed();
     bool buttonPressed(enum ButtonID button);
     int  wheelValue();
@@ -350,9 +350,9 @@ namespace pdqt
   public:
     SweetSourAppleController(Main*);
     Button& getButton(enum ButtonID id);
-    bool pressKey(int key);
-    bool unpressKey(int key);
-    bool knownKey(int key);
+    void pressKey(const int key);
+    void unpressKey(const int key);
+    bool knownKey(const int key);
     bool anyButtonPressed();
     bool buttonPressed(enum ButtonID button);
     int  wheelValue();
@@ -369,9 +369,9 @@ namespace pdqt
   public:
     SweetAppleController(Main*);
     Button& getButton(enum ButtonID id);
-    bool pressKey(int key);
-    bool unpressKey(int key);
-    bool knownKey(int key);
+    void pressKey(const int key);
+    void unpressKey(const int key);
+    bool knownKey(const int key);
     bool anyButtonPressed();
     bool buttonPressed(enum ButtonID button);
     int  wheelValue();
