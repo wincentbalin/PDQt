@@ -74,6 +74,28 @@ namespace pdqt
     BUTTONS
   };
 
+  /*
+   * Quadrants as usual:
+   *
+   *       ^
+   *       |
+   *    II | I
+   *       |
+   *  -----+---->
+   *       |
+   *   III | IV
+   *       |
+   *
+   *  Begin with quadrant, where the point (0, 0) of the screen is.
+   *  Enumerate counting clockwise.
+   */
+  enum Quadrant
+  {
+    SECOND_QUADRANT,
+    FIRST_QUADRANT,
+    FOURTH_QUADRANT,
+    THIRD_QUADRANT
+  };
 
   class ScreenProperties
   {
@@ -378,13 +400,14 @@ namespace pdqt
   class TurningGestureRecognizer
   {
   public:
-    TurningGestureRecognizer() : lastX(0), lastY(0) { controller = NULL; }
+    TurningGestureRecognizer();
     void setController(Controller* c) { controller = c; }
-    void setScreenProperties(ScreenProperties* sp) { properties = sp; }
+    void setScreenProperties(ScreenProperties* sp) { screenProperties = sp; }
     void nextCoordinates(const int x, const int y);
   private:
+    enum Quadrant quadrant;
     Controller* controller;
-    ScreenProperties* properties;
+    ScreenProperties* screenProperties;
   };
 
 

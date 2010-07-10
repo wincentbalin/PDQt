@@ -300,7 +300,75 @@ void SweetAppleController::addToWheel(const int i)
   }
 }
 
+/** Construct turning gesture recognizer object. */
+TurningGestureRecognizer::TurningGestureRecognizer()
+{
+  // Set quadrant to the one of the (0, 0) point
+  quadrant = SECOND_QUADRANT;
 
+  // Reset references
+  controller = NULL;
+  screenProperties = NULL;
+}
+
+/** Give next coordinate pair to the gesture recognizer. */
+void TurningGestureRecognizer::nextCoordinates(const int x, const int y)
+{
+  int direction = 0;
+  enum Quadrant currentQuadrant = SECOND_QUADRANT;
+
+  // If screen properties are set, calculate current quadrant
+  if(screenProperties)
+  {
+    const int halfScreenWidth = screenProperties->getScreenWidth() / 2;
+    const int halfScreenHeight = screenProperties->getScreenHeight() / 2;
+
+    if(x >= halfScreenWidth && y < halfScreenHeight)
+    {
+      currentQuadrant = FIRST_QUADRANT;
+    }
+    else if(x < halfScreenWidth && y < halfScreenHeight)
+    {
+      currentQuadrant = SECOND_QUADRANT;
+    }
+    else if(x < halfScreenWidth && y >= halfScreenHeight)
+    {
+      currentQuadrant = THIRD_QUADRANT;
+    }
+    else if(x >= halfScreenWidth && y >= halfScreenHeight)
+    {
+      currentQuadrant = FOURTH_QUADRANT;
+    }
+
+    // Compute direction of the gesture
+    if((quadrant == FIRST_QUADRANT && currentQuadrant == FOURTH_QUADRANT) ||
+       (quadrant == FOURTH_QUADRANT && currentQuadrant == THIRD_QUADRANT) ||
+       (quadrant == THIRD_QUADRANT && currentQuadrant == SECOND_QUADRANT) ||
+       (quadrant == SECOND_QUADRANT && currentQuadrant == FIRST_QUADRANT))
+    {
+      direction = 1; // Clockwise
+    }
+    else if((quadrant == FIRST_QUADRANT && currentQuadrant == SECOND_QUADRANT) ||
+            (quadrant == SECOND_QUADRANT && currentQuadrant == THIRD_QUADRANT) ||
+            (quadrant == THIRD_QUADRANT && currentQuadrant == FOURTH_QUADRANT) ||
+            (quadrant == FOURTH_QUADRANT && currentQuadrant == FIRST_QUADRANT))
+    {
+      direction = -1; // Counterclockwise
+    }
+  }
+
+  /*
+   * If controller call back is set and a certain direction has been computed,
+   * do as if a key has been pressed.
+   */
+  if(controller && direction != 0)
+  {
+    controller->addToWheel(direction);
+  }
+
+  // Backup current quadrant
+  quadrant = currentQuadrant;
+}
 
 
 widget::Bang::Bang(QStringList& parameters, ScreenProperties* sp)
