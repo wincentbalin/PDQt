@@ -383,6 +383,18 @@ namespace pdqt
     Main* main;
   };
 
+  class TurningGestureRecognizer
+  {
+  public:
+    TurningGestureRecognizer() : lastX(0), lastY(0) { controller = NULL; }
+    void setController(Controller* c) { controller = c; }
+    void nextPointPair(const int x, const int y);
+  private:
+    Controller* controller;
+    int lastX;
+    int lastY;
+  };
+
 
   class View
   {
