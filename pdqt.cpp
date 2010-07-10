@@ -1731,10 +1731,10 @@ void PDQt::keyPressEvent(QKeyEvent* k)
     k->ignore();
   }
 
-  // Release action button automatically after 10 msec
-  if(controller->getButton(BUTTON_ACTION) == key && isStandardView() &&
-      loaded && ! paused)
-    QTimer::singleShot(10, this, SLOT(buttonActionBackpress()));
+  // Release action button automatically after 100 msec
+  if(controller->getButton(BUTTON_ACTION) == key &&
+     isStandardView() && loaded && !paused)
+    QTimer::singleShot(100, this, SLOT(buttonActionBackpress()));
 
   // Repaint everything
   repaint(false);
