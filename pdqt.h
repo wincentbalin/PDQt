@@ -319,7 +319,7 @@ namespace pdqt
     Button(int key) : key_(key), pressed_(false) {}
     Button(const Button& b) : key_(b.key_), pressed_(b.pressed_) {}
     int key() const { return key_; }
-    void press(bool buttonpressed = true) { pressed_ = buttonpressed; }
+    void press(bool buttonPressed = true) { pressed_ = buttonPressed; }
     bool pressed() const { return pressed_; }
     inline bool operator == (const int key) { return (key_ == key); }
   private:
