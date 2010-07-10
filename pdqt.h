@@ -75,6 +75,15 @@ namespace pdqt
   };
 
 
+  class ScreenProperties
+  {
+  public:
+    virtual int getScreenWidth() const = 0;
+    virtual int getScreenHeight() const = 0;
+    virtual float getScreenMultiplier() const = 0;
+    virtual QBrush& getBlackBrush() = 0;
+  };
+
   namespace widget
   {
     namespace properties
@@ -154,7 +163,7 @@ namespace pdqt
     class Bang : public Widget, public properties::Bang
     {
     public:
-      Bang(QStringList& parameters);
+      Bang(QStringList& parameters, ScreenProperties* sp);
       virtual ~Bang() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
@@ -167,7 +176,7 @@ namespace pdqt
     class HorizontalSlider : public Widget, public properties::Slider
     {
     public:
-      HorizontalSlider(QStringList& parameters);
+      HorizontalSlider(QStringList& parameters, ScreenProperties* sp);
       virtual ~HorizontalSlider() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Slider::setValue(f); }
@@ -179,7 +188,7 @@ namespace pdqt
     class VerticalSlider : public Widget, public properties::Slider
     {
     public:
-      VerticalSlider(QStringList& parameters);
+      VerticalSlider(QStringList& parameters, ScreenProperties* sp);
       virtual ~VerticalSlider() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Slider::setValue(f); }
@@ -191,7 +200,7 @@ namespace pdqt
     class HorizontalRadio : public Widget, public properties::Radio
     {
     public:
-      HorizontalRadio(QStringList& parameters);
+      HorizontalRadio(QStringList& parameters, ScreenProperties* sp);
       virtual ~HorizontalRadio() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Radio::setValue(f); }
@@ -203,7 +212,7 @@ namespace pdqt
     class VerticalRadio : public Widget, public properties::Radio
     {
     public:
-      VerticalRadio(QStringList& parameters);
+      VerticalRadio(QStringList& parameters, ScreenProperties* sp);
       virtual ~VerticalRadio() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Radio::setValue(f); }
@@ -215,7 +224,7 @@ namespace pdqt
     class Number : public Widget, public properties::Geometric
     {
     public:
-      Number(QStringList& parameters);
+      Number(QStringList& parameters, ScreenProperties* sp);
       virtual ~Number() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
@@ -228,7 +237,7 @@ namespace pdqt
     class Text : public Widget, public properties::Textual
     {
     public:
-      Text(QStringList& parameters);
+      Text(QStringList& parameters, ScreenProperties* sp);
       virtual ~Text() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Textual::setValue(f); }
@@ -241,30 +250,13 @@ namespace pdqt
     class Symbol : public Widget, public properties::Base
     {
     public:
-      Symbol(QStringList& parameters);
+      Symbol(QStringList& parameters, ScreenProperties* sp);
       virtual ~Symbol() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter& p);
     };
   }
-
-
-  class GraphicProperties
-  {
-  public:
-    static GraphicProperties& getInstance() { static GraphicProperties instance; return instance; }
-    void setScale(const float f) { scale = f; }
-    float getScale() { return scale; }
-    const QBrush& getBlackBrush() { return blackBrush; }
-  private:
-    // singleton parts
-    GraphicProperties() { blackBrush = QBrush(Qt::black); }
-    // scaling factor
-    float scale;
-    // single instance of a black brush
-    QBrush blackBrush;
-  };
 
 
   class MessageSender
@@ -388,11 +380,11 @@ namespace pdqt
   public:
     TurningGestureRecognizer() : lastX(0), lastY(0) { controller = NULL; }
     void setController(Controller* c) { controller = c; }
+    void setScreenProperties(ScreenProperties* sp) { properties = sp; }
     void nextCoordinates(const int x, const int y);
   private:
     Controller* controller;
-    int lastX;
-    int lastY;
+    ScreenProperties* properties;
   };
 
 
@@ -486,7 +478,7 @@ namespace pdqt
   };
 
 
-  class PDQt : public QMainWindow, Main
+  class PDQt : public QMainWindow, Main, ScreenProperties
   {
     Q_OBJECT
   public:
@@ -522,9 +514,18 @@ namespace pdqt
     bool pdPaused() const;
     void setStatus(const char*);
     bool isStandardView() const;
-    //
+    // Screen properties
+  public:
+    int getScreenWidth() const { return screenWidth; }
+    int getScreenHeight() const { return screenHeight; }
+    float getScreenMultiplier() const { return screenMultiplier; }
+    QBrush& getBlackBrush() { return blackBrush; }
+  private:
     int screenWidth;
     int screenHeight;
+    float screenMultiplier;
+    QBrush blackBrush;
+    //
     QLabel* status;
     QPixmap paintPixmap;
     //

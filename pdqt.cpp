@@ -301,10 +301,12 @@ void SweetAppleController::addToWheel(const int i)
 }
 
 
-widget::Bang::Bang(QStringList& parameters)
+
+
+widget::Bang::Bang(QStringList& parameters, ScreenProperties* sp)
 {
   // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
+  const float scale = sp->getScreenMultiplier();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   width = (int) (parameters[5].toInt() * scale);
@@ -318,8 +320,7 @@ widget::Bang::Bang(QStringList& parameters)
   name_ = parameters[10];
 
   // Set black brush
-  GraphicProperties gp = GraphicProperties::getInstance();
-  blackBrush = gp.getBlackBrush();
+  blackBrush = sp->getBlackBrush();
 }
 
 void widget::Bang::paint(QPainter& p)
@@ -370,10 +371,10 @@ void widget::properties::Slider::setValue(float f)
   position = (int) ((float) width / max - min) * (int) (max - value);
 }
 
-widget::HorizontalSlider::HorizontalSlider(QStringList& parameters)
+widget::HorizontalSlider::HorizontalSlider(QStringList& parameters, ScreenProperties* sp)
 {
   // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
+  const float scale = sp->getScreenMultiplier();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   width = (int) (parameters[5].toInt() * scale);
@@ -387,8 +388,7 @@ widget::HorizontalSlider::HorizontalSlider(QStringList& parameters)
   name_ = parameters[12];
 
   // Set black brush
-  GraphicProperties gp = GraphicProperties::getInstance();
-  blackBrush = gp.getBlackBrush();
+  blackBrush = sp->getBlackBrush();
 }
 
 void widget::HorizontalSlider::paint(QPainter& p)
@@ -400,10 +400,10 @@ void widget::HorizontalSlider::paint(QPainter& p)
   p.fillRect(x + width - position, y, IndicatorThickness, height, blackBrush);
 }
 
-widget::VerticalSlider::VerticalSlider(QStringList& parameters)
+widget::VerticalSlider::VerticalSlider(QStringList& parameters, ScreenProperties* sp)
 {
   // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
+  const float scale = sp->getScreenMultiplier();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   width = (int) (parameters[5].toInt() * scale);
@@ -417,8 +417,7 @@ widget::VerticalSlider::VerticalSlider(QStringList& parameters)
   name_ = parameters[12];
 
   // Set black brush
-  GraphicProperties gp = GraphicProperties::getInstance();
-  blackBrush = gp.getBlackBrush();
+  blackBrush = sp->getBlackBrush();
 }
 
 void widget::VerticalSlider::paint(QPainter& p)
@@ -446,14 +445,14 @@ void widget::properties::Radio::setValue(float f)
   value = f;
 }
 
-widget::HorizontalRadio::HorizontalRadio(QStringList& parameters)
+widget::HorizontalRadio::HorizontalRadio(QStringList& parameters, ScreenProperties* sp)
 {
   // Set minimal and maximal values first (needed for dimension calculations)
   min = 0;
   max = parameters[8].toInt();
 
   // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
+  const float scale = sp->getScreenMultiplier();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   height = (int) (parameters[5].toInt() * scale);
@@ -467,8 +466,7 @@ widget::HorizontalRadio::HorizontalRadio(QStringList& parameters)
   max = max - 1; // Because first index is 0
 
   // Set black brush
-  GraphicProperties gp = GraphicProperties::getInstance();
-  blackBrush = gp.getBlackBrush();
+  blackBrush = sp->getBlackBrush();
 }
 
 void widget::HorizontalRadio::paint(QPainter& p)
@@ -490,14 +488,14 @@ void widget::HorizontalRadio::paint(QPainter& p)
   }
 }
 
-widget::VerticalRadio::VerticalRadio(QStringList& parameters)
+widget::VerticalRadio::VerticalRadio(QStringList& parameters, ScreenProperties* sp)
 {
   // Set minimal and maximal values first (needed for dimension calculations)
   min = 0;
   max = parameters[8].toInt();
 
   // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
+  const float scale = sp->getScreenMultiplier();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   width = (int) (parameters[5].toInt() * scale);
@@ -511,8 +509,7 @@ widget::VerticalRadio::VerticalRadio(QStringList& parameters)
   max = max - 1; // Because first index is 0
 
   // Set black brush
-  GraphicProperties gp = GraphicProperties::getInstance();
-  blackBrush = gp.getBlackBrush();
+  blackBrush = sp->getBlackBrush();
 }
 
 void widget::VerticalRadio::paint(QPainter& p)
@@ -534,11 +531,10 @@ void widget::VerticalRadio::paint(QPainter& p)
   }
 }
 
-widget::Number::Number(QStringList& parameters)
+widget::Number::Number(QStringList& parameters, ScreenProperties* sp)
 {
   // Set dimensions
-  GraphicProperties gp = GraphicProperties::getInstance();
-  float scale = gp.getScale();
+  const float scale = sp->getScreenMultiplier();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
   width = (int) (parameters[4].toInt() * 7 * scale);
@@ -582,10 +578,10 @@ void widget::properties::Textual::setValue(float f)
   (void) f; // No new value possible here
 }
 
-widget::Text::Text(QStringList& parameters)
+widget::Text::Text(QStringList& parameters, ScreenProperties* sp)
 {
   // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
+  const float scale = sp->getScreenMultiplier();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
 
@@ -614,10 +610,10 @@ void widget::Text::paint(QPainter& p)
   p.drawText(x + 12, y + p.fontMetrics().height() + 12, text, textLength);
 }
 
-widget::Symbol::Symbol(QStringList& parameters)
+widget::Symbol::Symbol(QStringList& parameters, ScreenProperties* sp)
 {
   // Set dimensions
-  float scale = GraphicProperties::getInstance().getScale();
+  const float scale = sp->getScreenMultiplier();
   x = (int) (parameters[2].toInt() * scale);
   y = (int) (parameters[3].toInt() * scale);
 
@@ -1152,9 +1148,8 @@ PDQt::PDQt(QWidget* parent, const char* name) : QMainWindow(parent, name)
   // Initialize standard GUI font
   font = QFont("helvetica", 24, QFont::Bold);
 
-
-  // Initialize graphic properties
-  GraphicProperties gp = GraphicProperties::getInstance();
+  // Initialize black brush
+  blackBrush = QBrush(Qt::black);
 
   // Build menu bar
   menuBar()->insertItem("&Open", this, SLOT(load()), CTRL+Key_O);
@@ -1271,8 +1266,7 @@ void PDQt::resizeEvent(QResizeEvent *)
   }
 
   // Calculate size factor
-  float screenMultiplier = screenWidth / 160.0f;
-  GraphicProperties::getInstance().setScale(screenMultiplier);
+  screenMultiplier = screenWidth / 160.0f;
 }
 
 /** Paint GUI. */
@@ -1427,7 +1421,7 @@ void PDQt::load(const char* filename)
   connectPD();
   // (Re-)Create view
   if(isStandardView())
-    view = new StandardView(controller, screenWidth, screenHeight);
+    view = new StandardView(controller, getScreenWidth(), getScreenHeight());
   else
     view = new CustomView(&widgets);
 
@@ -1721,35 +1715,35 @@ widget::Widget* PDQt::createWidget(QString& line)
   // Check whether line contains widget information; if so, create it
   if(line.contains("floatatom") && line.contains("pod_"))
   {
-    widget = new widget::Number(tokens);
+    widget = new widget::Number(tokens, this);
   }
   else if(line.contains("symbolatom") && line.contains("pod_"))
   {
-    widget = new widget::Symbol(tokens);
+    widget = new widget::Symbol(tokens, this);
   }
   else if(line.contains("vsl") && line.contains("pod_"))
   {
-    widget = new widget::VerticalSlider(tokens);
+    widget = new widget::VerticalSlider(tokens, this);
   }
   else if(line.contains("hsl") && line.contains("pod_"))
   {
-    widget = new widget::HorizontalSlider(tokens);
+    widget = new widget::HorizontalSlider(tokens, this);
   }
   else if(line.contains("vradio") && line.contains("pod_"))
   {
-    widget = new widget::VerticalRadio(tokens);
+    widget = new widget::VerticalRadio(tokens, this);
   }
   else if(line.contains("hradio") && line.contains("pod_"))
   {
-    widget = new widget::HorizontalRadio(tokens);
+    widget = new widget::HorizontalRadio(tokens, this);
   }
   else if(line.contains("bng") && line.contains("pod_"))
   {
-    widget = new widget::Bang(tokens);
+    widget = new widget::Bang(tokens, this);
   }
   else if(line.contains("text"))
   {
-    widget = new widget::Text(tokens);
+    widget = new widget::Text(tokens, this);
   }
 
   return widget;
