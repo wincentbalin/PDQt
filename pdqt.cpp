@@ -458,11 +458,12 @@ SweetAppleController::SweetAppleController(Main* main_)
   // Initialize buttons
   buttons[BUTTON_PLAY]     = Button(Qt::Key_Space);
   buttons[BUTTON_MENU]     = Button(Qt::Key_Menu);
-  buttons[BUTTON_ACTION]   = Button(Qt::Key_Shift);
+  buttons[BUTTON_ACTION]   = Button(Qt::Key_Return);
   buttons[BUTTON_REWIND]   = Button(Qt::Key_Left);
   buttons[BUTTON_FORWARD]  = Button(Qt::Key_Right);
   buttons[WHEEL_CLOCKWISE] = Button(Qt::Key_Up);
   buttons[WHEEL_COUNTERCLOCKWISE] = Button(Qt::Key_Down);
+  buttons[BUTTON_SHIFT]    = Button(Qt::Key_Shift);
 }
 
 /** Get a button. */
@@ -474,6 +475,13 @@ Button& SweetAppleController::getButton(enum ButtonID id)
 /** Press a key. */
 bool SweetAppleController::pressKey(int key)
 {
+  // Set shift if needed
+  if(buttons[BUTTON_SHIFT] == key)
+  {
+    shift = true;
+    return true;
+  }
+
   // Elaborate control logic
   if(buttons[BUTTON_MENU] == key)
   {
@@ -571,6 +579,13 @@ bool SweetAppleController::pressKey(int key)
 /** Release a key. */
 bool SweetAppleController::unpressKey(int key)
 {
+  // Reset shift if needed
+  if(buttons[BUTTON_SHIFT] == key)
+  {
+    shift = false;
+    return true;
+  }
+
   // Elaborate control logic
   if(buttons[BUTTON_MENU] == key)
   {

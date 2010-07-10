@@ -70,6 +70,7 @@ namespace pdqt
     BUTTON_FORWARD         = 4,
     WHEEL_CLOCKWISE        = 5,
     WHEEL_COUNTERCLOCKWISE = 6,
+    BUTTON_SHIFT           = 7,
     BUTTONS
   };
 
