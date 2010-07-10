@@ -98,6 +98,8 @@ namespace pdqt
 
       class Geometric : public Base
       {
+      public:
+        ~Geometric() {}
       protected:
         float value;
         int min;
@@ -109,17 +111,20 @@ namespace pdqt
       class Textual : public Base
       {
       public:
+        ~Textual() {}
         void setValue(float f);
       };
 
       class Bang : public Geometric
       {
       public:
+        ~Bang() {}
       };
 
       class Slider : public Geometric
       {
       public:
+        ~Slider() {}
         void setValue(float f);
       protected:
         int position;
@@ -129,6 +134,7 @@ namespace pdqt
       class Radio : public Geometric
       {
       public:
+        ~Radio() {}
         void setValue(float f);
       protected:
         unsigned int buttons;
