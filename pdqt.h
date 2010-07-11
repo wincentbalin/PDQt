@@ -120,6 +120,7 @@ namespace pdqt
       class Base : public virtual Named
       {
       public:
+        virtual ~Base() {}
         QString name(void) const { return name_; }
       protected:
         QString name_;
@@ -130,7 +131,6 @@ namespace pdqt
       class Geometric : public Base
       {
       public:
-        ~Geometric() {}
       protected:
         float value;
         int min;
@@ -142,20 +142,17 @@ namespace pdqt
       class Textual : public Base
       {
       public:
-        ~Textual() {}
         void setValue(float f);
       };
 
       class Bang : public Geometric
       {
       public:
-        ~Bang() {}
       };
 
       class Slider : public Geometric
       {
       public:
-        ~Slider() {}
         void setValue(float f);
       protected:
         int position;
@@ -165,7 +162,6 @@ namespace pdqt
       class Radio : public Geometric
       {
       public:
-        ~Radio() {}
         void setValue(float f);
       protected:
         unsigned int buttons;
@@ -186,7 +182,6 @@ namespace pdqt
     {
     public:
       Bang(QStringList& parameters, ScreenProperties* sp);
-      virtual ~Bang() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter&);
@@ -199,7 +194,6 @@ namespace pdqt
     {
     public:
       HorizontalSlider(QStringList& parameters, ScreenProperties* sp);
-      virtual ~HorizontalSlider() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Slider::setValue(f); }
       void paint(QPainter&);
@@ -211,7 +205,6 @@ namespace pdqt
     {
     public:
       VerticalSlider(QStringList& parameters, ScreenProperties* sp);
-      virtual ~VerticalSlider() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Slider::setValue(f); }
       void paint(QPainter&);
@@ -223,7 +216,6 @@ namespace pdqt
     {
     public:
       HorizontalRadio(QStringList& parameters, ScreenProperties* sp);
-      virtual ~HorizontalRadio() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Radio::setValue(f); }
       void paint(QPainter&);
@@ -235,7 +227,6 @@ namespace pdqt
     {
     public:
       VerticalRadio(QStringList& parameters, ScreenProperties* sp);
-      virtual ~VerticalRadio() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Radio::setValue(f); }
       void paint(QPainter&);
@@ -247,7 +238,6 @@ namespace pdqt
     {
     public:
       Number(QStringList& parameters, ScreenProperties* sp);
-      virtual ~Number() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter&);
@@ -260,7 +250,6 @@ namespace pdqt
     {
     public:
       Text(QStringList& parameters, ScreenProperties* sp);
-      virtual ~Text() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f) { properties::Textual::setValue(f); }
       void paint(QPainter&);
@@ -273,7 +262,6 @@ namespace pdqt
     {
     public:
       Symbol(QStringList& parameters, ScreenProperties* sp);
-      virtual ~Symbol() {}
       QString name(void) const { return properties::Base::name(); }
       void setValue(float f);
       void paint(QPainter& p);
