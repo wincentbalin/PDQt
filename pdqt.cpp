@@ -1310,6 +1310,9 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
 void PDQt::mouseMoveEvent(QMouseEvent* m)
 {
   turningGestureRecognizer.nextCoordinates(m->x(), m->y());
+
+  // Repaint everything
+  repaint(false);
 }
 
 /** Mouse wheel was turned. */
@@ -1322,6 +1325,9 @@ void PDQt::wheelEvent(QWheelEvent* w)
 
   // We accept every mouse wheel event
   w->accept();
+
+  // Repaint everything
+  repaint(false);
 }
 
 void PDQt::resizeEvent(QResizeEvent *)
