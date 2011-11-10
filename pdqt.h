@@ -328,44 +328,6 @@ namespace pdqt
     virtual void addToWheel(const int i) = 0;
   };
 
-  class SourAppleController : virtual public Controller
-  {
-  public:
-    SourAppleController(Main*);
-    Button& getButton(enum ButtonID id);
-    void pressKey(const int key);
-    void unpressKey(const int key);
-    bool knownKey(const int key);
-    bool anyButtonPressed();
-    bool buttonPressed(enum ButtonID button);
-    int  wheelValue();
-    void addToWheel(const int i) { (void) i; }
-  private:
-    bool shift;
-    Button buttons[BUTTONS];
-    ScrollWheel wheel;
-    Main* main;
-  };
-
-  class SweetSourAppleController : virtual public Controller
-  {
-  public:
-    SweetSourAppleController(Main*);
-    Button& getButton(enum ButtonID id);
-    void pressKey(const int key);
-    void unpressKey(const int key);
-    bool knownKey(const int key);
-    bool anyButtonPressed();
-    bool buttonPressed(enum ButtonID button);
-    int  wheelValue();
-    void addToWheel(const int i);
-  private:
-    bool shift;
-    Button buttons[BUTTONS];
-    ScrollWheel wheel;
-    Main* main;
-  };
-
   class SweetAppleController : virtual public Controller
   {
   public:
