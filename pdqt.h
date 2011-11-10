@@ -391,7 +391,7 @@ namespace pdqt
     TurningGestureRecognizer();
     void setController(Controller* c) { controller = c; }
     void setScreenProperties(ScreenProperties* sp) { screenProperties = sp; }
-    void nextCoordinates(const int x, const int y);
+    bool processNextCoordinates(const int x, const int y);
   private:
     enum Quadrant previousQuadrant;
     Controller* controller;

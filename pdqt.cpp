@@ -312,7 +312,7 @@ TurningGestureRecognizer::TurningGestureRecognizer()
 }
 
 /** Give next coordinate pair to the gesture recognizer. */
-void TurningGestureRecognizer::nextCoordinates(const int x, const int y)
+bool TurningGestureRecognizer::processNextCoordinates(const int x, const int y)
 {
   int direction = 0;
   enum Quadrant currentQuadrant = SECOND_QUADRANT;
@@ -368,6 +368,9 @@ void TurningGestureRecognizer::nextCoordinates(const int x, const int y)
 
   // Backup current quadrant
   previousQuadrant = currentQuadrant;
+
+  // Give feedback, whether a gesture has been recognized
+  return (direction != 0);
 }
 
 
@@ -1313,10 +1316,11 @@ void PDQt::keyReleaseEvent(QKeyEvent* k)
 /** Mouse was moved (while mouse button was pressed). */
 void PDQt::mouseMoveEvent(QMouseEvent* m)
 {
-  turningGestureRecognizer.nextCoordinates(m->x(), m->y());
+  bool gestureRecognized =
+  turningGestureRecognizer.processNextCoordinates(m->x(), m->y());
 
-  // Repaint everything
-  repaint(false);
+  if(gestureRecognized)
+    repaint(false);
 }
 
 /** Mouse wheel was turned. */
