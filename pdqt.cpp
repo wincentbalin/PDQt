@@ -1159,7 +1159,7 @@ AboutDialog::AboutDialog(QWidget* parent, const char* name, WFlags f) :
   about->setText
   (
     "<h1>Pure Data for Qt</h1><br/>"
-    "Copyright (C) 2008-2010 by Wincent Balin "
+    "Copyright (C) 2008-2011 by Wincent Balin "
       "<a href=\"mailto:wincent.balin@gmail.com\">(wincent.balin@gmail.com)</a><br/>"
     "<br/>"
     "This software is licensed under the terms of the GNU General Public License version 2.<br/>"
