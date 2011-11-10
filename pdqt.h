@@ -393,7 +393,7 @@ namespace pdqt
     void setScreenProperties(ScreenProperties* sp) { screenProperties = sp; }
     void nextCoordinates(const int x, const int y);
   private:
-    enum Quadrant quadrant;
+    enum Quadrant previousQuadrant;
     Controller* controller;
     ScreenProperties* screenProperties;
   };

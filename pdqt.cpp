@@ -304,7 +304,7 @@ void SweetAppleController::addToWheel(const int i)
 TurningGestureRecognizer::TurningGestureRecognizer()
 {
   // Set quadrant to the one of the (0, 0) point
-  quadrant = SECOND_QUADRANT;
+  previousQuadrant = SECOND_QUADRANT;
 
   // Reset references
   controller = NULL;
@@ -341,17 +341,17 @@ void TurningGestureRecognizer::nextCoordinates(const int x, const int y)
     }
 
     // Compute direction of the gesture
-    if((quadrant == FIRST_QUADRANT && currentQuadrant == FOURTH_QUADRANT) ||
-       (quadrant == FOURTH_QUADRANT && currentQuadrant == THIRD_QUADRANT) ||
-       (quadrant == THIRD_QUADRANT && currentQuadrant == SECOND_QUADRANT) ||
-       (quadrant == SECOND_QUADRANT && currentQuadrant == FIRST_QUADRANT))
+    if((previousQuadrant == FIRST_QUADRANT && currentQuadrant == FOURTH_QUADRANT) ||
+       (previousQuadrant == FOURTH_QUADRANT && currentQuadrant == THIRD_QUADRANT) ||
+       (previousQuadrant == THIRD_QUADRANT && currentQuadrant == SECOND_QUADRANT) ||
+       (previousQuadrant == SECOND_QUADRANT && currentQuadrant == FIRST_QUADRANT))
     {
       direction = 1; // Clockwise
     }
-    else if((quadrant == FIRST_QUADRANT && currentQuadrant == SECOND_QUADRANT) ||
-            (quadrant == SECOND_QUADRANT && currentQuadrant == THIRD_QUADRANT) ||
-            (quadrant == THIRD_QUADRANT && currentQuadrant == FOURTH_QUADRANT) ||
-            (quadrant == FOURTH_QUADRANT && currentQuadrant == FIRST_QUADRANT))
+    else if((previousQuadrant == FIRST_QUADRANT && currentQuadrant == SECOND_QUADRANT) ||
+            (previousQuadrant == SECOND_QUADRANT && currentQuadrant == THIRD_QUADRANT) ||
+            (previousQuadrant == THIRD_QUADRANT && currentQuadrant == FOURTH_QUADRANT) ||
+            (previousQuadrant == FOURTH_QUADRANT && currentQuadrant == FIRST_QUADRANT))
     {
       direction = -1; // Counterclockwise
     }
@@ -367,7 +367,7 @@ void TurningGestureRecognizer::nextCoordinates(const int x, const int y)
   }
 
   // Backup current quadrant
-  quadrant = currentQuadrant;
+  previousQuadrant = currentQuadrant;
 }
 
 
