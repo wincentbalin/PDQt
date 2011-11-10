@@ -1,0 +1,6 @@
+Makefile
+.moc
+*.o
+pdqt
+pdqt.exe
+pdqt*.ipk
